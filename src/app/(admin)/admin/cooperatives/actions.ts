@@ -55,7 +55,6 @@ export async function createCooperativeAction(
       municipalityCode: parsed.data.municipalityCode,
       slogan: parsed.data.slogan || null,
       descriptionText: parsed.data.descriptionText || null,
-      descriptionRich: null,
       status: CooperativeStatus.DRAFT,
       reviewStatus: ReviewStatus.PENDING,
     },
