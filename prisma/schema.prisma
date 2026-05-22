@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String                     @id @default(cuid())
+  email               String                     @unique
+  displayName         String
+  role                UserRole                   @default(COOP_ADMIN)
+  cooperativeId       String?                    @unique
+  passwordHash        String?
+  isActive            Boolean                    @default(true)
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  cooperative         Cooperative?               @relation("CooperativeAdmin", fields: [cooperativeId], references: [id], onDelete: SetNull)
+  createdCooperatives Cooperative[]              @relation("CooperativeCreatedBy")
+  updatedCooperatives Cooperative[]              @relation("CooperativeUpdatedBy")
+  requestedChanges    CooperativeChangeRequest[] @relation("RequestedBy")
+  reviewedChanges     CooperativeChangeRequest[] @relation("ReviewedBy")
+  createdBanners      HomeBanner[]               @relation("BannerCreatedBy")
+  updatedBanners      HomeBanner[]               @relation("BannerUpdatedBy")
+}
+
+model Municipality {
+  code         String        @id
+  name         String        @unique
+  cooperatives Cooperative[]
+}
+
+model Cooperative {
+  id               String                     @id @default(cuid())
+  name             String
+  slug             String                     @unique
+  municipalityCode String
+  logoUrl          String?
+  slogan           String?
+  descriptionText  String?
+  descriptionRich  Json?
+  status           CooperativeStatus          @default(DRAFT)
+  reviewStatus     ReviewStatus               @default(PENDING)
+  publishedAt      DateTime?
+  createdById      String?
+  updatedById      String?
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+  municipality     Municipality               @relation(fields: [municipalityCode], references: [code], onDelete: Restrict)
+  adminUser        User?                      @relation("CooperativeAdmin")
+  createdBy        User?                      @relation("CooperativeCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy        User?                      @relation("CooperativeUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  services         CooperativeService[]
+  contacts         ContactPoint[]
+  gallery          GalleryImage[]
+  changeRequests   CooperativeChangeRequest[]
+
+  @@index([name])
+  @@index([municipalityCode])
+  @@index([status])
+}
+
+model CooperativeService {
+  id            String      @id @default(cuid())
+  cooperativeId String
+  title         String
+  description   String?
+  sortOrder     Int         @default(0)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  cooperative   Cooperative @relation(fields: [cooperativeId], references: [id], onDelete: Cascade)
+
+  @@index([cooperativeId, sortOrder])
+}
+
+model ContactPoint {
+  id            String      @id @default(cuid())
+  cooperativeId String
+  type          ContactType
+  label         String?
+  value         String
+  sortOrder     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  cooperative   Cooperative @relation(fields: [cooperativeId], references: [id], onDelete: Cascade)
+
+  @@index([cooperativeId, sortOrder])
+}
+
+model GalleryImage {
+  id            String      @id @default(cuid())
+  cooperativeId String
+  imageUrl      String
+  altText       String?
+  sortOrder     Int         @default(0)
+  isPrimary     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  cooperative   Cooperative @relation(fields: [cooperativeId], references: [id], onDelete: Cascade)
+
+  @@index([cooperativeId, sortOrder])
+}
+
+model HomeBanner {
+  id          String     @id @default(cuid())
+  slot        BannerSlot
+  title       String
+  imageUrl    String
+  targetUrl   String?
+  isActive    Boolean    @default(true)
+  sortOrder   Int        @default(0)
+  activeFrom  DateTime?
+  activeUntil DateTime?
+  createdById String?
+  updatedById String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  createdBy   User?      @relation("BannerCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy   User?      @relation("BannerUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([slot, isActive])
+  @@index([slot, sortOrder])
+}
+
+model CooperativeChangeRequest {
+  id            String              @id @default(cuid())
+  cooperativeId String
+  requestedById String
+  reviewedById  String?
+  severity      ChangeSeverity
+  status        ChangeRequestStatus @default(PENDING)
+  payload       Json
+  notes         String?
+  reviewedAt    DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  cooperative   Cooperative         @relation(fields: [cooperativeId], references: [id], onDelete: Cascade)
+  requestedBy   User                @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+  reviewedBy    User?               @relation("ReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([cooperativeId, status])
+  @@index([status, severity])
+}
+
+enum UserRole {
+  PLATFORM_ADMIN
+  COOP_ADMIN
+}
+
+enum CooperativeStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ContactType {
+  PHONE
+  EMAIL
+  WEBSITE
+  WHATSAPP
+  ADDRESS
+}
+
+enum BannerSlot {
+  HERO
+  SIDEBAR_TOP
+  SIDEBAR_BOTTOM
+}
+
+enum ChangeSeverity {
+  MINOR
+  MAJOR
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  AUTO_PUBLISHED
+  APPROVED
+  REJECTED
+}
