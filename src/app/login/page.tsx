@@ -22,6 +22,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const errorMessage =
     params.error === "invalid_credentials"
       ? "Credenciales inválidas."
+      : params.error === "invalid_callbackurl"
+        ? "Neon Auth rechazó la callback URL. Agrega https://cooperatvaspr.vercel.app en Trusted Origins."
+        : params.error === "invalid_origin"
+          ? "Neon Auth rechazó el origin del request. Verifica Trusted Origins en Neon."
       : params.error === "missing_auth_config"
         ? "Falta configurar NEON_AUTH_BASE_URL."
         : params.error === "auth_origin_mismatch"

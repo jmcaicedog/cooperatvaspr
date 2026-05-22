@@ -80,6 +80,10 @@ export async function POST(request: NextRequest) {
 
     if (payload.code === "INVALID_EMAIL_OR_PASSWORD") {
       loginUrl.searchParams.set("error", "invalid_credentials");
+    } else if (payload.code === "INVALID_CALLBACKURL") {
+      loginUrl.searchParams.set("error", "invalid_callbackurl");
+    } else if (payload.code === "INVALID_ORIGIN") {
+      loginUrl.searchParams.set("error", "invalid_origin");
     } else if (payload.code === "MISSING_ORIGIN") {
       loginUrl.searchParams.set("error", "auth_origin_mismatch");
     } else {
