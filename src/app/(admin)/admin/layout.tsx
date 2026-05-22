@@ -49,6 +49,9 @@ export default async function AdminLayout({
             >
               Cooperativas
             </Link>
+            <Link className="block rounded px-3 py-2 hover:bg-zinc-100" href="/admin/users">
+              Usuarios
+            </Link>
             <Link className="block rounded px-3 py-2 hover:bg-zinc-100" href="/admin/banners">
               Banners
             </Link>

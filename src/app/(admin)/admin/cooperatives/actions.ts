@@ -69,6 +69,58 @@ export async function createCooperativeAction(
   };
 }
 
+export async function updateCooperativeByAdminAction(
+  _previousState: CooperativeActionState,
+  formData: FormData
+): Promise<CooperativeActionState> {
+  const actor = await requirePlatformAdmin();
+
+  const cooperativeId = String(formData.get("cooperativeId") ?? "").trim();
+  if (!cooperativeId) {
+    return { ok: false, message: "Cooperativa inválida." };
+  }
+
+  const parsed = cooperativeCreateSchema.safeParse({
+    name: formData.get("name"),
+    municipalityCode: formData.get("municipalityCode"),
+    slogan: formData.get("slogan"),
+    descriptionText: formData.get("descriptionText"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues[0]?.message ?? "Datos inválidos." };
+  }
+
+  const cooperative = await db.cooperative.findUnique({
+    where: { id: cooperativeId },
+    select: { id: true },
+  });
+
+  if (!cooperative) {
+    return { ok: false, message: "Cooperativa no encontrada." };
+  }
+
+  await db.cooperative.update({
+    where: { id: cooperative.id },
+    data: {
+      name: parsed.data.name,
+      municipalityCode: parsed.data.municipalityCode,
+      slogan: parsed.data.slogan || null,
+      descriptionText: parsed.data.descriptionText || null,
+      reviewStatus: ReviewStatus.APPROVED,
+      updatedById: actor.userId,
+    },
+  });
+
+  revalidatePath(`/admin/cooperatives/${cooperative.id}`);
+  revalidatePath("/admin/cooperatives");
+
+  return {
+    ok: true,
+    message: "Cooperativa actualizada exitosamente.",
+  };
+}
+
 export async function togglePublishCooperativeAction(id: string): Promise<void> {
   await requirePlatformAdmin();
 

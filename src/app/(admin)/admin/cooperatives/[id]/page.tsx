@@ -1,0 +1,51 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { EditForm } from "@/app/(admin)/admin/cooperatives/[id]/EditForm";
+import { requirePlatformAdmin } from "@/lib/auth/session";
+import { db } from "@/lib/db";
+
+type CooperativeDetailPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function CooperativeDetailPage({ params }: CooperativeDetailPageProps) {
+  await requirePlatformAdmin();
+  const { id } = await params;
+
+  const cooperative = await db.cooperative.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      municipalityCode: true,
+      slogan: true,
+      descriptionText: true,
+      status: true,
+      reviewStatus: true,
+    },
+  });
+
+  if (!cooperative) {
+    notFound();
+  }
+
+  return (
+    <section className="space-y-6">
+      <header className="space-y-2">
+        <p className="text-xs uppercase tracking-wide text-zinc-500">Editar cooperativa</p>
+        <h2 className="text-2xl font-semibold">{cooperative.name}</h2>
+        <p className="text-sm text-zinc-600">
+          Slug: /{cooperative.slug} | Estado: {cooperative.status} | Revisión: {cooperative.reviewStatus}
+        </p>
+      </header>
+
+      <EditForm cooperative={cooperative} />
+
+      <Link className="inline-flex text-sm underline" href="/admin/cooperatives">
+        Volver a listado
+      </Link>
+    </section>
+  );
+}

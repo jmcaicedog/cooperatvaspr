@@ -1,5 +1,6 @@
 import { CooperativeStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 import { CooperativeCreateForm } from "@/app/(admin)/admin/cooperatives/CooperativeCreateForm";
 import { togglePublishCooperativeAction } from "@/app/(admin)/admin/cooperatives/actions";
@@ -69,22 +70,30 @@ export default async function CooperativesPage() {
                 <td className="px-4 py-3">{cooperative.status}</td>
                 <td className="px-4 py-3">{cooperative.reviewStatus}</td>
                 <td className="px-4 py-3">
-                  <form
-                    action={async () => {
-                      "use server";
-                      await togglePublishCooperativeAction(cooperative.id);
-                      revalidatePath("/admin/cooperatives");
-                    }}
-                  >
-                    <button
-                      className="rounded-md border border-zinc-300 px-3 py-1.5 font-medium hover:bg-zinc-100"
-                      type="submit"
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                      href={`/admin/cooperatives/${cooperative.id}`}
                     >
-                      {cooperative.status === CooperativeStatus.PUBLISHED
-                        ? "Despublicar"
-                        : "Publicar"}
-                    </button>
-                  </form>
+                      Editar
+                    </Link>
+                    <form
+                      action={async () => {
+                        "use server";
+                        await togglePublishCooperativeAction(cooperative.id);
+                        revalidatePath("/admin/cooperatives");
+                      }}
+                    >
+                      <button
+                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                        type="submit"
+                      >
+                        {cooperative.status === CooperativeStatus.PUBLISHED
+                          ? "Despublicar"
+                          : "Publicar"}
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             ))}

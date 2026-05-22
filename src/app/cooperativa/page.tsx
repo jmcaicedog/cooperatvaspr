@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function CooperativaDashboardPage() {
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6">
@@ -8,14 +6,9 @@ export default function CooperativaDashboardPage() {
         Gestiona la información pública de tu cooperativa y envía cambios para publicación cuando
         sea necesario.
       </p>
-      <div className="mt-6">
-        <Link
-          className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-          href="/cooperativa/perfil"
-        >
-          Editar perfil
-        </Link>
-      </div>
+      <p className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
+        Usa el menú superior para navegar entre Inicio, Perfil, Servicios, Contactos y Galeria.
+      </p>
     </section>
   );
 }
