@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getAppBaseUrl, getNeonAuthApiBaseUrl } from "@/lib/auth/neon-auth";
+import { getNeonAuthApiBaseUrl } from "@/lib/auth/neon-auth";
 
 export async function GET(request: NextRequest) {
   const response = NextResponse.redirect(new URL("/login", request.url), {
     status: 303,
   });
+
+  const appOrigin = request.nextUrl.origin;
 
   const neonAuthApiBaseUrl = getNeonAuthApiBaseUrl();
   if (neonAuthApiBaseUrl) {
@@ -14,11 +16,11 @@ export async function GET(request: NextRequest) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          origin: getAppBaseUrl(),
+          origin: appOrigin,
           cookie: request.headers.get("cookie") ?? "",
         },
         body: JSON.stringify({
-          callbackURL: `${getAppBaseUrl()}/login`,
+          callbackURL: `${appOrigin}/login`,
         }),
         cache: "no-store",
       });

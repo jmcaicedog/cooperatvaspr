@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getAppBaseUrl, getNeonAuthApiBaseUrl } from "@/lib/auth/neon-auth";
+import { getNeonAuthApiBaseUrl } from "@/lib/auth/neon-auth";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
   const safeNext = nextPath.startsWith("/") ? nextPath : "/admin";
   const loginUrl = new URL("/login", request.url);
   loginUrl.searchParams.set("next", safeNext);
+  const appOrigin = request.nextUrl.origin;
 
   if (!email || !password) {
     loginUrl.searchParams.set("error", "missing_credentials");
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(loginUrl, { status: 303 });
   }
 
-  const callbackURL = `${getAppBaseUrl()}${safeNext}`;
+  const callbackURL = `${appOrigin}${safeNext}`;
 
   let authResponse: Response;
 
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        origin: getAppBaseUrl(),
+        origin: appOrigin,
       },
       body: JSON.stringify({
         email,
@@ -70,7 +71,21 @@ export async function POST(request: NextRequest) {
   }
 
   if (!authResponse.ok) {
-    loginUrl.searchParams.set("error", "invalid_credentials");
+    type ErrorPayload = {
+      code?: string;
+      message?: string;
+    };
+
+    const payload = (await authResponse.json().catch(() => ({}))) as ErrorPayload;
+
+    if (payload.code === "INVALID_EMAIL_OR_PASSWORD") {
+      loginUrl.searchParams.set("error", "invalid_credentials");
+    } else if (payload.code === "MISSING_ORIGIN") {
+      loginUrl.searchParams.set("error", "auth_origin_mismatch");
+    } else {
+      loginUrl.searchParams.set("error", "auth_rejected");
+    }
+
     return NextResponse.redirect(loginUrl, { status: 303 });
   }
 
