@@ -56,6 +56,8 @@ export async function createContactAction(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/cooperativa/contactos");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${parsed.data.cooperativeId}`);
 }
 
 export async function deleteContactAction(contactId: string): Promise<void> {
@@ -76,6 +78,8 @@ export async function deleteContactAction(contactId: string): Promise<void> {
 
   await db.contactPoint.delete({ where: { id: contact.id } });
   revalidatePath("/cooperativa/contactos");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${contact.cooperativeId}`);
 }
 
 export async function updateContactAction(formData: FormData): Promise<void> {
@@ -115,4 +119,6 @@ export async function updateContactAction(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/cooperativa/contactos");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${contact.cooperativeId}`);
 }

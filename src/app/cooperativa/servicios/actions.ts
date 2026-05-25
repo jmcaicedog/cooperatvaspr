@@ -51,6 +51,8 @@ export async function createServiceAction(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/cooperativa/servicios");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${parsed.data.cooperativeId}`);
 }
 
 export async function deleteServiceAction(serviceId: string): Promise<void> {
@@ -71,6 +73,8 @@ export async function deleteServiceAction(serviceId: string): Promise<void> {
 
   await db.cooperativeService.delete({ where: { id: service.id } });
   revalidatePath("/cooperativa/servicios");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${service.cooperativeId}`);
 }
 
 export async function updateServiceAction(formData: FormData): Promise<void> {
@@ -108,6 +112,8 @@ export async function updateServiceAction(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/cooperativa/servicios");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${service.cooperativeId}`);
 }
 
 export async function toggleServiceAction(serviceId: string): Promise<void> {
@@ -132,4 +138,6 @@ export async function toggleServiceAction(serviceId: string): Promise<void> {
   });
 
   revalidatePath("/cooperativa/servicios");
+  revalidatePath("/admin/cooperatives");
+  revalidatePath(`/admin/cooperatives/${service.cooperativeId}`);
 }

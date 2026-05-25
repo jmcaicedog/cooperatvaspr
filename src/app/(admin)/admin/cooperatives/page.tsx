@@ -2,10 +2,23 @@ import { CooperativeStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
+import { ConfirmDeleteCooperativeButton } from "@/app/(admin)/admin/cooperatives/ConfirmDeleteCooperativeButton";
 import { CooperativeCreateForm } from "@/app/(admin)/admin/cooperatives/CooperativeCreateForm";
 import { togglePublishCooperativeAction } from "@/app/(admin)/admin/cooperatives/actions";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+
+const statusLabel: Record<string, string> = {
+  DRAFT: "Borrador",
+  PUBLISHED: "Publicado",
+  UNPUBLISHED: "Despublicado",
+};
+
+const reviewLabel: Record<string, string> = {
+  PENDING: "Pendiente",
+  APPROVED: "Aprobada",
+  REJECTED: "Rechazada",
+};
 
 export default async function CooperativesPage() {
   try {
@@ -32,6 +45,11 @@ export default async function CooperativesPage() {
         name: true,
         slug: true,
         municipalityCode: true,
+        municipality: {
+          select: {
+            name: true,
+          },
+        },
         status: true,
         reviewStatus: true,
         updatedAt: true,
@@ -55,8 +73,6 @@ export default async function CooperativesPage() {
         </p>
       </header>
 
-      <CooperativeCreateForm municipalities={municipalities} />
-
       <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
         <table className="w-full border-collapse text-left text-sm">
           <thead className="bg-zinc-50 text-zinc-600">
@@ -75,9 +91,11 @@ export default async function CooperativesPage() {
                   <p className="font-medium">{cooperative.name}</p>
                   <p className="text-xs text-zinc-500">/{cooperative.slug}</p>
                 </td>
-                <td className="px-4 py-3">{cooperative.municipalityCode}</td>
-                <td className="px-4 py-3">{cooperative.status}</td>
-                <td className="px-4 py-3">{cooperative.reviewStatus}</td>
+                <td className="px-4 py-3">{cooperative.municipality?.name ?? cooperative.municipalityCode}</td>
+                <td className="px-4 py-3">{statusLabel[cooperative.status] ?? cooperative.status}</td>
+                <td className="px-4 py-3">
+                  {reviewLabel[cooperative.reviewStatus] ?? cooperative.reviewStatus}
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link
@@ -102,6 +120,10 @@ export default async function CooperativesPage() {
                           : "Publicar"}
                       </button>
                     </form>
+                    <ConfirmDeleteCooperativeButton
+                      cooperativeId={cooperative.id}
+                      cooperativeName={cooperative.name}
+                    />
                   </div>
                 </td>
               </tr>
@@ -109,6 +131,8 @@ export default async function CooperativesPage() {
           </tbody>
         </table>
       </div>
+
+      <CooperativeCreateForm municipalities={municipalities} />
     </section>
   );
 }

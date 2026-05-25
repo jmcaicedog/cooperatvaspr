@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { requirePlatformAdmin } from "@/lib/auth/session";
+import { db } from "@/lib/db";
 
 export default async function AdminLayout({
   children,
@@ -20,6 +21,15 @@ export default async function AdminLayout({
     redirect("/login?next=/admin");
   }
 
+  const userRecord = authContext.userId.startsWith("dev-bypass")
+    ? null
+    : await db.user.findUnique({
+        where: { id: authContext.userId },
+        select: { displayName: true },
+      });
+
+  const displayName = userRecord?.displayName || "Usuario plataforma";
+
   return (
     <div className="min-h-screen bg-zinc-100 text-zinc-950">
       <header className="border-b border-zinc-200 bg-white">
@@ -29,8 +39,11 @@ export default async function AdminLayout({
             <h1 className="text-lg font-semibold">Panel Administrativo</h1>
           </div>
           <div className="text-right text-sm text-zinc-600">
-            <p>{authContext ? `Rol activo: ${authContext.role}` : "Sin sesión"}</p>
-            <a className="text-xs underline" href="/auth/logout">
+            <p className="font-medium text-zinc-800">{displayName}</p>
+            <a
+              className="mt-1 inline-flex rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
+              href="/auth/logout"
+            >
               Cerrar sesión
             </a>
           </div>

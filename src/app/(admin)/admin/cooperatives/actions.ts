@@ -10,6 +10,7 @@ import {
 } from "@/lib/cloudinary";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { sanitizeBasicHtml, richTextPayloadSchema } from "@/lib/validators/rich-text";
 import { cooperativeCreateSchema, toSlug } from "@/lib/validators/cooperative";
 
 export type CooperativeActionState = {
@@ -124,8 +125,20 @@ export async function updateCooperativeByAdminAction(
     descriptionText: formData.get("descriptionText"),
   });
 
+  const parsedRich = richTextPayloadSchema.safeParse({
+    html: formData.get("descriptionRichHtml") ?? "",
+    text: formData.get("descriptionRichText") ?? "",
+  });
+
   if (!parsed.success) {
     return { ok: false, message: parsed.error.issues[0]?.message ?? "Datos inválidos." };
+  }
+
+  if (!parsedRich.success) {
+    return {
+      ok: false,
+      message: parsedRich.error.issues[0]?.message ?? "Descripción enriquecida inválida.",
+    };
   }
 
   const cooperative = await db.cooperative.findUnique({
@@ -144,6 +157,10 @@ export async function updateCooperativeByAdminAction(
       municipalityCode: parsed.data.municipalityCode,
       slogan: parsed.data.slogan || null,
       descriptionText: parsed.data.descriptionText || null,
+      descriptionRich: {
+        html: sanitizeBasicHtml(parsedRich.data.html),
+        text: parsedRich.data.text,
+      },
       reviewStatus: ReviewStatus.APPROVED,
       updatedById: actor.userId,
     },
@@ -183,6 +200,37 @@ export async function togglePublishCooperativeAction(id: string): Promise<void> 
       publishedAt: nextStatus === CooperativeStatus.PUBLISHED ? new Date() : null,
     },
   });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/cooperatives");
+}
+
+export async function deleteCooperativeByPlatformAction(cooperativeId: string): Promise<void> {
+  await requirePlatformAdmin();
+
+  const cooperative = await db.cooperative.findUnique({
+    where: { id: cooperativeId },
+    select: {
+      id: true,
+      logoUrl: true,
+      gallery: {
+        select: { imageUrl: true },
+      },
+    },
+  });
+
+  if (!cooperative) {
+    throw new Error("Cooperativa no encontrada.");
+  }
+
+  const publicIds = [
+    cooperative.logoUrl ? extractCloudinaryPublicIdFromUrl(cooperative.logoUrl) : null,
+    ...cooperative.gallery.map((image) => extractCloudinaryPublicIdFromUrl(image.imageUrl)),
+  ].filter((value): value is string => Boolean(value));
+
+  await db.cooperative.delete({ where: { id: cooperative.id } });
+
+  await Promise.all(publicIds.map((publicId) => destroyCloudinaryImage(publicId).catch(() => undefined)));
 
   revalidatePath("/admin");
   revalidatePath("/admin/cooperatives");
@@ -369,6 +417,38 @@ export async function setPrimaryGalleryImageByAdminAction(formData: FormData): P
       data: { isPrimary: true },
     }),
   ]);
+
+  revalidatePath(`/admin/cooperatives/${image.cooperativeId}`);
+  revalidatePath("/admin/cooperatives");
+}
+
+export async function updateGalleryImageAltTextByAdminAction(formData: FormData): Promise<void> {
+  await requirePlatformAdmin();
+  const imageId = String(formData.get("imageId") ?? "").trim();
+  const altTextRaw = formData.get("altText");
+  const altText = typeof altTextRaw === "string" ? altTextRaw.trim() : "";
+
+  if (!imageId) {
+    throw new Error("Imagen inválida.");
+  }
+
+  if (altText.length > 200) {
+    throw new Error("El texto alternativo no puede superar 200 caracteres.");
+  }
+
+  const image = await db.galleryImage.findUnique({
+    where: { id: imageId },
+    select: { id: true, cooperativeId: true },
+  });
+
+  if (!image) {
+    throw new Error("Imagen no encontrada.");
+  }
+
+  await db.galleryImage.update({
+    where: { id: image.id },
+    data: { altText: altText || null },
+  });
 
   revalidatePath(`/admin/cooperatives/${image.cooperativeId}`);
   revalidatePath("/admin/cooperatives");

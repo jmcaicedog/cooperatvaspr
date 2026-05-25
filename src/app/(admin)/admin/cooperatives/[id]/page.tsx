@@ -24,8 +24,27 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
         logoUrl: true,
         slogan: true,
         descriptionText: true,
+        descriptionRich: true,
         status: true,
         reviewStatus: true,
+        services: {
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            isActive: true,
+          },
+        },
+        contacts: {
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            id: true,
+            type: true,
+            label: true,
+            value: true,
+          },
+        },
         gallery: {
           orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
           select: {

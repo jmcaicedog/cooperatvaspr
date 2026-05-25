@@ -6,6 +6,18 @@ import { UserForms } from "@/app/(admin)/admin/users/UserForms";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
+function roleLabel(role: string): string {
+  if (role === "PLATFORM_ADMIN") {
+    return "Administrador";
+  }
+
+  if (role === "COOP_ADMIN") {
+    return "Editor";
+  }
+
+  return role;
+}
+
 export default async function AdminUsersPage() {
   const actor = await requirePlatformAdmin();
 
@@ -41,8 +53,6 @@ export default async function AdminUsersPage() {
         </p>
       </header>
 
-      <UserForms cooperatives={cooperatives} />
-
       <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
         <table className="w-full border-collapse text-left text-sm">
           <thead className="bg-zinc-50 text-zinc-700">
@@ -61,10 +71,8 @@ export default async function AdminUsersPage() {
                   <p className="font-medium text-zinc-900">{user.displayName}</p>
                   <p className="text-xs text-zinc-500">{user.email}</p>
                 </td>
-                <td className="px-4 py-3">{user.role}</td>
-                <td className="px-4 py-3">
-                  {user.cooperative ? `${user.cooperative.name} (/${user.cooperative.slug})` : "Sin asignar"}
-                </td>
+                <td className="px-4 py-3">{roleLabel(user.role)}</td>
+                <td className="px-4 py-3">{user.cooperative ? user.cooperative.name : "Sin asignar"}</td>
                 <td className="px-4 py-3">{user.isActive ? "Activo" : "Inactivo"}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
@@ -98,6 +106,8 @@ export default async function AdminUsersPage() {
           </tbody>
         </table>
       </div>
+
+      <UserForms cooperatives={cooperatives} />
     </section>
   );
 }
