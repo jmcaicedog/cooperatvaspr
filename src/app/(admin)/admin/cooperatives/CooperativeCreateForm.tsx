@@ -12,7 +12,12 @@ const initialState: CooperativeActionState = {
   message: "",
 };
 
-export function CooperativeCreateForm() {
+type MunicipalityOption = {
+  code: string;
+  name: string;
+};
+
+export function CooperativeCreateForm({ municipalities }: { municipalities: MunicipalityOption[] }) {
   const [state, action, pending] = useActionState(createCooperativeAction, initialState);
 
   return (
@@ -32,13 +37,22 @@ export function CooperativeCreateForm() {
       </label>
 
       <label className="grid gap-1 text-sm">
-        <span>Código de municipio</span>
-        <input
+        <span>Municipio</span>
+        <select
           className="rounded-md border border-zinc-300 px-3 py-2"
+          defaultValue=""
           name="municipalityCode"
-          placeholder="Ej. san-juan"
           required
-        />
+        >
+          <option disabled value="">
+            Selecciona un municipio
+          </option>
+          {municipalities.map((municipality) => (
+            <option key={municipality.code} value={municipality.code}>
+              {municipality.name}
+            </option>
+          ))}
+        </select>
       </label>
 
       <label className="grid gap-1 text-sm">

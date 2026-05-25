@@ -29,6 +29,11 @@ type CooperativeEditData = {
   }>;
 };
 
+type MunicipalityOption = {
+  code: string;
+  name: string;
+};
+
 const initialState: CooperativeActionState = {
   ok: false,
   message: "",
@@ -39,7 +44,13 @@ const initialMediaState: CooperativeMediaActionState = {
   message: "",
 };
 
-export function EditForm({ cooperative }: { cooperative: CooperativeEditData }) {
+export function EditForm({
+  cooperative,
+  municipalities,
+}: {
+  cooperative: CooperativeEditData;
+  municipalities: MunicipalityOption[];
+}) {
   const [state, action, pending] = useActionState(updateCooperativeByAdminAction, initialState);
   const [logoState, logoAction, logoPending] = useActionState(
     uploadCooperativeLogoByAdminAction,
@@ -69,13 +80,19 @@ export function EditForm({ cooperative }: { cooperative: CooperativeEditData }) 
           </label>
 
           <label className="grid gap-1 text-sm">
-            <span>Codigo de municipio</span>
-            <input
+            <span>Municipio</span>
+            <select
               className="rounded-md border border-zinc-300 px-3 py-2"
               defaultValue={cooperative.municipalityCode}
               name="municipalityCode"
               required
-            />
+            >
+              {municipalities.map((municipality) => (
+                <option key={municipality.code} value={municipality.code}>
+                  {municipality.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 

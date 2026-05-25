@@ -34,9 +34,6 @@ export default async function CooperativaLayout({
             </div>
           </div>
           <nav className="mt-3 flex flex-wrap gap-2 text-sm">
-            <Link className="rounded-md border border-zinc-300 px-3 py-1.5" href="/cooperativa">
-              Inicio
-            </Link>
             <Link className="rounded-md border border-zinc-300 px-3 py-1.5" href="/cooperativa/perfil">
               Perfil
             </Link>

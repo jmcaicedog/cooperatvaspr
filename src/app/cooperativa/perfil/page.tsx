@@ -25,33 +25,33 @@ export default async function CooperativeProfilePage() {
     );
   }
 
-  const cooperative = await db.cooperative.findFirst({
-    where:
-      actor.role === UserRole.PLATFORM_ADMIN
-        ? undefined
-        : {
-            id: actor.cooperativeId ?? undefined,
-          },
-    orderBy: { createdAt: "asc" },
-    select: {
-      id: true,
-      name: true,
-      municipalityCode: true,
-      logoUrl: true,
-      slogan: true,
-      descriptionText: true,
-      descriptionRich: true,
-      gallery: {
-        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
-        select: {
-          id: true,
-          imageUrl: true,
-          altText: true,
-          isPrimary: true,
-        },
+  const [cooperative, municipalities] = await Promise.all([
+    db.cooperative.findFirst({
+      where:
+        actor.role === UserRole.PLATFORM_ADMIN
+          ? undefined
+          : {
+              id: actor.cooperativeId ?? undefined,
+            },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        name: true,
+        municipalityCode: true,
+        logoUrl: true,
+        slogan: true,
+        descriptionText: true,
+        descriptionRich: true,
       },
-    },
-  });
+    }),
+    db.municipality.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        code: true,
+        name: true,
+      },
+    }),
+  ]);
 
   if (!cooperative) {
     return (
@@ -67,7 +67,7 @@ export default async function CooperativeProfilePage() {
       <p className="text-sm text-zinc-600">
         Cambios en nombre o municipio se consideran mayores y pasan a revisión de plataforma.
       </p>
-      <ProfileForm cooperative={cooperative} />
+      <ProfileForm cooperative={cooperative} municipalities={municipalities} />
     </section>
   );
 }

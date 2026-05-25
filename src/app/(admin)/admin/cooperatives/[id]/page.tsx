@@ -13,29 +13,38 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
   await requirePlatformAdmin();
   const { id } = await params;
 
-  const cooperative = await db.cooperative.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      municipalityCode: true,
-      logoUrl: true,
-      slogan: true,
-      descriptionText: true,
-      status: true,
-      reviewStatus: true,
-      gallery: {
-        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
-        select: {
-          id: true,
-          imageUrl: true,
-          altText: true,
-          isPrimary: true,
+  const [cooperative, municipalities] = await Promise.all([
+    db.cooperative.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        municipalityCode: true,
+        logoUrl: true,
+        slogan: true,
+        descriptionText: true,
+        status: true,
+        reviewStatus: true,
+        gallery: {
+          orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            id: true,
+            imageUrl: true,
+            altText: true,
+            isPrimary: true,
+          },
         },
       },
-    },
-  });
+    }),
+    db.municipality.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        code: true,
+        name: true,
+      },
+    }),
+  ]);
 
   if (!cooperative) {
     notFound();
@@ -51,7 +60,7 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
         </p>
       </header>
 
-      <EditForm cooperative={cooperative} />
+      <EditForm cooperative={cooperative} municipalities={municipalities} />
 
       <Link className="inline-flex text-sm underline" href="/admin/cooperatives">
         Volver a listado

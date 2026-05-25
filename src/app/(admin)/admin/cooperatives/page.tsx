@@ -24,18 +24,27 @@ export default async function CooperativesPage() {
     );
   }
 
-  const cooperatives = await db.cooperative.findMany({
-    orderBy: [{ createdAt: "desc" }],
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      municipalityCode: true,
-      status: true,
-      reviewStatus: true,
-      updatedAt: true,
-    },
-  });
+  const [cooperatives, municipalities] = await Promise.all([
+    db.cooperative.findMany({
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        municipalityCode: true,
+        status: true,
+        reviewStatus: true,
+        updatedAt: true,
+      },
+    }),
+    db.municipality.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        code: true,
+        name: true,
+      },
+    }),
+  ]);
 
   return (
     <section className="space-y-6">
@@ -46,7 +55,7 @@ export default async function CooperativesPage() {
         </p>
       </header>
 
-      <CooperativeCreateForm />
+      <CooperativeCreateForm municipalities={municipalities} />
 
       <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
         <table className="w-full border-collapse text-left text-sm">

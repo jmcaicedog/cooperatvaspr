@@ -4,10 +4,7 @@ import { useActionState } from "react";
 import Image from "next/image";
 
 import {
-  addCooperativeGalleryImageAction,
-  deleteCooperativeGalleryImageAction,
   removeCooperativeLogoAction,
-  setPrimaryCooperativeGalleryImageAction,
   type ProfileActionState,
   uploadCooperativeLogoAction,
   updateCooperativeProfileAction,
@@ -22,12 +19,11 @@ type CooperativeProfileData = {
   slogan: string | null;
   descriptionText: string | null;
   descriptionRich: unknown;
-  gallery: Array<{
-    id: string;
-    imageUrl: string;
-    altText: string | null;
-    isPrimary: boolean;
-  }>;
+};
+
+type MunicipalityOption = {
+  code: string;
+  name: string;
 };
 
 const initialState: ProfileActionState = {
@@ -35,15 +31,15 @@ const initialState: ProfileActionState = {
   message: "",
 };
 
-export function ProfileForm({ cooperative }: { cooperative: CooperativeProfileData }) {
+export function ProfileForm({
+  cooperative,
+  municipalities,
+}: {
+  cooperative: CooperativeProfileData;
+  municipalities: MunicipalityOption[];
+}) {
   const [state, action, pending] = useActionState(updateCooperativeProfileAction, initialState);
   const [logoState, logoAction, logoPending] = useActionState(uploadCooperativeLogoAction, initialState);
-  const [galleryState, galleryAction, galleryPending] = useActionState(
-    addCooperativeGalleryImageAction,
-    initialState
-  );
-
-  const galleryLimitReached = cooperative.gallery.length >= 5;
 
   const rich =
     cooperative.descriptionRich &&
@@ -70,13 +66,19 @@ export function ProfileForm({ cooperative }: { cooperative: CooperativeProfileDa
           </label>
 
           <label className="grid gap-1 text-sm">
-            <span>Codigo de municipio</span>
-            <input
+            <span>Municipio</span>
+            <select
               className="rounded-md border border-zinc-300 px-3 py-2"
               defaultValue={cooperative.municipalityCode}
               name="municipalityCode"
               required
-            />
+            >
+              {municipalities.map((municipality) => (
+                <option key={municipality.code} value={municipality.code}>
+                  {municipality.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 
@@ -171,99 +173,6 @@ export function ProfileForm({ cooperative }: { cooperative: CooperativeProfileDa
             {logoState.message}
           </p>
         ) : null}
-      </section>
-
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <header className="space-y-1">
-          <h2 className="text-base font-semibold">Galeria</h2>
-          <p className="text-xs text-zinc-600">
-            Opcional. Maximo 5 fotos por cooperativa. Formatos JPG, PNG o WEBP. Maximo 5 MB por imagen.
-          </p>
-          <p className="text-xs font-medium text-zinc-700">{cooperative.gallery.length}/5 imagenes</p>
-        </header>
-
-        <form action={galleryAction} className="grid gap-3 rounded-md border border-zinc-200 p-4 md:max-w-lg">
-          <input name="cooperativeId" type="hidden" value={cooperative.id} />
-          <input
-            accept="image/jpeg,image/png,image/webp"
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            disabled={galleryLimitReached || galleryPending}
-            name="galleryFile"
-            required
-            type="file"
-          />
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            disabled={galleryLimitReached || galleryPending}
-            maxLength={200}
-            name="altText"
-            placeholder="Texto alternativo (opcional)"
-          />
-          <button
-            className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
-            disabled={galleryLimitReached || galleryPending}
-            type="submit"
-          >
-            {galleryPending ? "Subiendo..." : "Agregar imagen"}
-          </button>
-          {galleryLimitReached ? (
-            <p className="text-xs text-amber-700">Se alcanzo el limite de 5 imagenes.</p>
-          ) : null}
-        </form>
-
-        {galleryState.message ? (
-          <p className={`text-sm ${galleryState.ok ? "text-emerald-600" : "text-rose-600"}`}>
-            {galleryState.message}
-          </p>
-        ) : null}
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {cooperative.gallery.length === 0 ? (
-            <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-              Aun no hay imagenes cargadas.
-            </article>
-          ) : (
-            cooperative.gallery.map((image) => (
-              <article className="rounded-lg border border-zinc-200 bg-white p-3" key={image.id}>
-                <div className="relative h-44 w-full overflow-hidden rounded-md bg-zinc-100">
-                  <Image
-                    alt={image.altText ?? "Imagen de galeria"}
-                    className="object-contain"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    src={image.imageUrl}
-                  />
-                </div>
-
-                <p className="mt-2 text-xs text-zinc-600">{image.altText ?? "Sin texto alternativo"}</p>
-                <p className="mt-1 text-xs font-medium text-zinc-700">
-                  {image.isPrimary ? "Imagen principal" : "Imagen secundaria"}
-                </p>
-
-                <div className="mt-3 flex gap-2">
-                  {!image.isPrimary ? (
-                    <form action={setPrimaryCooperativeGalleryImageAction}>
-                      <input name="imageId" type="hidden" value={image.id} />
-                      <button
-                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium"
-                        type="submit"
-                      >
-                        Marcar principal
-                      </button>
-                    </form>
-                  ) : null}
-
-                  <form action={deleteCooperativeGalleryImageAction}>
-                    <input name="imageId" type="hidden" value={image.id} />
-                    <button className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white" type="submit">
-                      Eliminar
-                    </button>
-                  </form>
-                </div>
-              </article>
-            ))
-          )}
-        </div>
       </section>
     </div>
   );
