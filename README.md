@@ -35,3 +35,30 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 # cooperatvaspr
+
+## Cloudinary integration (logo y galeria)
+
+Para habilitar carga de logo y galeria en local y en Vercel, configura en `.env` y en variables de entorno del deploy:
+
+- `CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>`
+
+La eliminación de usuario desde admin también elimina el registro en `neon_auth.user` (mismo proyecto Neon), evitando conflictos al recrear el mismo correo.
+
+Alternativa compatible:
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+Limites implementados:
+
+- Logo: opcional, `jpg/png/webp`, maximo `2 MB`.
+- Galeria: opcional, hasta `5` imagenes por cooperativa, `jpg/png/webp`, maximo `5 MB` por imagen.
+
+Flujo:
+
+- Ruta de cooperativa: `/cooperativa/perfil`.
+- El usuario de cooperativa puede subir/reemplazar/quitar logo.
+- El usuario de cooperativa puede agregar imagenes a la galeria, marcar principal y eliminar.
+- Ruta de admin: `/admin/cooperatives/[id]`.
+- El admin de plataforma puede cambiar estas imagenes para cualquier cooperativa.

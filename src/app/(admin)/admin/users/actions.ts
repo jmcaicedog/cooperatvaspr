@@ -5,7 +5,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
 import { requirePlatformAdmin } from "@/lib/auth/session";
-import { createNeonAuthUser } from "@/lib/auth/neon-provision";
+import { createNeonAuthUser, deleteNeonAuthUserByEmail } from "@/lib/auth/neon-provision";
 import { db } from "@/lib/db";
 
 const createCoopAdminSchema = z.object({
@@ -181,6 +181,54 @@ export async function unassignCoopAdminAction(userId: string): Promise<void> {
       cooperativeId: null,
       role: UserRole.COOP_ADMIN,
     },
+  });
+
+  revalidatePath("/admin/users");
+}
+
+export async function deleteUserByPlatformAction(userId: string): Promise<void> {
+  const actor = await requirePlatformAdmin();
+
+  const target = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      isActive: true,
+    },
+  });
+
+  if (!target) {
+    throw new Error("Usuario no encontrado.");
+  }
+
+  if (target.id === actor.userId) {
+    throw new Error("No puedes eliminar tu propio usuario activo.");
+  }
+
+  if (target.role === UserRole.PLATFORM_ADMIN && target.isActive) {
+    const activePlatformAdmins = await db.user.count({
+      where: {
+        role: UserRole.PLATFORM_ADMIN,
+        isActive: true,
+      },
+    });
+
+    if (activePlatformAdmins <= 1) {
+      throw new Error("Debe existir al menos un administrador de plataforma activo.");
+    }
+  }
+
+  const neonDeleteResult = await deleteNeonAuthUserByEmail(target.email);
+  if (!neonDeleteResult.ok) {
+    throw new Error(
+      `No se pudo eliminar en Neon Auth (${neonDeleteResult.code}): ${neonDeleteResult.message}`
+    );
+  }
+
+  await db.user.delete({
+    where: { id: target.id },
   });
 
   revalidatePath("/admin/users");

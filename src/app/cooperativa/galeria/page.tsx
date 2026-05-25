@@ -74,7 +74,13 @@ export default async function CooperativaGaleriaPage() {
           gallery.map((image) => (
             <article className="rounded-lg border border-zinc-200 bg-white p-3" key={image.id}>
               <div className="relative h-44 w-full overflow-hidden rounded-md bg-zinc-100">
-                <Image alt={image.altText ?? "Imagen de galeria"} fill src={image.imageUrl} />
+                <Image
+                  alt={image.altText ?? "Imagen de galeria"}
+                  className="object-contain"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  src={image.imageUrl}
+                />
               </div>
 
               <p className="mt-2 text-xs text-zinc-600">{image.altText ?? "Sin texto alternativo"}</p>

@@ -30,6 +30,14 @@ export async function createGalleryImageAction(formData: FormData): Promise<void
     throw new Error("No autorizado para editar la galeria de esta cooperativa.");
   }
 
+  const totalImages = await db.galleryImage.count({
+    where: { cooperativeId: parsed.data.cooperativeId },
+  });
+
+  if (totalImages >= 5) {
+    throw new Error("La galeria permite un maximo de 5 imagenes.");
+  }
+
   const maxSortOrder = await db.galleryImage.aggregate({
     where: { cooperativeId: parsed.data.cooperativeId },
     _max: { sortOrder: true },

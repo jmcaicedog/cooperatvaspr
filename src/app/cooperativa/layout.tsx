@@ -24,7 +24,15 @@ export default async function CooperativaLayout({
     <div className="min-h-screen bg-zinc-100 px-6 py-8">
       <div className="mx-auto w-full max-w-6xl space-y-6">
         <header className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs uppercase tracking-wide text-zinc-500">Panel de Cooperativa</p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <p className="text-xs uppercase tracking-wide text-zinc-500">Panel de Cooperativa</p>
+            <div className="text-right text-sm text-zinc-600">
+              <p>{`Rol activo: ${actor.role}`}</p>
+              <a className="text-xs underline" href="/auth/logout">
+                Cerrar sesion
+              </a>
+            </div>
+          </div>
           <nav className="mt-3 flex flex-wrap gap-2 text-sm">
             <Link className="rounded-md border border-zinc-300 px-3 py-1.5" href="/cooperativa">
               Inicio

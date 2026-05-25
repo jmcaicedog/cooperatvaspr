@@ -20,10 +20,20 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
       name: true,
       slug: true,
       municipalityCode: true,
+      logoUrl: true,
       slogan: true,
       descriptionText: true,
       status: true,
       reviewStatus: true,
+      gallery: {
+        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          imageUrl: true,
+          altText: true,
+          isPrimary: true,
+        },
+      },
     },
   });
 

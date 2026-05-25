@@ -1,10 +1,41 @@
 import "server-only";
 
 import { getAppBaseUrl, getNeonAuthApiBaseUrl } from "@/lib/auth/neon-auth";
+import { db } from "@/lib/db";
 
 export type NeonProvisionResult =
   | { ok: true }
   | { ok: false; code: string; message: string };
+
+type NeonAdminResult =
+  | { ok: true }
+  | { ok: false; code: string; message: string };
+
+export async function deleteNeonAuthUserByEmail(email: string): Promise<NeonAdminResult> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) {
+    return {
+      ok: false,
+      code: "invalid_email",
+      message: "Correo inválido para eliminar en Neon Auth.",
+    };
+  }
+
+  try {
+    await db.$executeRaw`
+      DELETE FROM neon_auth."user"
+      WHERE lower(email) = lower(${normalizedEmail})
+    `;
+
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      code: "neon_auth_delete_error",
+      message: "No fue posible eliminar el usuario en el esquema neon_auth.",
+    };
+  }
+}
 
 export async function createNeonAuthUser(params: {
   email: string;

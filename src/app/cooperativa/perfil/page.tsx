@@ -37,9 +37,19 @@ export default async function CooperativeProfilePage() {
       id: true,
       name: true,
       municipalityCode: true,
+      logoUrl: true,
       slogan: true,
       descriptionText: true,
       descriptionRich: true,
+      gallery: {
+        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          imageUrl: true,
+          altText: true,
+          isPrimary: true,
+        },
+      },
     },
   });
 

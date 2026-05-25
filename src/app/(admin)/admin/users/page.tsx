@@ -1,12 +1,13 @@
 import { revalidatePath } from "next/cache";
 
 import { unassignCoopAdminAction } from "@/app/(admin)/admin/users/actions";
+import { ConfirmDeleteUserButton } from "@/app/(admin)/admin/users/ConfirmDeleteUserButton";
 import { UserForms } from "@/app/(admin)/admin/users/UserForms";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
 export default async function AdminUsersPage() {
-  await requirePlatformAdmin();
+  const actor = await requirePlatformAdmin();
 
   const [cooperatives, users] = await Promise.all([
     db.cooperative.findMany({
@@ -66,21 +67,31 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="px-4 py-3">{user.isActive ? "Activo" : "Inactivo"}</td>
                 <td className="px-4 py-3">
-                  {user.cooperative ? (
-                    <form
-                      action={async () => {
-                        "use server";
-                        await unassignCoopAdminAction(user.id);
-                        revalidatePath("/admin/users");
-                      }}
-                    >
-                      <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs" type="submit">
-                        Quitar asignación
-                      </button>
-                    </form>
-                  ) : (
-                    <span className="text-xs text-zinc-500">-</span>
-                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {user.cooperative ? (
+                      <form
+                        action={async () => {
+                          "use server";
+                          await unassignCoopAdminAction(user.id);
+                          revalidatePath("/admin/users");
+                        }}
+                      >
+                        <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs" type="submit">
+                          Quitar asignación
+                        </button>
+                      </form>
+                    ) : null}
+
+                    {user.id === actor.userId ? (
+                      <span className="text-xs text-zinc-500">Usuario actual</span>
+                    ) : (
+                      <ConfirmDeleteUserButton
+                        displayName={user.displayName}
+                        email={user.email}
+                        userId={user.id}
+                      />
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
