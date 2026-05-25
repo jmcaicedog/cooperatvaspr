@@ -13,6 +13,12 @@ const createServiceSchema = z.object({
   description: z.string().trim().max(1200).optional().or(z.literal("")),
 });
 
+const updateServiceSchema = z.object({
+  serviceId: z.string().min(1),
+  title: z.string().trim().min(2, "El titulo es obligatorio."),
+  description: z.string().trim().max(1200).optional().or(z.literal("")),
+});
+
 export async function createServiceAction(formData: FormData): Promise<void> {
   const actor = await requireCoopAdminOrPlatform();
 
@@ -64,6 +70,43 @@ export async function deleteServiceAction(serviceId: string): Promise<void> {
   }
 
   await db.cooperativeService.delete({ where: { id: service.id } });
+  revalidatePath("/cooperativa/servicios");
+}
+
+export async function updateServiceAction(formData: FormData): Promise<void> {
+  const actor = await requireCoopAdminOrPlatform();
+
+  const parsed = updateServiceSchema.safeParse({
+    serviceId: formData.get("serviceId"),
+    title: formData.get("title"),
+    description: formData.get("description"),
+  });
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Datos inválidos.");
+  }
+
+  const service = await db.cooperativeService.findUnique({
+    where: { id: parsed.data.serviceId },
+    select: { id: true, cooperativeId: true },
+  });
+
+  if (!service) {
+    throw new Error("Servicio no encontrado.");
+  }
+
+  if (!canMutateCooperative(actor, service.cooperativeId)) {
+    throw new Error("No autorizado para actualizar este servicio.");
+  }
+
+  await db.cooperativeService.update({
+    where: { id: service.id },
+    data: {
+      title: parsed.data.title,
+      description: parsed.data.description || null,
+    },
+  });
+
   revalidatePath("/cooperativa/servicios");
 }
 

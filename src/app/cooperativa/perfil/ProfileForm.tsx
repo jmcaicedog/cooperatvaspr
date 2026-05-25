@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
 
 import {
@@ -38,6 +38,8 @@ export function ProfileForm({
   cooperative: CooperativeProfileData;
   municipalities: MunicipalityOption[];
 }) {
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedLogoName, setSelectedLogoName] = useState("");
   const [state, action, pending] = useActionState(updateCooperativeProfileAction, initialState);
   const [logoState, logoAction, logoPending] = useActionState(uploadCooperativeLogoAction, initialState);
 
@@ -51,6 +53,99 @@ export function ProfileForm({
 
   return (
     <div className="space-y-6">
+      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+        <header className="space-y-1">
+          <h2 className="text-base font-semibold">Logo</h2>
+          <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Maximo 2 MB.</p>
+        </header>
+
+        {cooperative.logoUrl ? (
+          <div className="relative h-28 w-28 overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
+            <Image
+              alt="Logo actual"
+              className="object-contain"
+              fill
+              sizes="112px"
+              src={cooperative.logoUrl}
+            />
+          </div>
+        ) : (
+          <p className="text-sm text-zinc-600">No hay logo cargado.</p>
+        )}
+
+        <form action={logoAction} className="grid gap-3 md:max-w-md">
+          <input name="cooperativeId" type="hidden" value={cooperative.id} />
+          <input
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            name="logoFile"
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0];
+              setSelectedLogoName(file?.name ?? "");
+            }}
+            ref={logoFileInputRef}
+            required
+            type="file"
+          />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              className="inline-flex items-center gap-2 rounded-md border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-100"
+              onClick={() => logoFileInputRef.current?.click()}
+              type="button"
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <path
+                  d="M12 5v14m-7-7h14"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.8"
+                />
+              </svg>
+              Buscar archivo
+            </button>
+
+            <button
+              className="inline-flex items-center gap-2 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
+              disabled={logoPending}
+              type="submit"
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <path
+                  d="M12 16V4m0 12 4-4m-4 4-4-4M5 20h14"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.8"
+                />
+              </svg>
+              {logoPending ? "Cargando..." : "Cargar"}
+            </button>
+          </div>
+
+          <p className="text-xs text-zinc-600">{selectedLogoName || "Ningun archivo seleccionado."}</p>
+        </form>
+
+        {cooperative.logoUrl ? (
+          <form action={removeCooperativeLogoAction}>
+            <input name="cooperativeId" type="hidden" value={cooperative.id} />
+            <button
+              className="inline-flex rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+              type="submit"
+            >
+              Quitar logo
+            </button>
+          </form>
+        ) : null}
+
+        {logoState.message ? (
+          <p className={`text-sm ${logoState.ok ? "text-emerald-600" : "text-rose-600"}`}>
+            {logoState.message}
+          </p>
+        ) : null}
+      </section>
+
       <form action={action} className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
         <input name="cooperativeId" type="hidden" value={cooperative.id} />
 
@@ -117,63 +212,6 @@ export function ProfileForm({
           <p className={`text-sm ${state.ok ? "text-emerald-600" : "text-rose-600"}`}>{state.message}</p>
         ) : null}
       </form>
-
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <header className="space-y-1">
-          <h2 className="text-base font-semibold">Logo</h2>
-          <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Maximo 2 MB.</p>
-        </header>
-
-        {cooperative.logoUrl ? (
-          <div className="relative h-28 w-28 overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
-            <Image
-              alt="Logo actual"
-              className="object-contain"
-              fill
-              sizes="112px"
-              src={cooperative.logoUrl}
-            />
-          </div>
-        ) : (
-          <p className="text-sm text-zinc-600">No hay logo cargado.</p>
-        )}
-
-        <form action={logoAction} className="grid gap-3 md:max-w-md">
-          <input name="cooperativeId" type="hidden" value={cooperative.id} />
-          <input
-            accept="image/jpeg,image/png,image/webp"
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            name="logoFile"
-            required
-            type="file"
-          />
-          <button
-            className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
-            disabled={logoPending}
-            type="submit"
-          >
-            {logoPending ? "Subiendo..." : "Subir logo"}
-          </button>
-        </form>
-
-        {cooperative.logoUrl ? (
-          <form action={removeCooperativeLogoAction}>
-            <input name="cooperativeId" type="hidden" value={cooperative.id} />
-            <button
-              className="inline-flex rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
-              type="submit"
-            >
-              Quitar logo
-            </button>
-          </form>
-        ) : null}
-
-        {logoState.message ? (
-          <p className={`text-sm ${logoState.ok ? "text-emerald-600" : "text-rose-600"}`}>
-            {logoState.message}
-          </p>
-        ) : null}
-      </section>
     </div>
   );
 }

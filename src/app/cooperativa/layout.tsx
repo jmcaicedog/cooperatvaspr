@@ -1,7 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { UserRole } from "@prisma/client";
 
+import { CooperativeTabs } from "@/app/cooperativa/CooperativeTabs";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
+import { db } from "@/lib/db";
 
 export default async function CooperativaLayout({
   children,
@@ -20,6 +22,18 @@ export default async function CooperativaLayout({
     redirect("/login?next=/cooperativa");
   }
 
+  const profileLabel = actor.role === UserRole.PLATFORM_ADMIN ? "Administrador" : "Editor";
+
+  const userRecord = actor.userId.startsWith("dev-bypass")
+    ? null
+    : await db.user.findUnique({
+        where: { id: actor.userId },
+        select: { displayName: true },
+      });
+
+  const displayName =
+    userRecord?.displayName || (actor.role === UserRole.PLATFORM_ADMIN ? "Usuario plataforma" : "Usuario cooperativa");
+
   return (
     <div className="min-h-screen bg-zinc-100 px-6 py-8">
       <div className="mx-auto w-full max-w-6xl space-y-6">
@@ -27,35 +41,17 @@ export default async function CooperativaLayout({
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p className="text-xs uppercase tracking-wide text-zinc-500">Panel de Cooperativa</p>
             <div className="text-right text-sm text-zinc-600">
-              <p>{`Rol activo: ${actor.role}`}</p>
-              <a className="text-xs underline" href="/auth/logout">
+              <p className="font-medium text-zinc-800">{displayName}</p>
+              <p className="text-xs text-zinc-500">{profileLabel}</p>
+              <a
+                className="mt-1 inline-flex rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
+                href="/auth/logout"
+              >
                 Cerrar sesion
               </a>
             </div>
           </div>
-          <nav className="mt-3 flex flex-wrap gap-2 text-sm">
-            <Link className="rounded-md border border-zinc-300 px-3 py-1.5" href="/cooperativa/perfil">
-              Perfil
-            </Link>
-            <Link
-              className="rounded-md border border-zinc-300 px-3 py-1.5"
-              href="/cooperativa/servicios"
-            >
-              Servicios
-            </Link>
-            <Link
-              className="rounded-md border border-zinc-300 px-3 py-1.5"
-              href="/cooperativa/contactos"
-            >
-              Contactos
-            </Link>
-            <Link
-              className="rounded-md border border-zinc-300 px-3 py-1.5"
-              href="/cooperativa/galeria"
-            >
-              Galeria
-            </Link>
-          </nav>
+          <CooperativeTabs />
         </header>
         {children}
       </div>

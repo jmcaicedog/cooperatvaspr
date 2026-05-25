@@ -4,6 +4,7 @@ import {
   createServiceAction,
   deleteServiceAction,
   toggleServiceAction,
+  updateServiceAction,
 } from "@/app/cooperativa/servicios/actions";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { getScopedCooperative } from "@/lib/cooperative-scope";
@@ -39,40 +40,47 @@ export default async function CooperativaServiciosPage() {
         <p className="text-sm text-zinc-600">Cooperativa: {cooperative.name}</p>
       </header>
 
-      <form action={createServiceAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <input name="cooperativeId" type="hidden" value={cooperative.id} />
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo servicio</h2>
-        <input
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-          name="title"
-          placeholder="Titulo del servicio"
-          required
-        />
-        <textarea
-          className="min-h-24 rounded-md border border-zinc-300 px-3 py-2 text-sm"
-          name="description"
-          placeholder="Descripcion"
-        />
-        <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
-          Agregar servicio
-        </button>
-      </form>
-
       <div className="space-y-3">
         {services.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
             Aun no hay servicios cargados.
           </article>
         ) : (
-          services.map((service) => (
+          services.map((service, index) => (
             <article className="rounded-lg border border-zinc-200 bg-white p-4" key={service.id}>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-medium">{service.title}</p>
-                  <p className="mt-1 text-sm text-zinc-600">{service.description ?? "Sin descripcion"}</p>
-                  <p className="mt-1 text-xs text-zinc-500">{service.isActive ? "Activo" : "Inactivo"}</p>
+              <div className="flex items-start gap-3">
+                <div className="mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 text-xs font-semibold text-zinc-700">
+                  {index + 1}
                 </div>
-                <div className="flex gap-2">
+
+                <div className="min-w-0 flex-1 space-y-3">
+                  <form action={updateServiceAction} className="grid gap-2">
+                    <input name="serviceId" type="hidden" value={service.id} />
+                    <input
+                      className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      defaultValue={service.title}
+                      name="title"
+                      placeholder="Titulo del servicio"
+                      required
+                    />
+                    <textarea
+                      className="min-h-20 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      defaultValue={service.description ?? ""}
+                      name="description"
+                      placeholder="Descripcion"
+                    />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                        type="submit"
+                      >
+                        Guardar edicion
+                      </button>
+                      <p className="text-xs text-zinc-500">{service.isActive ? "Activo" : "Inactivo"}</p>
+                    </div>
+                  </form>
+
+                  <div className="flex gap-2">
                   <form
                     action={async () => {
                       "use server";
@@ -101,10 +109,30 @@ export default async function CooperativaServiciosPage() {
                   </form>
                 </div>
               </div>
+              </div>
             </article>
           ))
         )}
       </div>
+
+      <form action={createServiceAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4">
+        <input name="cooperativeId" type="hidden" value={cooperative.id} />
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo servicio</h2>
+        <input
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          name="title"
+          placeholder="Titulo del servicio"
+          required
+        />
+        <textarea
+          className="min-h-24 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          name="description"
+          placeholder="Descripcion"
+        />
+        <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
+          Agregar servicio
+        </button>
+      </form>
     </section>
   );
 }

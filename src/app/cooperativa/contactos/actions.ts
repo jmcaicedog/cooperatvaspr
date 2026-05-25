@@ -15,6 +15,13 @@ const createContactSchema = z.object({
   value: z.string().trim().min(2, "El valor de contacto es obligatorio."),
 });
 
+const updateContactSchema = z.object({
+  contactId: z.string().min(1),
+  type: z.nativeEnum(ContactType),
+  label: z.string().trim().max(100).optional().or(z.literal("")),
+  value: z.string().trim().min(2, "El valor de contacto es obligatorio."),
+});
+
 export async function createContactAction(formData: FormData): Promise<void> {
   const actor = await requireCoopAdminOrPlatform();
 
@@ -68,5 +75,44 @@ export async function deleteContactAction(contactId: string): Promise<void> {
   }
 
   await db.contactPoint.delete({ where: { id: contact.id } });
+  revalidatePath("/cooperativa/contactos");
+}
+
+export async function updateContactAction(formData: FormData): Promise<void> {
+  const actor = await requireCoopAdminOrPlatform();
+
+  const parsed = updateContactSchema.safeParse({
+    contactId: formData.get("contactId"),
+    type: formData.get("type"),
+    label: formData.get("label"),
+    value: formData.get("value"),
+  });
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Datos inválidos.");
+  }
+
+  const contact = await db.contactPoint.findUnique({
+    where: { id: parsed.data.contactId },
+    select: { id: true, cooperativeId: true },
+  });
+
+  if (!contact) {
+    throw new Error("Contacto no encontrado.");
+  }
+
+  if (!canMutateCooperative(actor, contact.cooperativeId)) {
+    throw new Error("No autorizado para actualizar este contacto.");
+  }
+
+  await db.contactPoint.update({
+    where: { id: contact.id },
+    data: {
+      type: parsed.data.type,
+      label: parsed.data.label || null,
+      value: parsed.data.value,
+    },
+  });
+
   revalidatePath("/cooperativa/contactos");
 }

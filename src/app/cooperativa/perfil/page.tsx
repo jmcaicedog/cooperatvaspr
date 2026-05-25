@@ -65,7 +65,8 @@ export default async function CooperativeProfilePage() {
     <section className="space-y-4">
       <h1 className="text-2xl font-semibold">Perfil de cooperativa</h1>
       <p className="text-sm text-zinc-600">
-        Cambios en nombre o municipio se consideran mayores y pasan a revisión de plataforma.
+        Comienza actualizando el logo. Luego puedes editar los datos del perfil, que pasan a revision cuando
+        son cambios mayores.
       </p>
       <ProfileForm cooperative={cooperative} municipalities={municipalities} />
     </section>

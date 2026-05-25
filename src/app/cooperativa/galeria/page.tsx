@@ -5,6 +5,7 @@ import {
   createGalleryImageAction,
   deleteGalleryImageAction,
   setPrimaryGalleryImageAction,
+  updateGalleryImageAltTextAction,
 } from "@/app/cooperativa/galeria/actions";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { getScopedCooperative } from "@/lib/cooperative-scope";
@@ -40,31 +41,6 @@ export default async function CooperativaGaleriaPage() {
         <p className="text-sm text-zinc-600">Cooperativa: {cooperative.name}</p>
       </header>
 
-      <form
-        action={createGalleryImageAction}
-        className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4"
-      >
-        <input name="cooperativeId" type="hidden" value={cooperative.id} />
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nueva imagen</h2>
-
-        <input
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-          name="imageUrl"
-          placeholder="https://..."
-          required
-          type="url"
-        />
-        <input
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-          name="altText"
-          placeholder="Texto alternativo (opcional)"
-        />
-
-        <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
-          Agregar imagen
-        </button>
-      </form>
-
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {gallery.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
@@ -87,6 +63,19 @@ export default async function CooperativaGaleriaPage() {
               <p className="mt-1 text-xs font-medium text-zinc-700">
                 {image.isPrimary ? "Imagen principal" : "Imagen secundaria"}
               </p>
+
+              <form action={updateGalleryImageAltTextAction} className="mt-3 grid gap-2">
+                <input name="imageId" type="hidden" value={image.id} />
+                <input
+                  className="rounded-md border border-zinc-300 px-3 py-2 text-xs"
+                  defaultValue={image.altText ?? ""}
+                  name="altText"
+                  placeholder="Texto alternativo"
+                />
+                <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs" type="submit">
+                  Guardar texto alternativo
+                </button>
+              </form>
 
               <div className="mt-3 flex gap-2">
                 {!image.isPrimary ? (
@@ -122,6 +111,31 @@ export default async function CooperativaGaleriaPage() {
           ))
         )}
       </div>
+
+      <form
+        action={createGalleryImageAction}
+        className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4"
+      >
+        <input name="cooperativeId" type="hidden" value={cooperative.id} />
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nueva imagen</h2>
+
+        <input
+          accept="image/jpeg,image/png,image/webp"
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          name="imageFile"
+          required
+          type="file"
+        />
+        <input
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          name="altText"
+          placeholder="Texto alternativo (opcional)"
+        />
+
+        <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
+          Cargar imagen
+        </button>
+      </form>
     </section>
   );
 }
