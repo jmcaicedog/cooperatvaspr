@@ -77,6 +77,22 @@ export default async function AdminLayout({
             <Link className="block rounded px-3 py-2 hover:bg-zinc-100" href="/admin/reviews">
               Revisiones
             </Link>
+            <div className="my-2 border-t border-zinc-100" />
+            <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              Contenido
+            </p>
+            <Link className="block rounded px-3 py-2 hover:bg-zinc-100" href="/admin/blog">
+              Blog
+            </Link>
+            <Link className="block rounded px-3 py-2 hover:bg-zinc-100" href="/admin/eventos">
+              Eventos
+            </Link>
+            <Link
+              className="block rounded px-3 py-2 hover:bg-zinc-100"
+              href="/admin/testimonios"
+            >
+              Testimonios
+            </Link>
           </nav>
         </aside>
 

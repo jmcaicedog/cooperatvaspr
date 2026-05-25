@@ -3,11 +3,24 @@ import { CooperativeStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 
 export default async function AdminPage() {
-  const [total, published, pendingReview, banners] = await Promise.all([
+  const now = new Date();
+
+  const [
+    total,
+    published,
+    pendingReview,
+    banners,
+    publishedPosts,
+    upcomingEvents,
+    activeTestimonials,
+  ] = await Promise.all([
     db.cooperative.count(),
     db.cooperative.count({ where: { status: CooperativeStatus.PUBLISHED } }),
     db.cooperative.count({ where: { reviewStatus: "PENDING" } }),
     db.homeBanner.count(),
+    db.blogPost.count({ where: { status: "PUBLISHED" } }),
+    db.event.count({ where: { startsAt: { gte: now }, isPublished: true } }),
+    db.testimonial.count({ where: { isPublished: true } }),
   ]);
 
   return (
@@ -38,6 +51,21 @@ export default async function AdminPage() {
         <article className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-sm text-zinc-600">Banners configurados</p>
           <p className="text-3xl font-semibold">{banners}</p>
+        </article>
+
+        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+          <p className="text-sm text-zinc-600">Artículos publicados</p>
+          <p className="text-3xl font-semibold">{publishedPosts}</p>
+        </article>
+
+        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+          <p className="text-sm text-zinc-600">Eventos próximos</p>
+          <p className="text-3xl font-semibold">{upcomingEvents}</p>
+        </article>
+
+        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+          <p className="text-sm text-zinc-600">Testimonios activos</p>
+          <p className="text-3xl font-semibold">{activeTestimonials}</p>
         </article>
       </div>
     </section>

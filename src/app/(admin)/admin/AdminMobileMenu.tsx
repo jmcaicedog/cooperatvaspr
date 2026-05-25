@@ -10,6 +10,10 @@ const NAV_ITEMS = [
   { href: "/admin/users", label: "Usuarios" },
   { href: "/admin/banners", label: "Banners" },
   { href: "/admin/reviews", label: "Revisiones" },
+  { divider: true, label: "Contenido" },
+  { href: "/admin/blog", label: "Blog" },
+  { href: "/admin/eventos", label: "Eventos" },
+  { href: "/admin/testimonios", label: "Testimonios" },
 ];
 
 export function AdminMobileMenu({ displayName }: { displayName: string }) {
@@ -89,6 +93,17 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
 
             <nav className="space-y-1 text-sm">
               {NAV_ITEMS.map((item) => {
+                if ("divider" in item) {
+                  return (
+                    <div key={item.label}>
+                      <div className="my-2 border-t border-zinc-100" />
+                      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                        {item.label}
+                      </p>
+                    </div>
+                  );
+                }
+
                 const isActive = pathname === item.href;
 
                 return (
