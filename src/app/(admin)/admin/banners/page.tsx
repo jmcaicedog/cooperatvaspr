@@ -1,7 +1,7 @@
-import { BannerSlot } from "@prisma/client";
-
+import { BannerSlotCard } from "@/app/(admin)/admin/banners/BannerSlotCard";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { BANNER_SLOT_CONFIG, BANNER_SLOTS } from "@/lib/banner-config";
 
 export default async function BannersPage() {
   try {
@@ -26,6 +26,7 @@ export default async function BannersPage() {
       id: true,
       slot: true,
       title: true,
+      imageUrl: true,
       isActive: true,
       targetUrl: true,
       activeFrom: true,
@@ -33,39 +34,32 @@ export default async function BannersPage() {
     },
   });
 
-  const slots = [BannerSlot.HERO, BannerSlot.SIDEBAR_TOP, BannerSlot.SIDEBAR_BOTTOM];
+  const slots = BANNER_SLOTS;
 
   return (
     <section className="space-y-6">
       <header>
         <h2 className="text-2xl font-semibold">Gestión de banners</h2>
         <p className="text-sm text-zinc-600">
-          Slots iniciales del home: HERO rotativo y dos banners verticales.
+          Cada ubicación permite entre 1 y 3 imágenes con dimensiones fijas según el slot.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
         {slots.map((slot) => {
+          const config = BANNER_SLOT_CONFIG[slot];
           const slotBanners = banners.filter((banner) => banner.slot === slot);
 
           return (
-            <article className="rounded-lg border border-zinc-200 bg-white p-4" key={slot}>
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">{slot}</h3>
-
-              {slotBanners.length === 0 ? (
-                <p className="mt-4 text-sm text-zinc-500">Sin banners configurados aún.</p>
-              ) : (
-                <ul className="mt-4 space-y-3 text-sm">
-                  {slotBanners.map((banner) => (
-                    <li className="rounded-md border border-zinc-200 p-3" key={banner.id}>
-                      <p className="font-medium">{banner.title}</p>
-                      <p className="text-xs text-zinc-500">{banner.targetUrl ?? "Sin enlace"}</p>
-                      <p className="mt-1 text-xs">{banner.isActive ? "Activo" : "Inactivo"}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </article>
+            <BannerSlotCard
+              banners={slotBanners}
+              key={slot}
+              maxImages={config.maxImages}
+              requiredSize={`${config.width}x${config.height}px`}
+              slot={slot}
+              slotDescription={config.description}
+              slotLabel={config.label}
+            />
           );
         })}
       </div>

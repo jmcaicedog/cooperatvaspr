@@ -19,7 +19,7 @@ export default async function AdminPage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         <article className="rounded-lg border border-zinc-200 bg-white p-4">
           <p className="text-sm text-zinc-600">Cooperativas totales</p>
           <p className="text-3xl font-semibold">{total}</p>
