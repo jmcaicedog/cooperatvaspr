@@ -22,9 +22,7 @@ export default async function AdminLayout({
     redirect("/login?next=/admin");
   }
 
-  const userRecord = authContext.userId.startsWith("dev-bypass")
-    ? null
-    : await db.user.findUnique({
+  const userRecord = await db.user.findUnique({
         where: { id: authContext.userId },
         select: { displayName: true },
       });

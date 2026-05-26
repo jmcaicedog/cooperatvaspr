@@ -25,9 +25,7 @@ export default async function CooperativaLayout({
 
   const profileLabel = actor.role === UserRole.PLATFORM_ADMIN ? "Administrador" : "Editor";
 
-  const userRecord = actor.userId.startsWith("dev-bypass")
-    ? null
-    : await db.user.findUnique({
+  const userRecord = await db.user.findUnique({
         where: { id: actor.userId },
         select: { displayName: true },
       });

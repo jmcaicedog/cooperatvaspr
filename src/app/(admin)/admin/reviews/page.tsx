@@ -42,21 +42,7 @@ function severityLabel(raw: string): string {
 }
 
 export default async function ReviewsPage() {
-  try {
-    await requirePlatformAdmin();
-  } catch {
-    return (
-      <section className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900">
-        <h2 className="text-xl font-semibold">Acceso restringido</h2>
-        <p className="mt-2 text-sm">
-          Solo un usuario PLATFORM_ADMIN puede revisar solicitudes.
-        </p>
-        <a className="mt-4 inline-flex rounded-md bg-zinc-900 px-3 py-2 text-sm text-white" href="/login">
-          Ir a login
-        </a>
-      </section>
-    );
-  }
+  await requirePlatformAdmin();
 
   const pending = await db.cooperativeChangeRequest.findMany({
     where: { status: ChangeRequestStatus.PENDING },
