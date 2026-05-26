@@ -57,7 +57,62 @@ export default async function AdminUsersPage() {
         </p>
       </header>
 
-      <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
+      {/* Mobile cards */}
+      <div className="space-y-3 md:hidden">
+        {users.map((user) => (
+          <div className="rounded-lg border border-zinc-200 bg-white p-4" key={user.id}>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-medium text-zinc-900">{user.displayName}</p>
+                <p className="text-xs text-zinc-500">{user.email}</p>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                  user.isActive ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-500"
+                }`}
+              >
+                {user.isActive ? "Activo" : "Inactivo"}
+              </span>
+            </div>
+            <div className="mt-1.5 flex flex-wrap gap-x-3 text-sm text-zinc-500">
+              <span>{roleLabel(user.role)}</span>
+              {user.cooperative && (
+                <>
+                  <span>·</span>
+                  <span>{user.cooperative.name}</span>
+                </>
+              )}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2 border-t border-zinc-100 pt-3">
+              {user.cooperative ? (
+                <form
+                  action={async () => {
+                    "use server";
+                    await unassignCoopAdminAction(user.id);
+                    revalidatePath("/admin/users");
+                  }}
+                >
+                  <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs" type="submit">
+                    Quitar asignación
+                  </button>
+                </form>
+              ) : null}
+              {user.id === actor.userId ? (
+                <span className="text-xs text-zinc-500">Usuario actual</span>
+              ) : (
+                <ConfirmDeleteUserButton
+                  displayName={user.displayName}
+                  email={user.email}
+                  userId={user.id}
+                />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden overflow-x-auto rounded-lg border border-zinc-200 bg-white md:block">
         <table className="w-full border-collapse text-left text-sm">
           <thead className="bg-zinc-50 text-zinc-700">
             <tr>

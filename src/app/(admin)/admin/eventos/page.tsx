@@ -54,60 +54,100 @@ export default async function EventosPage() {
             Aún no hay eventos. Crea el primero abajo.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-100 bg-zinc-50">
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600">Evento</th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600">Ubicación</th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600">Fecha</th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600">Estado</th>
-                  <th className="px-4 py-3 text-right font-medium text-zinc-600">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {sorted.map((event) => {
-                  const isPast = event.startsAt < now;
-                  return (
-                    <tr key={event.id} className={`hover:bg-zinc-50 ${isPast ? "opacity-60" : ""}`}>
-                      <td className="px-4 py-3 font-medium text-zinc-900">
-                        <div className="max-w-xs truncate">{event.title}</div>
-                      </td>
-                      <td className="max-w-[160px] truncate px-4 py-3 text-zinc-600">
-                        {event.location}
-                      </td>
-                      <td className="px-4 py-3 text-zinc-600">
-                        <div>{fmtDate(event.startsAt)}</div>
-                        {event.endsAt && (
-                          <div className="text-xs text-zinc-400">hasta {fmtDate(event.endsAt)}</div>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
+          <>
+            {/* Mobile cards */}
+            <div className="divide-y divide-zinc-100 md:hidden">
+              {sorted.map((event) => {
+                const isPast = event.startsAt < now;
+                return (
+                  <div
+                    className={`flex items-start justify-between gap-3 p-4 ${isPast ? "opacity-60" : ""}`}
+                    key={event.id}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-zinc-900">{event.title}</p>
+                      <p className="mt-0.5 truncate text-xs text-zinc-500">{event.location}</p>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${event.isPublished ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-600"}`}
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${event.isPublished ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-600"}`}
                         >
                           {event.isPublished ? "Publicado" : "Borrador"}
                         </span>
                         {isPast && (
-                          <span className="ml-1 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">
+                          <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">
                             Pasado
                           </span>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/admin/eventos/${event.id}`}
-                          className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
-                        >
-                          Editar
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <span className="text-xs text-zinc-400">{fmtDate(event.startsAt)}</span>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/admin/eventos/${event.id}`}
+                      className="shrink-0 rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+                    >
+                      Editar
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop table */}
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-100 bg-zinc-50">
+                    <th className="px-4 py-3 text-left font-medium text-zinc-600">Evento</th>
+                    <th className="px-4 py-3 text-left font-medium text-zinc-600">Ubicación</th>
+                    <th className="px-4 py-3 text-left font-medium text-zinc-600">Fecha</th>
+                    <th className="px-4 py-3 text-left font-medium text-zinc-600">Estado</th>
+                    <th className="px-4 py-3 text-right font-medium text-zinc-600">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100">
+                  {sorted.map((event) => {
+                    const isPast = event.startsAt < now;
+                    return (
+                      <tr key={event.id} className={`hover:bg-zinc-50 ${isPast ? "opacity-60" : ""}`}>
+                        <td className="px-4 py-3 font-medium text-zinc-900">
+                          <div className="max-w-xs truncate">{event.title}</div>
+                        </td>
+                        <td className="max-w-40 truncate px-4 py-3 text-zinc-600">
+                          {event.location}
+                        </td>
+                        <td className="px-4 py-3 text-zinc-600">
+                          <div>{fmtDate(event.startsAt)}</div>
+                          {event.endsAt && (
+                            <div className="text-xs text-zinc-400">hasta {fmtDate(event.endsAt)}</div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${event.isPublished ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-600"}`}
+                          >
+                            {event.isPublished ? "Publicado" : "Borrador"}
+                          </span>
+                          {isPast && (
+                            <span className="ml-1 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">
+                              Pasado
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Link
+                            href={`/admin/eventos/${event.id}`}
+                            className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+                          >
+                            Editar
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

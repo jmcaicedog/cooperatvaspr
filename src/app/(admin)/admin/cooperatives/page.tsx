@@ -77,7 +77,62 @@ export default async function CooperativesPage() {
         </p>
       </header>
 
-      <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
+      {/* Mobile cards */}
+      <div className="space-y-3 md:hidden">
+        {cooperatives.map((cooperative) => (
+          <div className="rounded-lg border border-zinc-200 bg-white p-4" key={cooperative.id}>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-medium text-zinc-900">{cooperative.name}</p>
+                <p className="text-xs text-zinc-500">/{cooperative.slug}</p>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                  cooperative.status === CooperativeStatus.PUBLISHED
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "bg-zinc-100 text-zinc-600"
+                }`}
+              >
+                {statusLabel[cooperative.status] ?? cooperative.status}
+              </span>
+            </div>
+            <div className="mt-1.5 flex flex-wrap gap-x-3 text-sm text-zinc-500">
+              <span>{cooperative.municipality?.name ?? cooperative.municipalityCode}</span>
+              <span>·</span>
+              <span>{reviewLabel[cooperative.reviewStatus] ?? cooperative.reviewStatus}</span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2 border-t border-zinc-100 pt-3">
+              <Link
+                className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                href={`/admin/cooperatives/${cooperative.id}`}
+              >
+                Editar
+              </Link>
+              <form
+                action={async () => {
+                  "use server";
+                  await togglePublishCooperativeAction(cooperative.id);
+                  revalidatePath("/admin/cooperatives");
+                }}
+              >
+                <button
+                  className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                  type="submit"
+                >
+                  {cooperative.status === CooperativeStatus.PUBLISHED ? "Despublicar" : "Publicar"}
+                </button>
+              </form>
+              <ConfirmDeleteCooperativeButton
+                cooperativeId={cooperative.id}
+                cooperativeName={cooperative.name}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden overflow-x-auto rounded-lg border border-zinc-200 bg-white md:block">
         <table className="w-full border-collapse text-left text-sm">
           <thead className="bg-zinc-50 text-zinc-600">
             <tr>
