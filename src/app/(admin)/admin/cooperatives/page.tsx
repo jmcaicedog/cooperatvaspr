@@ -69,7 +69,11 @@ export default async function CooperativesPage() {
       <header>
         <h2 className="text-2xl font-semibold">Gestión de cooperativas</h2>
         <p className="text-sm text-zinc-600">
-          Desde aquí el administrador de plataforma crea, publica y despublica cooperativas.
+          {cooperatives.length} en total
+          {" · "}
+          {cooperatives.filter((c) => c.status === "PUBLISHED").length} publicadas
+          {" · "}
+          {cooperatives.filter((c) => c.reviewStatus === "PENDING").length} pendientes de revisión
         </p>
       </header>
 

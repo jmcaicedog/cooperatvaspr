@@ -93,7 +93,9 @@ export default async function ReviewsPage() {
       <header>
         <h2 className="text-2xl font-semibold">Revisión de cambios mayores</h2>
         <p className="text-sm text-zinc-600">
-          Cola editorial para aprobar o rechazar solicitudes de cooperativas.
+          {pending.length === 0
+            ? "Sin solicitudes pendientes"
+            : `${pending.length} solicitud${pending.length === 1 ? "" : "es"} pendiente${pending.length === 1 ? "" : "s"} de revisión`}
         </p>
       </header>
 

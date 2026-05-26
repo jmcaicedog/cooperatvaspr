@@ -41,7 +41,11 @@ export default async function BannersPage() {
       <header>
         <h2 className="text-2xl font-semibold">Gestión de banners</h2>
         <p className="text-sm text-zinc-600">
-          Cada ubicación permite entre 1 y 3 imágenes con dimensiones fijas según el slot.
+          {banners.length} configurados
+          {" · "}
+          {banners.filter((b) => b.isActive).length} activos
+          {" · "}
+          {slots.length} slots disponibles
         </p>
       </header>
 

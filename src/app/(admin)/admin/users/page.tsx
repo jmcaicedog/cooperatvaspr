@@ -49,7 +49,11 @@ export default async function AdminUsersPage() {
       <header>
         <h2 className="text-2xl font-semibold">Usuarios y asignaciones</h2>
         <p className="text-sm text-zinc-600">
-          El administrador de plataforma puede crear usuarios de cooperativa y asignarlos.
+          {users.length} usuarios
+          {" · "}
+          {users.filter((u) => u.role === "PLATFORM_ADMIN").length} administradores
+          {" · "}
+          {users.filter((u) => u.role === "COOP_ADMIN").length} editores de cooperativa
         </p>
       </header>
 

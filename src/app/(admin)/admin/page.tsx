@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { CooperativeStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
@@ -26,47 +28,44 @@ export default async function AdminPage() {
   return (
     <section className="space-y-6">
       <header>
-        <h2 className="text-2xl font-semibold">Resumen del módulo admin</h2>
-        <p className="text-sm text-zinc-600">
-          Primera iteración enfocada en backoffice y gestión editorial.
-        </p>
+        <h2 className="text-2xl font-semibold">Panel de control</h2>
       </header>
 
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/cooperatives" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Cooperativas totales</p>
           <p className="text-3xl font-semibold">{total}</p>
-        </article>
+        </Link>
 
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/cooperatives" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Publicadas</p>
           <p className="text-3xl font-semibold">{published}</p>
-        </article>
+        </Link>
 
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/reviews" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Pendientes de revisión</p>
           <p className="text-3xl font-semibold">{pendingReview}</p>
-        </article>
+        </Link>
 
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/banners" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Banners configurados</p>
           <p className="text-3xl font-semibold">{banners}</p>
-        </article>
+        </Link>
 
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/blog" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Artículos publicados</p>
           <p className="text-3xl font-semibold">{publishedPosts}</p>
-        </article>
+        </Link>
 
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/eventos" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Eventos próximos</p>
           <p className="text-3xl font-semibold">{upcomingEvents}</p>
-        </article>
+        </Link>
 
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
+        <Link href="/admin/testimonios" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
           <p className="text-sm text-zinc-600">Testimonios activos</p>
           <p className="text-3xl font-semibold">{activeTestimonials}</p>
-        </article>
+        </Link>
       </div>
     </section>
   );
