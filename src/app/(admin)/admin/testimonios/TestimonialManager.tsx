@@ -54,6 +54,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
                   src={testimonial.avatarUrl}
                   alt={testimonial.authorName}
                   fill
+                  sizes="56px"
                   className="object-cover"
                 />
               </div>

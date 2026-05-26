@@ -222,6 +222,8 @@ export function EditEventForm({ event }: { event: Event }) {
                   src={event.coverImageUrl}
                   alt="Imagen del evento"
                   fill
+                  priority
+                  sizes="(max-width: 1280px) 100vw, 33vw"
                   className="object-cover"
                 />
               </div>

@@ -311,28 +311,28 @@ export async function uploadPostCoverAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
-
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
-
-  const file = formData.get("cover");
-  if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, message: "Selecciona una imagen" };
-  }
-
-  const post = await db.blogPost.findUnique({
-    where: { id },
-    select: { coverImageUrl: true },
-  });
-  if (!post) return { ok: false, message: "Artículo no encontrado" };
-
-  if (post.coverImageUrl) {
-    const publicId = extractCloudinaryPublicIdFromUrl(post.coverImageUrl);
-    if (publicId) await destroyCloudinaryImage(publicId);
-  }
-
   try {
+    await requirePlatformAdmin();
+
+    const id = formData.get("id");
+    if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
+
+    const file = formData.get("cover");
+    if (!(file instanceof File) || file.size === 0) {
+      return { ok: false, message: "Selecciona una imagen" };
+    }
+
+    const post = await db.blogPost.findUnique({
+      where: { id },
+      select: { coverImageUrl: true },
+    });
+    if (!post) return { ok: false, message: "Artículo no encontrado" };
+
+    if (post.coverImageUrl) {
+      const publicId = extractCloudinaryPublicIdFromUrl(post.coverImageUrl);
+      if (publicId) await destroyCloudinaryImage(publicId);
+    }
+
     const result = await uploadImageToCloudinary(file, {
       folder: "blog/covers",
       maxBytes: 5 * 1024 * 1024,
@@ -343,40 +343,47 @@ export async function uploadPostCoverAction(
       where: { id },
       data: { coverImageUrl: result.secureUrl },
     });
+
+    revalidatePath(`/admin/blog/${id}`);
+    return { ok: true, message: "Imagen de portada actualizada" };
   } catch (error) {
     return {
       ok: false,
       message: error instanceof Error ? error.message : "No se pudo subir la imagen.",
     };
   }
-
-  revalidatePath(`/admin/blog/${id}`);
-  return { ok: true, message: "Imagen de portada actualizada" };
 }
 
 export async function removePostCoverAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  try {
+    await requirePlatformAdmin();
 
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
+    const id = formData.get("id");
+    if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
 
-  const post = await db.blogPost.findUnique({
-    where: { id },
-    select: { coverImageUrl: true },
-  });
-  if (!post || !post.coverImageUrl) return { ok: false, message: "No hay imagen" };
+    const post = await db.blogPost.findUnique({
+      where: { id },
+      select: { coverImageUrl: true },
+    });
+    if (!post || !post.coverImageUrl) return { ok: false, message: "No hay imagen" };
 
-  const publicId = extractCloudinaryPublicIdFromUrl(post.coverImageUrl);
-  if (publicId) await destroyCloudinaryImage(publicId);
+    const publicId = extractCloudinaryPublicIdFromUrl(post.coverImageUrl);
+    if (publicId) await destroyCloudinaryImage(publicId);
 
-  await db.blogPost.update({
-    where: { id },
-    data: { coverImageUrl: null },
-  });
+    await db.blogPost.update({
+      where: { id },
+      data: { coverImageUrl: null },
+    });
 
-  revalidatePath(`/admin/blog/${id}`);
-  return { ok: true, message: "Imagen eliminada" };
+    revalidatePath(`/admin/blog/${id}`);
+    return { ok: true, message: "Imagen eliminada" };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "No se pudo eliminar la imagen.",
+    };
+  }
 }

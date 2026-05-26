@@ -243,6 +243,8 @@ export function EditPostForm({
                   src={post.coverImageUrl}
                   alt="Portada del artículo"
                   fill
+                  priority
+                  sizes="(max-width: 1280px) 100vw, 33vw"
                   className="object-cover"
                 />
               </div>

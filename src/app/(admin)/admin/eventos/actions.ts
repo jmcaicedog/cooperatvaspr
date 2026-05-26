@@ -191,28 +191,28 @@ export async function uploadEventCoverAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  const auth = await requirePlatformAdmin();
-
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
-
-  const file = formData.get("cover");
-  if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, message: "Selecciona una imagen" };
-  }
-
-  const event = await db.event.findUnique({
-    where: { id },
-    select: { coverImageUrl: true },
-  });
-  if (!event) return { ok: false, message: "Evento no encontrado" };
-
-  if (event.coverImageUrl) {
-    const publicId = extractCloudinaryPublicIdFromUrl(event.coverImageUrl);
-    if (publicId) await destroyCloudinaryImage(publicId);
-  }
-
   try {
+    await requirePlatformAdmin();
+
+    const id = formData.get("id");
+    if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
+
+    const file = formData.get("cover");
+    if (!(file instanceof File) || file.size === 0) {
+      return { ok: false, message: "Selecciona una imagen" };
+    }
+
+    const event = await db.event.findUnique({
+      where: { id },
+      select: { coverImageUrl: true },
+    });
+    if (!event) return { ok: false, message: "Evento no encontrado" };
+
+    if (event.coverImageUrl) {
+      const publicId = extractCloudinaryPublicIdFromUrl(event.coverImageUrl);
+      if (publicId) await destroyCloudinaryImage(publicId);
+    }
+
     const result = await uploadImageToCloudinary(file, {
       folder: "eventos/covers",
       maxBytes: 5 * 1024 * 1024,
@@ -220,37 +220,44 @@ export async function uploadEventCoverAction(
     });
 
     await db.event.update({ where: { id }, data: { coverImageUrl: result.secureUrl } });
+
+    revalidatePath(`/admin/eventos/${id}`);
+    return { ok: true, message: "Imagen de portada actualizada" };
   } catch (error) {
     return {
       ok: false,
       message: error instanceof Error ? error.message : "No se pudo subir la imagen.",
     };
   }
-
-  revalidatePath(`/admin/eventos/${id}`);
-  return { ok: true, message: "Imagen de portada actualizada" };
 }
 
 export async function removeEventCoverAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  const auth = await requirePlatformAdmin();
+  try {
+    await requirePlatformAdmin();
 
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
+    const id = formData.get("id");
+    if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
 
-  const event = await db.event.findUnique({
-    where: { id },
-    select: { coverImageUrl: true },
-  });
-  if (!event || !event.coverImageUrl) return { ok: false, message: "No hay imagen" };
+    const event = await db.event.findUnique({
+      where: { id },
+      select: { coverImageUrl: true },
+    });
+    if (!event || !event.coverImageUrl) return { ok: false, message: "No hay imagen" };
 
-  const publicId = extractCloudinaryPublicIdFromUrl(event.coverImageUrl);
-  if (publicId) await destroyCloudinaryImage(publicId);
+    const publicId = extractCloudinaryPublicIdFromUrl(event.coverImageUrl);
+    if (publicId) await destroyCloudinaryImage(publicId);
 
-  await db.event.update({ where: { id }, data: { coverImageUrl: null } });
+    await db.event.update({ where: { id }, data: { coverImageUrl: null } });
 
-  revalidatePath(`/admin/eventos/${id}`);
-  return { ok: true, message: "Imagen eliminada" };
+    revalidatePath(`/admin/eventos/${id}`);
+    return { ok: true, message: "Imagen eliminada" };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "No se pudo eliminar la imagen.",
+    };
+  }
 }

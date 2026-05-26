@@ -157,28 +157,28 @@ export async function uploadAvatarAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  const auth = await requirePlatformAdmin();
-
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
-
-  const file = formData.get("avatar");
-  if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, message: "Selecciona una imagen" };
-  }
-
-  const testimonial = await db.testimonial.findUnique({
-    where: { id },
-    select: { avatarUrl: true },
-  });
-  if (!testimonial) return { ok: false, message: "Testimonio no encontrado" };
-
-  if (testimonial.avatarUrl) {
-    const publicId = extractCloudinaryPublicIdFromUrl(testimonial.avatarUrl);
-    if (publicId) await destroyCloudinaryImage(publicId);
-  }
-
   try {
+    await requirePlatformAdmin();
+
+    const id = formData.get("id");
+    if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
+
+    const file = formData.get("avatar");
+    if (!(file instanceof File) || file.size === 0) {
+      return { ok: false, message: "Selecciona una imagen" };
+    }
+
+    const testimonial = await db.testimonial.findUnique({
+      where: { id },
+      select: { avatarUrl: true },
+    });
+    if (!testimonial) return { ok: false, message: "Testimonio no encontrado" };
+
+    if (testimonial.avatarUrl) {
+      const publicId = extractCloudinaryPublicIdFromUrl(testimonial.avatarUrl);
+      if (publicId) await destroyCloudinaryImage(publicId);
+    }
+
     const result = await uploadImageToCloudinary(file, {
       folder: "testimonios/avatars",
       maxBytes: 2 * 1024 * 1024,
@@ -186,37 +186,44 @@ export async function uploadAvatarAction(
     });
 
     await db.testimonial.update({ where: { id }, data: { avatarUrl: result.secureUrl } });
+
+    revalidatePath("/admin/testimonios");
+    return { ok: true, message: "Avatar actualizado" };
   } catch (error) {
     return {
       ok: false,
       message: error instanceof Error ? error.message : "No se pudo subir la imagen.",
     };
   }
-
-  revalidatePath("/admin/testimonios");
-  return { ok: true, message: "Avatar actualizado" };
 }
 
 export async function removeAvatarAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  const auth = await requirePlatformAdmin();
+  try {
+    await requirePlatformAdmin();
 
-  const id = formData.get("id");
-  if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
+    const id = formData.get("id");
+    if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
 
-  const testimonial = await db.testimonial.findUnique({
-    where: { id },
-    select: { avatarUrl: true },
-  });
-  if (!testimonial || !testimonial.avatarUrl) return { ok: false, message: "No hay avatar" };
+    const testimonial = await db.testimonial.findUnique({
+      where: { id },
+      select: { avatarUrl: true },
+    });
+    if (!testimonial || !testimonial.avatarUrl) return { ok: false, message: "No hay avatar" };
 
-  const publicId = extractCloudinaryPublicIdFromUrl(testimonial.avatarUrl);
-  if (publicId) await destroyCloudinaryImage(publicId);
+    const publicId = extractCloudinaryPublicIdFromUrl(testimonial.avatarUrl);
+    if (publicId) await destroyCloudinaryImage(publicId);
 
-  await db.testimonial.update({ where: { id }, data: { avatarUrl: null } });
+    await db.testimonial.update({ where: { id }, data: { avatarUrl: null } });
 
-  revalidatePath("/admin/testimonios");
-  return { ok: true, message: "Avatar eliminado" };
+    revalidatePath("/admin/testimonios");
+    return { ok: true, message: "Avatar eliminado" };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "No se pudo eliminar el avatar.",
+    };
+  }
 }
