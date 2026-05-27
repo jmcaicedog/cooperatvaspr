@@ -42,6 +42,8 @@ export default async function CooperativeProfilePage() {
         slogan: true,
         descriptionText: true,
         descriptionRich: true,
+        cooperativeTypes: true,
+        tags: true,
       },
     }),
     db.municipality.findMany({

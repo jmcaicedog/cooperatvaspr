@@ -44,6 +44,8 @@ model Cooperative {
   slogan           String?
   descriptionText  String?
   descriptionRich  Json?
+  cooperativeTypes CooperativeType[]          @default([])
+  tags             String[]                   @default([])
   status           CooperativeStatus          @default(DRAFT)
   reviewStatus     ReviewStatus               @default(PENDING)
   publishedAt      DateTime?
@@ -63,6 +65,8 @@ model Cooperative {
   @@index([name])
   @@index([municipalityCode])
   @@index([status])
+  @@index([cooperativeTypes], type: Gin)
+  @@index([tags], type: Gin)
 }
 
 model CooperativeService {
@@ -157,6 +161,13 @@ enum CooperativeStatus {
   DRAFT
   PUBLISHED
   UNPUBLISHED
+}
+
+enum CooperativeType {
+  TRABAJO_ASOCIADO
+  CONSUMIDORES_USUARIOS
+  VIVIENDA
+  ENERGIA
 }
 
 enum ReviewStatus {

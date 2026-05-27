@@ -8,6 +8,7 @@ import {
   extractCloudinaryPublicIdFromUrl,
   uploadImageToCloudinary,
 } from "@/lib/cloudinary";
+import { parseTagListInput } from "@/lib/cooperative-taxonomy";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { canMutateCooperative } from "@/lib/cooperative-scope";
 import { db } from "@/lib/db";
@@ -58,6 +59,14 @@ function revalidateCooperativeMediaViews(cooperativeId: string): void {
   revalidatePath(`/admin/cooperatives/${cooperativeId}`);
 }
 
+function areSameArray(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return a.every((value, index) => value === b[index]);
+}
+
 export async function updateCooperativeProfileAction(
   _previousState: ProfileActionState,
   formData: FormData
@@ -82,6 +91,8 @@ export async function updateCooperativeProfileAction(
       slogan: true,
       descriptionText: true,
       descriptionRich: true,
+      cooperativeTypes: true,
+      tags: true,
     },
   });
 
@@ -94,6 +105,8 @@ export async function updateCooperativeProfileAction(
     municipalityCode: formData.get("municipalityCode"),
     slogan: formData.get("slogan"),
     descriptionText: formData.get("descriptionText"),
+    cooperativeTypes: formData.getAll("cooperativeTypes"),
+    tags: parseTagListInput(formData.get("tags")),
   });
 
   if (!parsedCore.success) {
@@ -120,6 +133,8 @@ export async function updateCooperativeProfileAction(
     municipalityCode: parsedCore.data.municipalityCode,
     slogan: parsedCore.data.slogan || null,
     descriptionText: parsedCore.data.descriptionText || null,
+    cooperativeTypes: parsedCore.data.cooperativeTypes,
+    tags: parsedCore.data.tags,
     descriptionRich: {
       html: sanitizeBasicHtml(parsedRich.data.html),
       text: parsedRich.data.text,
@@ -127,7 +142,9 @@ export async function updateCooperativeProfileAction(
   };
 
   const isMajorChange =
-    newData.name !== cooperative.name || newData.municipalityCode !== cooperative.municipalityCode;
+    newData.name !== cooperative.name ||
+    newData.municipalityCode !== cooperative.municipalityCode ||
+    !areSameArray(newData.cooperativeTypes, cooperative.cooperativeTypes);
 
   if (actor.role === UserRole.PLATFORM_ADMIN || !isMajorChange) {
     await db.cooperative.update({
@@ -471,6 +488,8 @@ export async function reviewChangeRequestAction(
       municipalityCode: string;
       slogan: string | null;
       descriptionText: string | null;
+      cooperativeTypes: string[];
+      tags: string[];
       descriptionRich: { html: string; text: string };
     };
 
@@ -481,6 +500,8 @@ export async function reviewChangeRequestAction(
         municipalityCode: payload.municipalityCode,
         slogan: payload.slogan,
         descriptionText: payload.descriptionText,
+        cooperativeTypes: payload.cooperativeTypes,
+        tags: payload.tags,
         descriptionRich: payload.descriptionRich,
         reviewStatus: ReviewStatus.APPROVED,
         updatedById: actor.userId,

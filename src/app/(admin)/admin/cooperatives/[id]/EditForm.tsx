@@ -27,6 +27,7 @@ import {
   updateContactAction,
 } from "@/app/cooperativa/contactos/actions";
 import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
+import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
 
 type CooperativeEditData = {
   id: string;
@@ -36,6 +37,8 @@ type CooperativeEditData = {
   slogan: string | null;
   descriptionText: string | null;
   descriptionRich: unknown;
+  cooperativeTypes: string[];
+  tags: string[];
   services: Array<{
     id: string;
     title: string;
@@ -304,6 +307,34 @@ export function EditForm({
             defaultValue={cooperative.descriptionText ?? ""}
             name="descriptionText"
           />
+        </label>
+
+        <fieldset className="grid gap-2 text-sm">
+          <legend className="text-sm">Tipo de cooperativa</legend>
+          <div className="grid gap-2 rounded-md border border-zinc-300 p-3">
+            {cooperativeTypeValues.map((cooperativeType) => (
+              <label className="inline-flex items-center gap-2" key={cooperativeType}>
+                <input
+                  defaultChecked={cooperative.cooperativeTypes.includes(cooperativeType)}
+                  name="cooperativeTypes"
+                  type="checkbox"
+                  value={cooperativeType}
+                />
+                <span>{cooperativeTypeLabels[cooperativeType]}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <label className="grid gap-1 text-sm">
+          <span>Palabras clave (tags)</span>
+          <input
+            className="rounded-md border border-zinc-300 px-3 py-2"
+            defaultValue={cooperative.tags.join(", ")}
+            name="tags"
+            placeholder="Ej. cafe, turismo, agroecologia"
+          />
+          <span className="text-xs text-zinc-500">Separa cada palabra clave por coma.</span>
         </label>
 
         <div className="grid gap-1 text-sm">

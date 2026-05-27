@@ -8,6 +8,7 @@ import {
   extractCloudinaryPublicIdFromUrl,
   uploadImageToCloudinary,
 } from "@/lib/cloudinary";
+import { parseTagListInput } from "@/lib/cooperative-taxonomy";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { sanitizeBasicHtml, richTextPayloadSchema } from "@/lib/validators/rich-text";
@@ -61,6 +62,8 @@ export async function createCooperativeAction(
     municipalityCode: formData.get("municipalityCode"),
     slogan: formData.get("slogan"),
     descriptionText: formData.get("descriptionText"),
+    cooperativeTypes: formData.getAll("cooperativeTypes"),
+    tags: parseTagListInput(formData.get("tags")),
   });
 
   if (!parsed.success) {
@@ -93,6 +96,8 @@ export async function createCooperativeAction(
       municipalityCode: parsed.data.municipalityCode,
       slogan: parsed.data.slogan || null,
       descriptionText: parsed.data.descriptionText || null,
+      cooperativeTypes: parsed.data.cooperativeTypes,
+      tags: parsed.data.tags,
       status: CooperativeStatus.DRAFT,
       reviewStatus: ReviewStatus.PENDING,
     },
@@ -123,6 +128,8 @@ export async function updateCooperativeByAdminAction(
     municipalityCode: formData.get("municipalityCode"),
     slogan: formData.get("slogan"),
     descriptionText: formData.get("descriptionText"),
+    cooperativeTypes: formData.getAll("cooperativeTypes"),
+    tags: parseTagListInput(formData.get("tags")),
   });
 
   const parsedRich = richTextPayloadSchema.safeParse({
@@ -157,6 +164,8 @@ export async function updateCooperativeByAdminAction(
       municipalityCode: parsed.data.municipalityCode,
       slogan: parsed.data.slogan || null,
       descriptionText: parsed.data.descriptionText || null,
+      cooperativeTypes: parsed.data.cooperativeTypes,
+      tags: parsed.data.tags,
       descriptionRich: {
         html: sanitizeBasicHtml(parsedRich.data.html),
         text: parsedRich.data.text,

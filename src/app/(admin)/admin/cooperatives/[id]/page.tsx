@@ -25,6 +25,8 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
         slogan: true,
         descriptionText: true,
         descriptionRich: true,
+        cooperativeTypes: true,
+        tags: true,
         status: true,
         reviewStatus: true,
         services: {
