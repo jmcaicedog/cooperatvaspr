@@ -8,6 +8,8 @@ import { useState } from "react";
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/#directorio", label: "Directorio" },
+  { href: "/eventos", label: "Eventos" },
+  { href: "/blog", label: "Blog" },
   { href: "/quienes-somos", label: "Quiénes somos" },
   { href: "/servicios", label: "Servicios" },
   { href: "/contacto", label: "Contacto" },

@@ -7,6 +7,8 @@ const FOOTER_LINKS = [
     links: [
       { href: "/", label: "Inicio" },
       { href: "/#directorio", label: "Directorio" },
+      { href: "/eventos", label: "Eventos" },
+      { href: "/blog", label: "Blog" },
       { href: "/quienes-somos", label: "Quiénes somos" },
     ],
   },
