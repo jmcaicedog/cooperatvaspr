@@ -6,6 +6,13 @@ import { useEffect } from "react";
 
 import { createPostAction } from "./actions";
 import type { BlogActionState } from "./actions";
+import {
+  AdminButton,
+  AdminInput,
+  AdminLabel,
+  AdminSelect,
+  AdminTextarea,
+} from "@/components/admin/ui";
 
 type Category = { id: string; name: string };
 
@@ -23,25 +30,23 @@ export function CreatePostForm({ categories }: { categories: Category[] }) {
     <form action={formAction} className="admin-themed space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">
+          <AdminLabel>
             Título <span className="text-red-500">*</span>
-          </label>
-          <input
+          </AdminLabel>
+          <AdminInput
             type="text"
             name="title"
             required
             placeholder="Ej. Cooperativas transforman comunidades"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">
+          <AdminLabel>
             Categoría <span className="text-red-500">*</span>
-          </label>
-          <select
+          </AdminLabel>
+          <AdminSelect
             name="categoryId"
             required
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
           >
             <option value="">Selecciona una categoría</option>
             {categories.map((c) => (
@@ -49,18 +54,17 @@ export function CreatePostForm({ categories }: { categories: Category[] }) {
                 {c.name}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700">Extracto</label>
-        <textarea
+        <AdminLabel>Extracto</AdminLabel>
+        <AdminTextarea
           name="excerpt"
           rows={2}
           maxLength={400}
           placeholder="Breve descripción del artículo (visible en listados)"
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
         />
       </div>
 
@@ -69,13 +73,13 @@ export function CreatePostForm({ categories }: { categories: Category[] }) {
       )}
 
       <div className="flex justify-end">
-        <button
+        <AdminButton
           type="submit"
           disabled={isPending}
-          className="admin-btn-primary rounded-lg px-5 py-2 text-sm font-medium disabled:opacity-50"
+          className="rounded-lg px-5 py-2"
         >
           {isPending ? "Creando…" : "Crear artículo"}
-        </button>
+        </AdminButton>
       </div>
     </form>
   );
