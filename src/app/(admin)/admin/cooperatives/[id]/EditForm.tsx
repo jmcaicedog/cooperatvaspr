@@ -27,6 +27,14 @@ import {
   updateContactAction,
 } from "@/app/cooperativa/contactos/actions";
 import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
+import {
+  AdminCard,
+  AdminButton,
+  AdminInput,
+  AdminLabel,
+  AdminSelect,
+  AdminTextarea,
+} from "@/components/admin/ui";
 import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
 
 type CooperativeEditData = {
@@ -167,7 +175,7 @@ export function EditForm({
 
   return (
     <div className="admin-themed space-y-6">
-      <section className="admin-card space-y-4 rounded-xl border p-6">
+      <AdminCard className="space-y-4 p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Logo</h3>
           <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Maximo 2 MB.</p>
@@ -203,8 +211,9 @@ export function EditForm({
           />
 
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              className="admin-btn-secondary inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm"
+            <AdminButton
+              className="inline-flex items-center gap-2 rounded-md px-3 py-2"
+              variant="secondary"
               onClick={() => logoFileInputRef.current?.click()}
               type="button"
             >
@@ -218,10 +227,10 @@ export function EditForm({
                 />
               </svg>
               Buscar archivo
-            </button>
+            </AdminButton>
 
-            <button
-              className="admin-btn-primary inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60"
+            <AdminButton
+              className="inline-flex items-center gap-2 rounded-md px-4 py-2 disabled:opacity-60"
               disabled={logoPending}
               type="submit"
             >
@@ -235,7 +244,7 @@ export function EditForm({
                 />
               </svg>
               {logoPending ? "Cargando..." : "Cargar"}
-            </button>
+            </AdminButton>
           </div>
 
           <p className="text-xs text-zinc-600">{selectedLogoName || "Ningun archivo seleccionado."}</p>
@@ -244,12 +253,9 @@ export function EditForm({
         {cooperative.logoUrl ? (
           <form action={removeCooperativeLogoByAdminAction}>
             <input name="cooperativeId" type="hidden" value={cooperative.id} />
-            <button
-              className="admin-btn-secondary inline-flex rounded-md border px-3 py-1.5 text-xs font-medium"
-              type="submit"
-            >
+            <AdminButton className="inline-flex rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
               Quitar logo
-            </button>
+            </AdminButton>
           </form>
         ) : null}
 
@@ -258,26 +264,24 @@ export function EditForm({
             {logoState.message}
           </p>
         ) : null}
-      </section>
+      </AdminCard>
 
       <form action={action} className="admin-card space-y-4 rounded-xl border p-6">
         <input name="cooperativeId" type="hidden" value={cooperative.id} />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label className="grid gap-1 text-sm">
-            <span>Nombre</span>
-            <input
-              className="rounded-md border border-zinc-300 px-3 py-2"
+          <div className="grid gap-1 text-sm">
+            <AdminLabel className="mb-0">Nombre</AdminLabel>
+            <AdminInput
               defaultValue={cooperative.name}
               name="name"
               required
             />
-          </label>
+          </div>
 
-          <label className="grid gap-1 text-sm">
-            <span>Municipio</span>
-            <select
-              className="rounded-md border border-zinc-300 px-3 py-2"
+          <div className="grid gap-1 text-sm">
+            <AdminLabel className="mb-0">Municipio</AdminLabel>
+            <AdminSelect
               defaultValue={cooperative.municipalityCode}
               name="municipalityCode"
               required
@@ -287,27 +291,26 @@ export function EditForm({
                   {municipality.name}
                 </option>
               ))}
-            </select>
-          </label>
+            </AdminSelect>
+          </div>
         </div>
 
-        <label className="grid gap-1 text-sm">
-          <span>Slogan</span>
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2"
+        <div className="grid gap-1 text-sm">
+          <AdminLabel className="mb-0">Slogan</AdminLabel>
+          <AdminInput
             defaultValue={cooperative.slogan ?? ""}
             name="slogan"
           />
-        </label>
+        </div>
 
-        <label className="grid gap-1 text-sm">
-          <span>Descripcion breve (texto plano)</span>
-          <textarea
-            className="min-h-28 rounded-md border border-zinc-300 px-3 py-2"
+        <div className="grid gap-1 text-sm">
+          <AdminLabel className="mb-0">Descripcion breve (texto plano)</AdminLabel>
+          <AdminTextarea
+            className="min-h-28"
             defaultValue={cooperative.descriptionText ?? ""}
             name="descriptionText"
           />
-        </label>
+        </div>
 
         <fieldset className="grid gap-2 text-sm">
           <legend className="text-sm">Tipo de cooperativa</legend>
@@ -326,36 +329,31 @@ export function EditForm({
           </div>
         </fieldset>
 
-        <label className="grid gap-1 text-sm">
-          <span>Palabras clave (tags)</span>
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2"
+        <div className="grid gap-1 text-sm">
+          <AdminLabel className="mb-0">Palabras clave (tags)</AdminLabel>
+          <AdminInput
             defaultValue={cooperative.tags.join(", ")}
             name="tags"
             placeholder="Ej. cafe, turismo, agroecologia"
           />
           <span className="text-xs text-zinc-500">Separa cada palabra clave por coma.</span>
-        </label>
+        </div>
 
         <div className="grid gap-1 text-sm">
           <span>Descripcion enriquecida</span>
           <RichTextEditor defaultHtml={rich.html} defaultText={rich.text} name="descriptionRich" />
         </div>
 
-        <button
-          className="admin-btn-primary inline-flex rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60"
-          disabled={pending}
-          type="submit"
-        >
+        <AdminButton className="inline-flex rounded-md px-4 py-2 disabled:opacity-60" disabled={pending} type="submit">
           {pending ? "Guardando..." : "Guardar cambios"}
-        </button>
+        </AdminButton>
 
         {state.message ? (
           <p className={`text-sm ${state.ok ? "text-emerald-700" : "text-rose-700"}`}>{state.message}</p>
         ) : null}
       </form>
 
-      <section className="admin-card space-y-4 rounded-xl border p-6">
+      <AdminCard className="space-y-4 p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Galeria de imagenes</h3>
           <p className="text-xs text-zinc-600">
@@ -388,39 +386,33 @@ export function EditForm({
 
                 <form action={updateGalleryImageAltTextByAdminAction} className="mt-3 grid gap-2">
                   <input name="imageId" type="hidden" value={image.id} />
-                  <input
-                    className="rounded-md border border-zinc-300 px-3 py-2 text-xs"
+                  <AdminInput
+                    className="text-xs"
                     defaultValue={image.altText ?? ""}
                     maxLength={200}
                     name="altText"
                     placeholder="Texto alternativo"
                   />
-                  <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs" type="submit">
+                  <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
                     Guardar texto alternativo
-                  </button>
+                  </AdminButton>
                 </form>
 
                 <div className="mt-3 flex gap-2">
                   {!image.isPrimary ? (
                     <form action={setPrimaryGalleryImageByAdminAction}>
                       <input name="imageId" type="hidden" value={image.id} />
-                      <button
-                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
-                        type="submit"
-                      >
+                      <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
                         Marcar principal
-                      </button>
+                      </AdminButton>
                     </form>
                   ) : null}
 
                   <form action={deleteGalleryImageByAdminAction}>
                     <input name="imageId" type="hidden" value={image.id} />
-                    <button
-                      className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-700"
-                      type="submit"
-                    >
+                    <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="danger">
                       Eliminar
-                    </button>
+                    </AdminButton>
                   </form>
                 </div>
               </article>
@@ -430,28 +422,26 @@ export function EditForm({
 
         <form action={galleryAction} className="grid gap-3 rounded-md border border-zinc-200 p-4 md:max-w-lg">
           <input name="cooperativeId" type="hidden" value={cooperative.id} />
-          <input
+          <AdminInput
             accept="image/jpeg,image/png,image/webp"
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
             disabled={galleryLimitReached || galleryPending}
             name="galleryFile"
             required
             type="file"
           />
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          <AdminInput
             disabled={galleryLimitReached || galleryPending}
             maxLength={200}
             name="altText"
             placeholder="Texto alternativo (opcional)"
           />
-          <button
-            className="admin-btn-primary inline-flex rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60"
+          <AdminButton
+            className="inline-flex rounded-md px-4 py-2 disabled:opacity-60"
             disabled={galleryLimitReached || galleryPending}
             type="submit"
           >
             {galleryPending ? "Subiendo..." : "Agregar imagen"}
-          </button>
+          </AdminButton>
           {galleryLimitReached ? (
             <p className="text-xs text-amber-700">Se alcanzo el limite de 5 imagenes.</p>
           ) : null}
@@ -462,9 +452,9 @@ export function EditForm({
             {galleryState.message}
           </p>
         ) : null}
-      </section>
+      </AdminCard>
 
-      <section className="admin-card space-y-4 rounded-xl border p-6">
+      <AdminCard className="space-y-4 p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Servicios</h3>
           <p className="text-xs text-zinc-600">Gestiona los servicios desde esta misma pantalla.</p>
@@ -486,44 +476,37 @@ export function EditForm({
                   <div className="min-w-0 flex-1 space-y-3">
                     <form action={updateServiceAction} className="grid gap-2">
                       <input name="serviceId" type="hidden" value={service.id} />
-                      <input
-                        className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      <AdminInput
                         defaultValue={service.title}
                         name="title"
                         placeholder="Titulo del servicio"
                         required
                       />
-                      <textarea
-                        className="min-h-20 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      <AdminTextarea
+                        className="min-h-20"
                         defaultValue={service.description ?? ""}
                         name="description"
                         placeholder="Descripcion"
                       />
                       <div className="flex flex-wrap items-center gap-2">
-                        <button
-                          className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
-                          type="submit"
-                        >
+                        <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
                           Guardar edicion
-                        </button>
+                        </AdminButton>
                         <p className="text-xs text-zinc-500">{service.isActive ? "Activo" : "Inactivo"}</p>
                       </div>
                     </form>
 
                     <div className="flex gap-2">
                       <form action={toggleServiceAction.bind(null, service.id)}>
-                        <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs" type="submit">
+                        <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
                           {service.isActive ? "Desactivar" : "Activar"}
-                        </button>
+                        </AdminButton>
                       </form>
 
                       <form action={deleteServiceAction.bind(null, service.id)}>
-                        <button
-                          className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white"
-                          type="submit"
-                        >
+                        <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="danger">
                           Eliminar
-                        </button>
+                        </AdminButton>
                       </form>
                     </div>
                   </div>
@@ -536,24 +519,23 @@ export function EditForm({
         <form action={createServiceAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
           <input name="cooperativeId" type="hidden" value={cooperative.id} />
           <h4 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo servicio</h4>
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          <AdminInput
             name="title"
             placeholder="Titulo del servicio"
             required
           />
-          <textarea
-            className="min-h-24 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          <AdminTextarea
+            className="min-h-24"
             name="description"
             placeholder="Descripcion"
           />
-          <button className="admin-btn-primary rounded-md px-4 py-2 text-sm font-medium" type="submit">
+          <AdminButton className="rounded-md px-4 py-2" type="submit">
             Agregar servicio
-          </button>
+          </AdminButton>
         </form>
-      </section>
+      </AdminCard>
 
-      <section className="admin-card space-y-4 rounded-xl border p-6">
+      <AdminCard className="space-y-4 p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Contactos</h3>
           <p className="text-xs text-zinc-600">Administra contactos con el mismo flujo del panel cooperativa.</p>
@@ -576,8 +558,7 @@ export function EditForm({
                     <form action={updateContactAction} className="grid gap-2">
                       <input name="contactId" type="hidden" value={contact.id} />
 
-                      <select
-                        className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      <AdminSelect
                         defaultValue={contact.type}
                         name="type"
                         required
@@ -587,35 +568,30 @@ export function EditForm({
                         <option value={ContactType.WEBSITE}>Sitio web</option>
                         <option value={ContactType.WHATSAPP}>WhatsApp</option>
                         <option value={ContactType.ADDRESS}>Direccion</option>
-                      </select>
+                      </AdminSelect>
 
-                      <input
-                        className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      <AdminInput
                         defaultValue={contact.label ?? ""}
                         name="label"
                         placeholder="Etiqueta (opcional)"
                       />
 
-                      <input
-                        className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                      <AdminInput
                         defaultValue={contact.value}
                         name="value"
                         placeholder="Valor de contacto"
                         required
                       />
 
-                      <button
-                        className="w-fit rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
-                        type="submit"
-                      >
+                      <AdminButton className="w-fit rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
                         Guardar edicion
-                      </button>
+                      </AdminButton>
                     </form>
 
                     <form action={deleteContactAction.bind(null, contact.id)}>
-                      <button className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white" type="submit">
+                      <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="danger">
                         Eliminar
-                      </button>
+                      </AdminButton>
                     </form>
                   </div>
                 </div>
@@ -628,32 +604,30 @@ export function EditForm({
           <input name="cooperativeId" type="hidden" value={cooperative.id} />
           <h4 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo contacto</h4>
 
-          <select className="rounded-md border border-zinc-300 px-3 py-2 text-sm" name="type" required>
+          <AdminSelect name="type" required>
             <option value={ContactType.PHONE}>Telefono</option>
             <option value={ContactType.EMAIL}>Correo</option>
             <option value={ContactType.WEBSITE}>Sitio web</option>
             <option value={ContactType.WHATSAPP}>WhatsApp</option>
             <option value={ContactType.ADDRESS}>Direccion</option>
-          </select>
+          </AdminSelect>
 
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          <AdminInput
             name="label"
             placeholder="Etiqueta (opcional)"
           />
 
-          <input
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          <AdminInput
             name="value"
             placeholder="Valor de contacto"
             required
           />
 
-          <button className="admin-btn-primary rounded-md px-4 py-2 text-sm font-medium" type="submit">
+          <AdminButton className="rounded-md px-4 py-2" type="submit">
             Agregar contacto
-          </button>
+          </AdminButton>
         </form>
-      </section>
+      </AdminCard>
     </div>
   );
 }

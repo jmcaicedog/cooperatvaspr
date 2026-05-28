@@ -4,6 +4,14 @@ import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
 
 import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
+import {
+  AdminCard,
+  AdminButton,
+  AdminInput,
+  AdminLabel,
+  AdminSelect,
+  AdminTextarea,
+} from "@/components/admin/ui";
 
 import {
   archivePostAction,
@@ -67,66 +75,62 @@ export function EditPostForm({
       {/* Columna principal */}
       <div className="space-y-6 xl:col-span-2">
         {/* Metadatos */}
-        <section className="admin-card rounded-xl border p-6">
+        <AdminCard className="p-6">
           <h2 className="mb-4 text-base font-semibold text-zinc-900">Información del artículo</h2>
           <form action={saveAction} className="space-y-4">
             <input type="hidden" name="id" value={post.id} />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium text-zinc-700">
+                <AdminLabel>
                   Título <span className="text-red-500">*</span>
-                </label>
-                <input
+                </AdminLabel>
+                <AdminInput
                   type="text"
                   name="title"
                   required
                   defaultValue={post.title}
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-zinc-700">Slug</label>
-                <input
+                <AdminLabel>Slug</AdminLabel>
+                <AdminInput
                   type="text"
                   name="slug"
                   defaultValue={post.slug}
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700">
+              <AdminLabel>
                 Categoría <span className="text-red-500">*</span>
-              </label>
-              <select
+              </AdminLabel>
+              <AdminSelect
                 name="categoryId"
                 required
                 defaultValue={post.categoryId}
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700">Extracto</label>
-              <textarea
+              <AdminLabel>Extracto</AdminLabel>
+              <AdminTextarea
                 name="excerpt"
                 rows={2}
                 maxLength={400}
                 defaultValue={post.excerpt ?? ""}
                 placeholder="Breve descripción visible en listados"
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-zinc-700">Contenido</label>
+              <AdminLabel className="mb-2">Contenido</AdminLabel>
               <RichTextEditor
                 name="body"
                 defaultHtml={post.bodyHtml ?? ""}
@@ -143,22 +147,18 @@ export function EditPostForm({
             )}
 
             <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="admin-btn-primary rounded-lg px-5 py-2 text-sm font-medium disabled:opacity-50"
-              >
+              <AdminButton type="submit" disabled={isSaving} className="rounded-lg px-5 py-2">
                 {isSaving ? "Guardando…" : "Guardar cambios"}
-              </button>
+              </AdminButton>
             </div>
           </form>
-        </section>
+        </AdminCard>
       </div>
 
       {/* Columna lateral */}
       <div className="space-y-4">
         {/* Estado del artículo */}
-        <section className="admin-card rounded-xl border p-5">
+        <AdminCard className="p-5">
           <h2 className="mb-3 text-sm font-semibold text-zinc-700">Estado</h2>
           <div className="mb-4 flex items-center gap-2">
             <span
@@ -180,29 +180,31 @@ export function EditPostForm({
           <div className="space-y-2">
             <form action={publishAction}>
               <input type="hidden" name="id" value={post.id} />
-              <button
+              <AdminButton
                 type="submit"
+                variant="secondary"
                 disabled={isPublishing || post.status === "ARCHIVED"}
-                className="admin-btn-secondary w-full rounded-lg border px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full rounded-lg px-3 py-2 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isPublishing
                   ? "…"
                   : post.status === "PUBLISHED"
                     ? "Despublicar"
                     : "Publicar"}
-              </button>
+              </AdminButton>
             </form>
 
             {post.status !== "ARCHIVED" && (
               <form action={archiveAction}>
                 <input type="hidden" name="id" value={post.id} />
-                <button
+                <AdminButton
                   type="submit"
+                  variant="secondary"
                   disabled={isArchiving}
-                  className="w-full rounded-lg border border-amber-200 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50"
+                  className="w-full rounded-lg border-amber-200 px-3 py-2 text-amber-700 hover:bg-amber-50"
                 >
                   {isArchiving ? "…" : "Archivar"}
-                </button>
+                </AdminButton>
               </form>
             )}
 
@@ -215,13 +217,14 @@ export function EditPostForm({
               }}
             >
               <input type="hidden" name="id" value={post.id} />
-              <button
+              <AdminButton
                 type="submit"
+                variant="danger"
                 disabled={isDeleting}
-                className="w-full rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                className="w-full rounded-lg px-3 py-2"
               >
                 {isDeleting ? "…" : "Eliminar artículo"}
-              </button>
+              </AdminButton>
             </form>
           </div>
 
@@ -230,10 +233,10 @@ export function EditPostForm({
               {publishState.message || archiveState.message || deleteState.message}
             </p>
           )}
-        </section>
+        </AdminCard>
 
         {/* Imagen de portada */}
-        <section className="admin-card rounded-xl border p-5">
+        <AdminCard className="p-5">
           <h2 className="mb-3 text-sm font-semibold text-zinc-700">Imagen de portada</h2>
 
           {post.coverImageUrl ? (
@@ -250,13 +253,14 @@ export function EditPostForm({
               </div>
               <form action={removeCoverAction}>
                 <input type="hidden" name="id" value={post.id} />
-                <button
+                <AdminButton
                   type="submit"
+                  variant="danger"
                   disabled={isRemovingCover}
-                  className="w-full rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  className="w-full rounded-lg px-3 py-2 text-xs"
                 >
                   {isRemovingCover ? "…" : "Eliminar imagen"}
-                </button>
+                </AdminButton>
               </form>
               {removeCoverState.message && !removeCoverState.ok && (
                 <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">
@@ -276,13 +280,14 @@ export function EditPostForm({
                 onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
               />
               <div className="flex items-center gap-2">
-                <button
+                <AdminButton
                   type="button"
+                  variant="secondary"
                   onClick={() => fileInputRef.current?.click()}
-                  className="rounded-lg border border-zinc-300 px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+                  className="rounded-lg px-3 py-2 text-xs"
                 >
                   Buscar archivo
-                </button>
+                </AdminButton>
                 <span className="truncate text-xs text-zinc-500">
                   {fileName ?? "Sin archivo seleccionado"}
                 </span>
@@ -295,16 +300,16 @@ export function EditPostForm({
                   {uploadState.message}
                 </p>
               )}
-              <button
+              <AdminButton
                 type="submit"
                 disabled={isUploading || !fileName}
-                className="admin-btn-primary w-full rounded-lg px-3 py-2 text-xs font-medium disabled:opacity-50"
+                className="w-full rounded-lg px-3 py-2 text-xs disabled:opacity-50"
               >
                 {isUploading ? "Subiendo…" : "Subir imagen"}
-              </button>
+              </AdminButton>
             </form>
           )}
-        </section>
+        </AdminCard>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -45,18 +46,19 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen text-zinc-950" data-scope="admin" style={{ background: "linear-gradient(180deg, #eef4f2 0%, #f6f8fb 100%)" }}>
-      <header className="border-b" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffffcc", backdropFilter: "blur(10px)" }}>
+      <header className="border-b" style={{ borderColor: "#d7e4dd", backgroundColor: "#f3f8f5cc", backdropFilter: "blur(10px)" }}>
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: "var(--verde-impulso)", color: "var(--verde-cooperativo)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path d="M4 18V8l8-4 8 4v10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M9 18v-4h6v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
             <div>
-              <p className="text-xs uppercase tracking-widest" style={{ color: "#54736a" }}>Directorio de Cooperativas</p>
-              <h1 className="text-lg font-semibold" style={{ color: "#0f2c24" }}>Panel Administrativo</h1>
+              <Image
+                src="/brand/logo-verde-claro.svg"
+                alt="cooperativas.pr"
+                width={180}
+                height={19}
+                priority
+                className="h-7 w-auto"
+              />
+              <p className="mt-1 text-xs uppercase tracking-widest" style={{ color: "#54736a" }}>Panel Administrativo</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
