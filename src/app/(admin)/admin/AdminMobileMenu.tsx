@@ -40,7 +40,8 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
       <button
         aria-expanded={open}
         aria-label="Abrir menú"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-zinc-700"
+        style={{ borderColor: "#c8dad1", backgroundColor: "#f7fbf9", color: "#1f3f35" }}
         onClick={() => setOpen(true)}
         type="button"
       >
@@ -61,16 +62,18 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
           role="presentation"
         >
           <div
-            className="absolute right-0 top-0 h-full w-72 bg-white p-4 shadow-xl"
+            className="absolute right-0 top-0 h-full w-80 p-4 shadow-xl"
+            style={{ backgroundColor: "#ffffff" }}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
           >
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm font-semibold text-zinc-800">Navegación</p>
+              <p className="text-sm font-semibold" style={{ color: "#16392f" }}>Navegación</p>
               <button
                 aria-label="Cerrar menú"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border"
+                style={{ borderColor: "#c8dad1", color: "#1f3f35" }}
                 onClick={() => setOpen(false)}
                 type="button"
               >
@@ -80,11 +83,12 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
               </button>
             </div>
 
-            <div className="mb-4 rounded-md border border-zinc-200 bg-zinc-50 p-3">
-              <p className="text-xs text-zinc-500">Sesión activa</p>
-              <p className="text-sm font-medium text-zinc-800">{displayName}</p>
+            <div className="mb-4 rounded-xl border p-3" style={{ borderColor: "#d7e4dd", backgroundColor: "#f7fbf9" }}>
+              <p className="text-xs" style={{ color: "#5f7d72" }}>Sesión activa</p>
+              <p className="text-sm font-medium" style={{ color: "#1a3f34" }}>{displayName}</p>
               <a
-                className="mt-2 inline-flex rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
+                className="mt-2 inline-flex rounded-md border px-2.5 py-1 text-xs font-medium"
+                style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
                 href="/auth/logout"
               >
                 Cerrar sesión
@@ -96,8 +100,8 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
                 if ("divider" in item) {
                   return (
                     <div key={item.label}>
-                      <div className="my-2 border-t border-zinc-100" />
-                      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                      <div className="my-2 border-t" style={{ borderColor: "#edf2ef" }} />
+                      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#7e9a8f" }}>
                         {item.label}
                       </p>
                     </div>
@@ -108,14 +112,19 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
 
                 return (
                   <Link
-                    className={`block rounded-md px-3 py-2 ${
+                    className={`block rounded-lg px-3 py-2.5 font-medium ${
                       isActive
-                        ? "bg-zinc-900 text-white"
-                        : "text-zinc-700 hover:bg-zinc-100"
+                        ? "text-white"
+                        : "hover:bg-zinc-100"
                     }`}
                     href={item.href}
                     key={item.href}
                     onClick={() => setOpen(false)}
+                    style={
+                      isActive
+                        ? { backgroundColor: "var(--verde-impulso)", color: "#ffffff" }
+                        : { color: "#1f3f35" }
+                    }
                   >
                     {item.label}
                   </Link>

@@ -27,44 +27,50 @@ export default async function AdminPage() {
 
   return (
     <section className="space-y-6">
-      <header>
-        <h2 className="text-2xl font-semibold">Panel de control</h2>
+      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #003024 0%, #0a4a39 100%)" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--verde-cooperativo)" }}>
+          Vista general
+        </p>
+        <h2 className="mt-2 text-2xl font-semibold text-white">Panel de control</h2>
+        <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.78)" }}>
+          Gestiona cooperativas, contenido y flujo editorial desde un solo lugar.
+        </p>
       </header>
 
-      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <Link href="/admin/cooperatives" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Cooperativas totales</p>
-          <p className="text-3xl font-semibold">{total}</p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Link href="/admin/cooperatives" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Cooperativas totales</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{total}</p>
         </Link>
 
-        <Link href="/admin/cooperatives" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Publicadas</p>
-          <p className="text-3xl font-semibold">{published}</p>
+        <Link href="/admin/cooperatives" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Publicadas</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{published}</p>
         </Link>
 
-        <Link href="/admin/reviews" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Pendientes de revisión</p>
-          <p className="text-3xl font-semibold">{pendingReview}</p>
+        <Link href="/admin/reviews" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Pendientes de revisión</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{pendingReview}</p>
         </Link>
 
-        <Link href="/admin/banners" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Banners configurados</p>
-          <p className="text-3xl font-semibold">{banners}</p>
+        <Link href="/admin/banners" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Banners configurados</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{banners}</p>
         </Link>
 
-        <Link href="/admin/blog" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Artículos publicados</p>
-          <p className="text-3xl font-semibold">{publishedPosts}</p>
+        <Link href="/admin/blog" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Artículos publicados</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{publishedPosts}</p>
         </Link>
 
-        <Link href="/admin/eventos" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Eventos próximos</p>
-          <p className="text-3xl font-semibold">{upcomingEvents}</p>
+        <Link href="/admin/eventos" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Eventos próximos</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{upcomingEvents}</p>
         </Link>
 
-        <Link href="/admin/testimonios" className="rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-50">
-          <p className="text-sm text-zinc-600">Testimonios activos</p>
-          <p className="text-3xl font-semibold">{activeTestimonials}</p>
+        <Link href="/admin/testimonios" className="rounded-xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <p className="text-sm" style={{ color: "#5f7d72" }}>Testimonios activos</p>
+          <p className="mt-1 text-3xl font-semibold" style={{ color: "#0e2f25" }}>{activeTestimonials}</p>
         </Link>
       </div>
     </section>
