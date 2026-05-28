@@ -1,20 +1,39 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const noka = localFont({
+  src: [
+    {
+      path: "../../public/fonts/noka-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/noka-bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-noka",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const ligema = localFont({
+  src: "../../public/fonts/ligema.woff2",
+  variable: "--font-ligema",
+  weight: "400",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Directorio de Cooperativas PR",
-  description: "Plataforma de gestión y publicación de cooperativas en Puerto Rico.",
+  title: {
+    default: "cooperativas.pr — Directorio de Cooperativas de Puerto Rico",
+    template: "%s | cooperativas.pr",
+  },
+  description:
+    "Descubre las cooperativas de Puerto Rico: directorio, mapa interactivo, servicios y contacto.",
+  metadataBase: new URL("https://cooperativas.pr"),
 };
 
 export default function RootLayout({
@@ -24,8 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="es"
+      className={`${noka.variable} ${ligema.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

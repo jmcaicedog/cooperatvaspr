@@ -1,43 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f7fb;
-  --foreground: #111827;
+  /* ─── Brand palette ─────────────────────────────── */
+  --verde-impulso: #003024;
+  --azul-compromiso: #14bfed;
+  --verde-cooperativo: #a5ec48;
+  --amarillo-impulso: #fffe00;
+  --blanco-confianza: #ffffff;
+
+  /* ─── Semantic tokens ───────────────────────────── */
+  --bg-site: #f4f7f4;
+  --bg-card: #ffffff;
+  --text-primary: #0a1a0f;
+  --text-secondary: #3d5140;
+  --text-muted: #6b7f6e;
+  --border-subtle: #dde8dd;
+
+  /* ─── Legacy compat ────────────────────────────── */
+  --background: var(--bg-site);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-noka);
+  --font-display: var(--font-ligema);
+
+  /* Brand colors available as Tailwind utilities */
+  --color-verde-impulso: var(--verde-impulso);
+  --color-azul-compromiso: var(--azul-compromiso);
+  --color-verde-cooperativo: var(--verde-cooperativo);
+  --color-amarillo-impulso: var(--amarillo-impulso);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  background: var(--bg-site);
+  color: var(--text-primary);
+  font-family: var(--font-noka), "Segoe UI", sans-serif;
   color-scheme: light;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ─── Admin panel keeps neutral palette ──────────── */
+[data-scope="admin"] {
+  --background: #f5f7fb;
+  --foreground: #111827;
+}
+
+[data-scope="admin"] body,
+[data-scope="admin"] h1,
+[data-scope="admin"] h2,
+[data-scope="admin"] h3,
+[data-scope="admin"] h4,
+[data-scope="admin"] h5,
+[data-scope="admin"] h6 {
+  color: #0f172a;
+}
+
+/* ─── Form elements (used in admin) ─────────────── */
 @layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: #0f172a;
-  }
-
-  p,
-  label,
-  span,
-  li,
-  td,
-  th {
-    color: #1f2937;
-  }
-
   input,
   textarea,
   select {
@@ -51,4 +73,44 @@ body {
     color: #6b7280;
     opacity: 1;
   }
+}
+
+/* ─── Smooth scrolling ──────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Cooperative detail rich text ─────────────── */
+.prose-coop h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--verde-impulso);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-coop h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--verde-impulso);
+  margin-top: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+.prose-coop p {
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+.prose-coop ul,
+.prose-coop ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+}
+.prose-coop li {
+  margin-bottom: 0.3rem;
+  line-height: 1.6;
+}
+.prose-coop a {
+  color: var(--azul-compromiso);
+  text-decoration: underline;
 }

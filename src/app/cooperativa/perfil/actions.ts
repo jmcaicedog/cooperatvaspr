@@ -1,6 +1,6 @@
 "use server";
 
-import { ChangeRequestStatus, ChangeSeverity, ReviewStatus, UserRole } from "@prisma/client";
+import { ChangeRequestStatus, ChangeSeverity, CooperativeType, ReviewStatus, UserRole } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import {
@@ -500,7 +500,7 @@ export async function reviewChangeRequestAction(
         municipalityCode: payload.municipalityCode,
         slogan: payload.slogan,
         descriptionText: payload.descriptionText,
-        cooperativeTypes: payload.cooperativeTypes,
+        cooperativeTypes: payload.cooperativeTypes as CooperativeType[],
         tags: payload.tags,
         descriptionRich: payload.descriptionRich,
         reviewStatus: ReviewStatus.APPROVED,
