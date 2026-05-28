@@ -31,8 +31,8 @@ export function UserForms({ cooperatives }: { cooperatives: CooperativeOption[] 
   );
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-      <form action={createAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4">
+    <div className="admin-themed grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <form action={createAction} className="admin-card grid gap-3 rounded-xl border p-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
           Crear usuario de cooperativa
         </h3>
@@ -67,7 +67,7 @@ export function UserForms({ cooperatives }: { cooperatives: CooperativeOption[] 
         </select>
 
         <button
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+          className="admin-btn-primary rounded-md px-4 py-2 text-sm font-medium"
           disabled={createPending}
           type="submit"
         >
@@ -81,7 +81,7 @@ export function UserForms({ cooperatives }: { cooperatives: CooperativeOption[] 
         ) : null}
       </form>
 
-      <form action={assignAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4">
+      <form action={assignAction} className="admin-card grid gap-3 rounded-xl border p-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
           Asignar usuario existente
         </h3>
@@ -103,7 +103,7 @@ export function UserForms({ cooperatives }: { cooperatives: CooperativeOption[] 
         </select>
 
         <button
-          className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium"
+          className="admin-btn-secondary rounded-md border px-4 py-2 text-sm font-medium"
           disabled={assignPending}
           type="submit"
         >

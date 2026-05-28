@@ -20,7 +20,7 @@ export function CreatePostForm({ categories }: { categories: Category[] }) {
   }, [state.ok, router]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="admin-themed space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700">
@@ -72,7 +72,7 @@ export function CreatePostForm({ categories }: { categories: Category[] }) {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          className="admin-btn-primary rounded-lg px-5 py-2 text-sm font-medium disabled:opacity-50"
         >
           {isPending ? "Creando…" : "Crear artículo"}
         </button>

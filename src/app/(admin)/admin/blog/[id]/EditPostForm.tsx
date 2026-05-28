@@ -63,11 +63,11 @@ export function EditPostForm({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+    <div className="admin-themed grid grid-cols-1 gap-6 xl:grid-cols-3">
       {/* Columna principal */}
       <div className="space-y-6 xl:col-span-2">
         {/* Metadatos */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-6">
+        <section className="admin-card rounded-xl border p-6">
           <h2 className="mb-4 text-base font-semibold text-zinc-900">Información del artículo</h2>
           <form action={saveAction} className="space-y-4">
             <input type="hidden" name="id" value={post.id} />
@@ -146,7 +146,7 @@ export function EditPostForm({
               <button
                 type="submit"
                 disabled={isSaving}
-                className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                className="admin-btn-primary rounded-lg px-5 py-2 text-sm font-medium disabled:opacity-50"
               >
                 {isSaving ? "Guardando…" : "Guardar cambios"}
               </button>
@@ -158,7 +158,7 @@ export function EditPostForm({
       {/* Columna lateral */}
       <div className="space-y-4">
         {/* Estado del artículo */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-5">
+        <section className="admin-card rounded-xl border p-5">
           <h2 className="mb-3 text-sm font-semibold text-zinc-700">Estado</h2>
           <div className="mb-4 flex items-center gap-2">
             <span
@@ -183,7 +183,7 @@ export function EditPostForm({
               <button
                 type="submit"
                 disabled={isPublishing || post.status === "ARCHIVED"}
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="admin-btn-secondary w-full rounded-lg border px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isPublishing
                   ? "…"
@@ -233,7 +233,7 @@ export function EditPostForm({
         </section>
 
         {/* Imagen de portada */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-5">
+        <section className="admin-card rounded-xl border p-5">
           <h2 className="mb-3 text-sm font-semibold text-zinc-700">Imagen de portada</h2>
 
           {post.coverImageUrl ? (
@@ -298,7 +298,7 @@ export function EditPostForm({
               <button
                 type="submit"
                 disabled={isUploading || !fileName}
-                className="w-full rounded-lg bg-zinc-900 px-3 py-2 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                className="admin-btn-primary w-full rounded-lg px-3 py-2 text-xs font-medium disabled:opacity-50"
               >
                 {isUploading ? "Subiendo…" : "Subir imagen"}
               </button>

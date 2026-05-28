@@ -43,7 +43,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   );
 
   return (
-    <article className="rounded-xl border border-zinc-200 bg-white p-5">
+    <article className="admin-card rounded-xl border bg-white p-5">
       <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="shrink-0">
@@ -170,7 +170,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                  className="admin-btn-primary rounded-md px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                 >
                   {isUpdating ? "…" : "Guardar"}
                 </button>
@@ -267,10 +267,10 @@ export function TestimonialManager({ testimonials }: { testimonials: Testimonial
   );
 
   return (
-    <div className="space-y-6">
+    <div className="admin-themed space-y-6">
       {/* Cards existentes */}
       {testimonials.length === 0 ? (
-        <p className="rounded-xl border border-zinc-200 bg-white py-12 text-center text-sm text-zinc-400">
+        <p className="admin-card rounded-xl border py-12 text-center text-sm text-zinc-400">
           Aún no hay testimonios. Crea el primero abajo.
         </p>
       ) : (
@@ -282,7 +282,7 @@ export function TestimonialManager({ testimonials }: { testimonials: Testimonial
       )}
 
       {/* Formulario nuevo testimonio */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-6">
+      <section className="admin-card rounded-xl border p-6">
         <h2 className="mb-4 text-base font-semibold text-zinc-900">Nuevo testimonio</h2>
         <form action={createAction} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -345,7 +345,7 @@ export function TestimonialManager({ testimonials }: { testimonials: Testimonial
             <button
               type="submit"
               disabled={isCreating}
-              className="rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+              className="admin-btn-primary rounded-lg px-5 py-2 text-sm font-medium disabled:opacity-50"
             >
               {isCreating ? "Creando…" : "Crear testimonio"}
             </button>

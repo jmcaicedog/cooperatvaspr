@@ -166,8 +166,8 @@ export function EditForm({
       : { html: cooperative.descriptionText ?? "", text: cooperative.descriptionText ?? "" };
 
   return (
-    <div className="space-y-6">
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+    <div className="admin-themed space-y-6">
+      <section className="admin-card space-y-4 rounded-xl border p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Logo</h3>
           <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Maximo 2 MB.</p>
@@ -204,7 +204,7 @@ export function EditForm({
 
           <div className="flex flex-wrap items-center gap-2">
             <button
-              className="inline-flex items-center gap-2 rounded-md border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-100"
+              className="admin-btn-secondary inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm"
               onClick={() => logoFileInputRef.current?.click()}
               type="button"
             >
@@ -221,7 +221,7 @@ export function EditForm({
             </button>
 
             <button
-              className="inline-flex items-center gap-2 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
+              className="admin-btn-primary inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60"
               disabled={logoPending}
               type="submit"
             >
@@ -245,7 +245,7 @@ export function EditForm({
           <form action={removeCooperativeLogoByAdminAction}>
             <input name="cooperativeId" type="hidden" value={cooperative.id} />
             <button
-              className="inline-flex rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+              className="admin-btn-secondary inline-flex rounded-md border px-3 py-1.5 text-xs font-medium"
               type="submit"
             >
               Quitar logo
@@ -260,7 +260,7 @@ export function EditForm({
         ) : null}
       </section>
 
-      <form action={action} className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+      <form action={action} className="admin-card space-y-4 rounded-xl border p-6">
         <input name="cooperativeId" type="hidden" value={cooperative.id} />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -343,7 +343,7 @@ export function EditForm({
         </div>
 
         <button
-          className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
+          className="admin-btn-primary inline-flex rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60"
           disabled={pending}
           type="submit"
         >
@@ -355,7 +355,7 @@ export function EditForm({
         ) : null}
       </form>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+      <section className="admin-card space-y-4 rounded-xl border p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Galeria de imagenes</h3>
           <p className="text-xs text-zinc-600">
@@ -446,7 +446,7 @@ export function EditForm({
             placeholder="Texto alternativo (opcional)"
           />
           <button
-            className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
+            className="admin-btn-primary inline-flex rounded-md px-4 py-2 text-sm font-medium disabled:opacity-60"
             disabled={galleryLimitReached || galleryPending}
             type="submit"
           >
@@ -464,7 +464,7 @@ export function EditForm({
         ) : null}
       </section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+      <section className="admin-card space-y-4 rounded-xl border p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Servicios</h3>
           <p className="text-xs text-zinc-600">Gestiona los servicios desde esta misma pantalla.</p>
@@ -547,13 +547,13 @@ export function EditForm({
             name="description"
             placeholder="Descripcion"
           />
-          <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
+          <button className="admin-btn-primary rounded-md px-4 py-2 text-sm font-medium" type="submit">
             Agregar servicio
           </button>
         </form>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+      <section className="admin-card space-y-4 rounded-xl border p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Contactos</h3>
           <p className="text-xs text-zinc-600">Administra contactos con el mismo flujo del panel cooperativa.</p>
@@ -649,7 +649,7 @@ export function EditForm({
             required
           />
 
-          <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
+          <button className="admin-btn-primary rounded-md px-4 py-2 text-sm font-medium" type="submit">
             Agregar contacto
           </button>
         </form>

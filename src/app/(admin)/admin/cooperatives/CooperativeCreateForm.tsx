@@ -22,8 +22,8 @@ export function CooperativeCreateForm({ municipalities }: { municipalities: Muni
   const [state, action, pending] = useActionState(createCooperativeAction, initialState);
 
   return (
-    <form action={action} className="grid gap-3 rounded-lg border border-zinc-200 bg-white p-4">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
+    <form action={action} className="admin-themed admin-card grid gap-3 rounded-lg border p-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: "#2f5f51" }}>
         Crear cooperativa
       </h3>
 
@@ -92,7 +92,7 @@ export function CooperativeCreateForm({ municipalities }: { municipalities: Muni
       </label>
 
       <button
-        className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="admin-btn-primary inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
         disabled={pending}
         type="submit"
       >

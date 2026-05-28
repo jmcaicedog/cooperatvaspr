@@ -58,6 +58,41 @@ body {
   color: #0f172a;
 }
 
+[data-scope="admin"] .admin-themed {
+  color: #1f3f35;
+}
+
+[data-scope="admin"] .admin-themed :is(input, textarea, select) {
+  border-color: #c8dad1 !important;
+  color: #15382e;
+  background-color: #ffffff;
+}
+
+[data-scope="admin"] .admin-themed :is(input, textarea, select)::placeholder {
+  color: #6d8b80;
+  opacity: 1;
+}
+
+[data-scope="admin"] .admin-themed .admin-card {
+  border-color: #d7e4dd !important;
+  background-color: #ffffff;
+}
+
+[data-scope="admin"] .admin-themed .admin-btn-primary {
+  background-color: #003024;
+  color: #ffffff;
+}
+
+[data-scope="admin"] .admin-themed .admin-btn-primary:hover {
+  background-color: #0a4a39;
+}
+
+[data-scope="admin"] .admin-themed .admin-btn-secondary {
+  border-color: #c8dad1 !important;
+  color: #2f5f51;
+  background-color: #ffffff;
+}
+
 /* ─── Form elements (used in admin) ─────────────── */
 @layer base {
   input,
