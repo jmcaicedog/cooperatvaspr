@@ -73,10 +73,10 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
 
   return (
     <section className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-xs uppercase tracking-wide text-zinc-500">Editar cooperativa</p>
-        <h2 className="text-2xl font-semibold">{cooperative.name}</h2>
-        <p className="text-sm text-zinc-600">
+      <header className="space-y-2 rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <p className="text-xs uppercase tracking-wide" style={{ color: "#68867b" }}>Editar cooperativa</p>
+        <h2 className="text-2xl font-semibold" style={{ color: "#0f2c24" }}>{cooperative.name}</h2>
+        <p className="text-sm" style={{ color: "#4e6d62" }}>
           Slug: /{cooperative.slug} | Estado: {cooperative.status} | Revisión: {cooperative.reviewStatus}
         </p>
       </header>

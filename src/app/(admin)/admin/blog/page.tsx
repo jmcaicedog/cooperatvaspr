@@ -49,21 +49,22 @@ export default async function BlogPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 rounded-2xl border p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Blog</h1>
-          <p className="mt-1 text-sm text-zinc-500">{posts.length} artículo(s)</p>
+          <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Blog</h1>
+          <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>{posts.length} artículo(s)</p>
         </div>
         <Link
           href="/admin/blog/categories"
-          className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          className="inline-flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm font-medium"
+          style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
         >
           Gestionar categorías
         </Link>
       </div>
 
       {/* Tabla de posts */}
-      <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+      <div className="overflow-hidden rounded-xl border bg-white" style={{ borderColor: "#d7e4dd" }}>
         {posts.length === 0 ? (
           <div className="py-16 text-center text-sm text-zinc-400">
             Aún no hay artículos. Crea el primero abajo.
@@ -164,8 +165,8 @@ export default async function BlogPage() {
           antes de publicar un artículo.
         </div>
       ) : (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-900">Nuevo artículo</h2>
+        <section className="rounded-xl border bg-white p-6" style={{ borderColor: "#d7e4dd" }}>
+          <h2 className="mb-4 text-lg font-semibold" style={{ color: "#0f2c24" }}>Nuevo artículo</h2>
           <CreatePostForm categories={categories} />
         </section>
       )}

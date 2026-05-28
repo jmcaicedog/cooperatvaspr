@@ -40,15 +40,15 @@ export default async function EventosPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Eventos</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+      <div className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Eventos</h1>
+        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
           {upcoming.length} próximo(s) · {past.length} pasado(s)
         </p>
       </div>
 
       {/* Tabla */}
-      <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+      <div className="overflow-hidden rounded-xl border bg-white" style={{ borderColor: "#d7e4dd" }}>
         {sorted.length === 0 ? (
           <div className="py-16 text-center text-sm text-zinc-400">
             Aún no hay eventos. Crea el primero abajo.
@@ -152,8 +152,8 @@ export default async function EventosPage() {
       </div>
 
       {/* Formulario crear evento */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-semibold text-zinc-900">Nuevo evento</h2>
+      <section className="rounded-xl border bg-white p-6" style={{ borderColor: "#d7e4dd" }}>
+        <h2 className="mb-4 text-lg font-semibold" style={{ color: "#0f2c24" }}>Nuevo evento</h2>
         <CreateEventForm />
       </section>
     </div>

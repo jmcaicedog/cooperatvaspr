@@ -34,9 +34,9 @@ export default async function TestimoniosPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Testimonios</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+      <div className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Testimonios</h1>
+        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
           {published.length} activo(s) · {drafts.length} inactivo(s)
         </p>
       </div>

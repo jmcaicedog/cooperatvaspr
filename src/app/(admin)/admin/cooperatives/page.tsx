@@ -66,9 +66,9 @@ export default async function CooperativesPage() {
 
   return (
     <section className="space-y-6">
-      <header>
-        <h2 className="text-2xl font-semibold">Gestión de cooperativas</h2>
-        <p className="text-sm text-zinc-600">
+      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h2 className="text-2xl font-semibold" style={{ color: "#0f2c24" }}>Gestión de cooperativas</h2>
+        <p className="text-sm" style={{ color: "#4e6d62" }}>
           {cooperatives.length} en total
           {" · "}
           {cooperatives.filter((c) => c.status === "PUBLISHED").length} publicadas
@@ -80,11 +80,11 @@ export default async function CooperativesPage() {
       {/* Mobile cards */}
       <div className="space-y-3 md:hidden">
         {cooperatives.map((cooperative) => (
-          <div className="rounded-lg border border-zinc-200 bg-white p-4" key={cooperative.id}>
+          <div className="rounded-xl border bg-white p-4" style={{ borderColor: "#d7e4dd" }} key={cooperative.id}>
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="font-medium text-zinc-900">{cooperative.name}</p>
-                <p className="text-xs text-zinc-500">/{cooperative.slug}</p>
+                <p className="font-medium" style={{ color: "#102e26" }}>{cooperative.name}</p>
+                <p className="text-xs" style={{ color: "#68867b" }}>/{cooperative.slug}</p>
               </div>
               <span
                 className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -96,14 +96,15 @@ export default async function CooperativesPage() {
                 {statusLabel[cooperative.status] ?? cooperative.status}
               </span>
             </div>
-            <div className="mt-1.5 flex flex-wrap gap-x-3 text-sm text-zinc-500">
+            <div className="mt-1.5 flex flex-wrap gap-x-3 text-sm" style={{ color: "#5b7a6f" }}>
               <span>{cooperative.municipality?.name ?? cooperative.municipalityCode}</span>
               <span>·</span>
               <span>{reviewLabel[cooperative.reviewStatus] ?? cooperative.reviewStatus}</span>
             </div>
-            <div className="mt-3 flex flex-wrap gap-2 border-t border-zinc-100 pt-3">
+            <div className="mt-3 flex flex-wrap gap-2 border-t pt-3" style={{ borderColor: "#edf2ef" }}>
               <Link
-                className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                className="rounded-md border px-3 py-1.5 text-xs font-medium"
+                style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
                 href={`/admin/cooperatives/${cooperative.id}`}
               >
                 Editar
@@ -116,7 +117,8 @@ export default async function CooperativesPage() {
                 }}
               >
                 <button
-                  className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                  className="rounded-md border px-3 py-1.5 text-xs font-medium"
+                  style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
                   type="submit"
                 >
                   {cooperative.status === CooperativeStatus.PUBLISHED ? "Despublicar" : "Publicar"}
@@ -132,9 +134,9 @@ export default async function CooperativesPage() {
       </div>
 
       {/* Desktop table */}
-      <div className="hidden overflow-x-auto rounded-lg border border-zinc-200 bg-white md:block">
+      <div className="hidden overflow-x-auto rounded-xl border bg-white md:block" style={{ borderColor: "#d7e4dd" }}>
         <table className="w-full border-collapse text-left text-sm">
-          <thead className="bg-zinc-50 text-zinc-600">
+          <thead style={{ backgroundColor: "#f3f8f5", color: "#54736a" }}>
             <tr>
               <th className="px-4 py-3 font-medium">Nombre</th>
               <th className="px-4 py-3 font-medium">Municipio</th>
@@ -145,10 +147,10 @@ export default async function CooperativesPage() {
           </thead>
           <tbody>
             {cooperatives.map((cooperative) => (
-              <tr className="border-t border-zinc-200" key={cooperative.id}>
+              <tr className="border-t" style={{ borderColor: "#edf2ef" }} key={cooperative.id}>
                 <td className="px-4 py-3">
-                  <p className="font-medium">{cooperative.name}</p>
-                  <p className="text-xs text-zinc-500">/{cooperative.slug}</p>
+                  <p className="font-medium" style={{ color: "#102e26" }}>{cooperative.name}</p>
+                  <p className="text-xs" style={{ color: "#68867b" }}>/{cooperative.slug}</p>
                 </td>
                 <td className="px-4 py-3">{cooperative.municipality?.name ?? cooperative.municipalityCode}</td>
                 <td className="px-4 py-3">{statusLabel[cooperative.status] ?? cooperative.status}</td>
@@ -158,7 +160,8 @@ export default async function CooperativesPage() {
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link
-                      className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                      className="rounded-md border px-3 py-1.5 text-xs font-medium"
+                      style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
                       href={`/admin/cooperatives/${cooperative.id}`}
                     >
                       Editar
@@ -171,7 +174,8 @@ export default async function CooperativesPage() {
                       }}
                     >
                       <button
-                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                        className="rounded-md border px-3 py-1.5 text-xs font-medium"
+                        style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
                         type="submit"
                       >
                         {cooperative.status === CooperativeStatus.PUBLISHED

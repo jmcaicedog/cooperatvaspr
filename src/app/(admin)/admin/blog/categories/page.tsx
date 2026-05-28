@@ -24,9 +24,9 @@ export default async function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Categorías del blog</h1>
-        <p className="mt-1 text-sm text-zinc-500">{categories.length} categoría(s)</p>
+      <div className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Categorías del blog</h1>
+        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>{categories.length} categoría(s)</p>
       </div>
       <CategoryManager categories={categories} />
     </div>

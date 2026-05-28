@@ -38,9 +38,9 @@ export default async function BannersPage() {
 
   return (
     <section className="space-y-6">
-      <header>
-        <h2 className="text-2xl font-semibold">Gestión de banners</h2>
-        <p className="text-sm text-zinc-600">
+      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h2 className="text-2xl font-semibold" style={{ color: "#0f2c24" }}>Gestión de banners</h2>
+        <p className="text-sm" style={{ color: "#4e6d62" }}>
           {banners.length} configurados
           {" · "}
           {banners.filter((b) => b.isActive).length} activos

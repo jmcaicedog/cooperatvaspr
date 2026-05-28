@@ -76,9 +76,9 @@ export default async function ReviewsPage() {
 
   return (
     <section className="space-y-6">
-      <header>
-        <h2 className="text-2xl font-semibold">Revisión de cambios mayores</h2>
-        <p className="text-sm text-zinc-600">
+      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h2 className="text-2xl font-semibold" style={{ color: "#0f2c24" }}>Revisión de cambios mayores</h2>
+        <p className="text-sm" style={{ color: "#4e6d62" }}>
           {pending.length === 0
             ? "Sin solicitudes pendientes"
             : `${pending.length} solicitud${pending.length === 1 ? "" : "es"} pendiente${pending.length === 1 ? "" : "s"} de revisión`}
@@ -87,12 +87,12 @@ export default async function ReviewsPage() {
 
       <div className="space-y-3">
         {pending.length === 0 ? (
-          <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
+          <article className="rounded-xl border bg-white p-4 text-sm" style={{ borderColor: "#d7e4dd", color: "#5b7a6f" }}>
             No hay solicitudes pendientes.
           </article>
         ) : (
           pending.map((item) => (
-            <article className="rounded-lg border border-zinc-200 bg-white p-4" key={item.id}>
+            <article className="rounded-xl border bg-white p-4" style={{ borderColor: "#d7e4dd" }} key={item.id}>
               {(() => {
                 const payload = toPayload(item.payload);
                 const currentRichText =
@@ -136,26 +136,26 @@ export default async function ReviewsPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-medium">{item.cooperative.name}</p>
-                  <p className="text-xs text-zinc-500">/{item.cooperative.slug}</p>
-                  <p className="mt-1 text-xs text-zinc-600">
+                  <p className="text-xs" style={{ color: "#68867b" }}>/{item.cooperative.slug}</p>
+                  <p className="mt-1 text-xs" style={{ color: "#5b7a6f" }}>
                     Solicitado por {item.requestedBy.displayName} ({item.requestedBy.email})
                   </p>
-                  <p className="mt-1 text-xs text-zinc-600">Severidad: {severityLabel(item.severity)}</p>
+                  <p className="mt-1 text-xs" style={{ color: "#5b7a6f" }}>Severidad: {severityLabel(item.severity)}</p>
 
-                  <div className="mt-3 rounded-md border border-zinc-200 bg-zinc-50 p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-zinc-700">
+                  <div className="mt-3 rounded-md border p-3" style={{ borderColor: "#e0ece6", backgroundColor: "#f6fbf8" }}>
+                    <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#3f6558" }}>
                       Cambios solicitados
                     </p>
                     {changes.length === 0 ? (
-                      <p className="mt-1 text-xs text-zinc-600">
+                      <p className="mt-1 text-xs" style={{ color: "#5b7a6f" }}>
                         No se detectaron diferencias campo a campo en el payload.
                       </p>
                     ) : (
-                      <ul className="mt-2 space-y-2 text-xs text-zinc-700">
+                      <ul className="mt-2 space-y-2 text-xs" style={{ color: "#3f6558" }}>
                         {changes.map((change) => (
                           <li key={change.label}>
                             <p className="font-medium">{change.label}</p>
-                            <p className="text-zinc-500">Actual: {normalizeValue(change.from)}</p>
+                            <p style={{ color: "#68867b" }}>Actual: {normalizeValue(change.from)}</p>
                             <p>Solicitado: {normalizeValue(change.to)}</p>
                           </li>
                         ))}

@@ -44,9 +44,9 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Editar artículo</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+      <div className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Editar artículo</h1>
+        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
           Actualizado el{" "}
           {post.updatedAt.toLocaleDateString("es-PR", {
             day: "numeric",
