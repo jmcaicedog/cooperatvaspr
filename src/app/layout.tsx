@@ -36,10 +36,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://cooperativas.pr"),
   icons: {
     icon: [
-      { url: "/brand/logo-mark.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/icon.svg?v=20260529", type: "image/svg+xml" },
+      { url: "/favicon.ico?v=20260529", type: "image/x-icon" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon.ico?v=20260529",
   },
 };
 
