@@ -34,6 +34,13 @@ export const metadata: Metadata = {
   description:
     "Descubre las cooperativas de Puerto Rico: directorio, mapa interactivo, servicios y contacto.",
   metadataBase: new URL("https://cooperativas.pr"),
+  icons: {
+    icon: [
+      { url: "/brand/logo-mark.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
