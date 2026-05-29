@@ -3,6 +3,8 @@ import Link from "next/link";
 import { PostStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Blog cooperativo",
   description: "Articulos, noticias y analisis sobre cooperativas en Puerto Rico.",

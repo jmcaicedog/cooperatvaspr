@@ -2,6 +2,8 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { PublicEventsCalendar } from "@/components/PublicEventsCalendar";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Eventos cooperativos",
   description: "Calendario de actividades, encuentros y eventos del ecosistema cooperativo.",

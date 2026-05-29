@@ -9,14 +9,7 @@ type BlogDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  const posts = await db.blogPost.findMany({
-    where: { status: PostStatus.PUBLISHED },
-    select: { slug: true },
-  });
-
-  return posts.map((post) => ({ slug: post.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
   const { slug } = await params;

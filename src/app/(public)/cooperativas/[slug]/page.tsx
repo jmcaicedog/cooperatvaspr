@@ -7,13 +7,7 @@ import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
-  const coops = await db.cooperative.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true },
-  });
-  return coops.map((c) => ({ slug: c.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
