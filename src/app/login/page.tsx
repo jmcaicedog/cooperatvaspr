@@ -53,10 +53,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <Image
               src="/brand/logo-mark.svg"
               alt="cooperativas.pr"
-              width={48}
+              width={88}
               height={48}
               priority
-              className="h-12 w-auto"
             />
           </div>
           <Image

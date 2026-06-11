@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
 import { CooperativeCard, type CooperativeListItem } from "./CooperativeCard";
 
@@ -16,20 +17,48 @@ type Props = {
 };
 
 type ViewMode = "cards" | "map";
+const PAGE_SIZE = 12;
+
+function parseListParam(raw: string | null): string[] {
+  if (!raw) return [];
+  return Array.from(
+    new Set(
+      raw
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean)
+    )
+  );
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((value, index) => value === b[index]);
+}
 
 export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
-  const [search, setSearch] = useState("");
-  const [selectedMunicipality, setSelectedMunicipality] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [view, setView] = useState<ViewMode>("cards");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const cooperativeTypeSet = useMemo(() => new Set<string>(cooperativeTypeValues), []);
+
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
+  const [selectedMunicipality, setSelectedMunicipality] = useState(() => searchParams.get("muni") ?? "");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(() =>
+    parseListParam(searchParams.get("types")).filter((type) => cooperativeTypeSet.has(type))
+  );
+  const [view, setView] = useState<ViewMode>(() => (searchParams.get("view") === "map" ? "map" : "cards"));
+  const [selectedTags, setSelectedTags] = useState<string[]>(() => parseListParam(searchParams.get("tags")));
+  const [currentPage, setCurrentPage] = useState(() => {
+    const raw = Number.parseInt(searchParams.get("page") ?? "1", 10);
+    return Number.isFinite(raw) && raw > 0 ? raw : 1;
+  });
 
   const allTags = useMemo(() => {
     const set = new Set<string>();
     cooperatives.forEach((c) => c.tags.forEach((t) => set.add(t)));
     return Array.from(set).sort();
   }, [cooperatives]);
-
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -55,15 +84,21 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
   }, [cooperatives, search, selectedMunicipality, selectedTypes, selectedTags]);
 
   const toggleType = (type: string) => {
-    setSelectedTypes((prev) =>
+    setSelectedTypes((prev) => {
+      const next =
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+      setCurrentPage(1);
+      return next;
+    });
   };
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
+    setSelectedTags((prev) => {
+      const next =
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+      setCurrentPage(1);
+      return next;
+    });
   };
 
   const clearFilters = () => {
@@ -71,10 +106,91 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     setSelectedMunicipality("");
     setSelectedTypes([]);
     setSelectedTags([]);
+    setCurrentPage(1);
   };
 
   const hasActiveFilters =
     search || selectedMunicipality || selectedTypes.length > 0 || selectedTags.length > 0;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPageSafe = Math.min(currentPage, totalPages);
+  const startIndex = (currentPageSafe - 1) * PAGE_SIZE;
+  const endIndex = Math.min(startIndex + PAGE_SIZE, filtered.length);
+  const pagedCooperatives = filtered.slice(startIndex, endIndex);
+
+  const goToPage = (nextPage: number) => {
+    const clamped = Math.max(1, Math.min(totalPages, nextPage));
+    setCurrentPage(clamped);
+  };
+
+  useEffect(() => {
+    const querySearch = searchParams.get("q") ?? "";
+    const queryMunicipality = searchParams.get("muni") ?? "";
+    const queryTypes = parseListParam(searchParams.get("types")).filter((type) => cooperativeTypeSet.has(type));
+    const queryTags = parseListParam(searchParams.get("tags"));
+    const queryView = searchParams.get("view") === "map" ? "map" : "cards";
+    const queryPageRaw = Number.parseInt(searchParams.get("page") ?? "1", 10);
+    const queryPage = Number.isFinite(queryPageRaw) && queryPageRaw > 0 ? queryPageRaw : 1;
+
+    if (search !== querySearch) setSearch(querySearch);
+    if (selectedMunicipality !== queryMunicipality) setSelectedMunicipality(queryMunicipality);
+    if (!arraysEqual(selectedTypes, queryTypes)) setSelectedTypes(queryTypes);
+    if (!arraysEqual(selectedTags, queryTags)) setSelectedTags(queryTags);
+    if (view !== queryView) setView(queryView);
+    if (currentPage !== queryPage) setCurrentPage(queryPage);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (search.trim()) params.set("q", search.trim());
+    else params.delete("q");
+
+    if (selectedMunicipality) params.set("muni", selectedMunicipality);
+    else params.delete("muni");
+
+    if (selectedTypes.length > 0) params.set("types", selectedTypes.join(","));
+    else params.delete("types");
+
+    if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
+    else params.delete("tags");
+
+    if (view === "map") params.set("view", "map");
+    else params.delete("view");
+
+    if (currentPageSafe > 1) params.set("page", String(currentPageSafe));
+    else params.delete("page");
+
+    const currentQuery = searchParams.toString();
+    const nextQuery = params.toString();
+    if (nextQuery !== currentQuery) {
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+    }
+  }, [
+    search,
+    selectedMunicipality,
+    selectedTypes,
+    selectedTags,
+    view,
+    currentPageSafe,
+    pathname,
+    router,
+    searchParams,
+  ]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginationNumbers = useMemo(() => {
+    const pages = new Set<number>([1, totalPages, currentPageSafe - 1, currentPageSafe, currentPageSafe + 1]);
+
+    return Array.from(pages)
+      .filter((page) => page >= 1 && page <= totalPages)
+      .sort((a, b) => a - b);
+  }, [currentPageSafe, totalPages]);
 
   return (
     <section id="directorio" className="w-full">
@@ -100,7 +216,10 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
           <input
             type="search"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Buscar cooperativa, municipio, servicio…"
             className="w-full rounded-xl border pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition-shadow"
             style={{
@@ -116,8 +235,11 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
           {/* Municipality dropdown */}
           <select
             value={selectedMunicipality}
-            onChange={(e) => setSelectedMunicipality(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 flex-1 min-w-[160px]"
+            onChange={(e) => {
+              setSelectedMunicipality(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 flex-1 min-w-40"
             style={{ borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}
           >
             <option value="">Todos los municipios</option>
@@ -195,6 +317,11 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
               ? `${cooperatives.length} cooperativas`
               : `${filtered.length} de ${cooperatives.length} cooperativas`}
           </p>
+          {view === "cards" && filtered.length > 0 && (
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              Mostrando {startIndex + 1}-{endIndex}
+            </p>
+          )}
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
@@ -235,11 +362,69 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
         filtered.length === 0 ? (
           <EmptyState onClear={clearFilters} />
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            {filtered.map((coop) => (
-              <CooperativeCard key={coop.id} coop={coop} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              {pagedCooperatives.map((coop) => (
+                <CooperativeCard key={coop.id} coop={coop} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <nav className="mt-6 flex items-center justify-center gap-1.5" aria-label="Paginación cooperativas">
+                <button
+                  onClick={() => goToPage(currentPageSafe - 1)}
+                  disabled={currentPageSafe === 1}
+                  className="rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+                  style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
+                >
+                  Anterior
+                </button>
+
+                {paginationNumbers.map((page, index) => {
+                  const prevPage = paginationNumbers[index - 1];
+                  const shouldShowEllipsis = prevPage && page - prevPage > 1;
+                  return (
+                    <div key={page} className="flex items-center gap-1.5">
+                      {shouldShowEllipsis && (
+                        <span className="px-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                          ...
+                        </span>
+                      )}
+                      <button
+                        onClick={() => goToPage(page)}
+                        className="min-w-8 rounded-lg border px-2.5 py-1.5 text-xs font-semibold"
+                        style={
+                          page === currentPageSafe
+                            ? {
+                                borderColor: "var(--verde-impulso)",
+                                backgroundColor: "var(--verde-impulso)",
+                                color: "#fff",
+                              }
+                            : {
+                                borderColor: "var(--border-subtle)",
+                                color: "var(--text-secondary)",
+                                backgroundColor: "transparent",
+                              }
+                        }
+                        aria-current={page === currentPageSafe ? "page" : undefined}
+                      >
+                        {page}
+                      </button>
+                    </div>
+                  );
+                })}
+
+                <button
+                  onClick={() => goToPage(currentPageSafe + 1)}
+                  disabled={currentPageSafe === totalPages}
+                  className="rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+                  style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
+                >
+                  Siguiente
+                </button>
+              </nav>
+            )}
+          </>
         )
       ) : (
         <div
