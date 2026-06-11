@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -21,15 +21,63 @@ type Props = {
 };
 
 type TooltipState = {
-  name: string;
   municipality: string;
-  slug: string;
+  cooperatives: Array<{
+    name: string;
+    slug: string;
+  }>;
 } | null;
+
+function getLabelWidth(label: string) {
+  const estimated = Math.ceil(label.length * 4.2) + 12;
+  return Math.max(76, Math.min(estimated, 140));
+}
+
+function getLabelLayout([lon, lat]: [number, number], labelWidth: number) {
+  let rectX = -labelWidth / 2;
+  let textX = rectX + 6;
+
+  // Municipios del este: desplazar etiqueta hacia la izquierda.
+  if (lon > -65.78) {
+    rectX = -(labelWidth + 2);
+    textX = rectX + 6;
+  }
+
+  // Municipios del oeste: desplazar etiqueta hacia la derecha.
+  if (lon < -67.0) {
+    rectX = 2;
+    textX = 6;
+  }
+
+  // Municipios del norte: mover etiqueta debajo del marcador.
+  const isNorthEdge = lat > 18.42;
+  const rectY = isNorthEdge ? 12 : -24;
+  const textY = rectY + 8.5;
+
+  return { rectX, rectY, textX, textY };
+}
 
 export function PuertoRicoMap({ cooperatives }: Props) {
   const router = useRouter();
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [activeMunicipalityCode, setActiveMunicipalityCode] = useState<string | null>(null);
+  const [compactMapLabel, setCompactMapLabel] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 640px)");
+
+    const apply = () => {
+      setCompactMapLabel(media.matches);
+    };
+
+    apply();
+    media.addEventListener("change", apply);
+
+    return () => {
+      media.removeEventListener("change", apply);
+    };
+  }, []);
 
   /** Set of municipality codes that have at least one cooperative */
   const activeMunicipalities = new Set(cooperatives.map((c) => c.municipalityCode));
@@ -48,10 +96,10 @@ export function PuertoRicoMap({ cooperatives }: Props) {
       router.push(`/cooperativas/${coop.slug}`);
     } else {
       setActiveSlug(coop.slug);
+      setActiveMunicipalityCode(coop.municipalityCode);
       setTooltip({
-        name: coop.name,
         municipality: coop.municipalityName,
-        slug: coop.slug,
+        cooperatives: [{ name: coop.name, slug: coop.slug }],
       });
     }
   };
@@ -109,6 +157,11 @@ export function PuertoRicoMap({ cooperatives }: Props) {
           const coords = municipalityCentroids[code];
           if (!coords) return null;
           const isMultiple = coops.length > 1;
+          const labelText = compactMapLabel
+            ? `${coops.length} ${coops.length === 1 ? "coop." : "coops."}`
+            : `${coops.length} ${coops.length === 1 ? "cooperativa" : "cooperativas"}`;
+          const labelWidth = getLabelWidth(labelText);
+          const labelLayout = getLabelLayout(coords, labelWidth);
 
           return (
             <Marker
@@ -119,11 +172,14 @@ export function PuertoRicoMap({ cooperatives }: Props) {
                   handleMarkerClick(coops[0]);
                 } else {
                   setTooltip({
-                    name: `${coops.length} cooperativas`,
                     municipality: coops[0].municipalityName,
-                    slug: coops[0].slug,
+                    cooperatives: coops
+                      .slice()
+                      .sort((a, b) => a.name.localeCompare(b.name, "es"))
+                      .map((coop) => ({ name: coop.name, slug: coop.slug })),
                   });
-                  setActiveSlug(coops[0].slug);
+                  setActiveMunicipalityCode(code);
+                  setActiveSlug(null);
                 }
               }}
               style={{ cursor: "pointer" }}
@@ -149,6 +205,34 @@ export function PuertoRicoMap({ cooperatives }: Props) {
                   {coops.length}
                 </text>
               )}
+
+                {activeMunicipalityCode === code && (
+                  <>
+                    <rect
+                      x={labelLayout.rectX}
+                      y={labelLayout.rectY}
+                      width={labelWidth}
+                      height={12}
+                      rx={6}
+                      fill="#003024"
+                      opacity={0.92}
+                    />
+                    <text
+                      textAnchor="start"
+                      x={labelLayout.textX}
+                      y={labelLayout.textY}
+                      style={{
+                        fill: "#ffffff",
+                        fontSize: "6px",
+                        fontWeight: "700",
+                        userSelect: "none",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {labelText}
+                    </text>
+                  </>
+                )}
             </Marker>
           );
         })}
@@ -157,25 +241,26 @@ export function PuertoRicoMap({ cooperatives }: Props) {
       {/* Tooltip panel */}
       {tooltip && (
         <div
-          className="mt-3 flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
+          className="mt-3 rounded-xl border px-4 py-3"
           style={{
             backgroundColor: "#fff",
             borderColor: "var(--border-subtle)",
           }}
         >
-          <div>
-            <p className="font-semibold text-sm" style={{ color: "var(--verde-impulso)" }}>
-              {tooltip.name}
-            </p>
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-              {tooltip.municipality}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold text-sm" style={{ color: "var(--verde-impulso)" }}>
+                {tooltip.cooperatives.length} cooperativas
+              </p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                {tooltip.municipality}
+              </p>
+            </div>
             <button
               onClick={() => {
                 setTooltip(null);
                 setActiveSlug(null);
+                  setActiveMunicipalityCode(null);
               }}
               className="rounded-full p-1 text-gray-400 hover:text-gray-600 transition-colors"
               aria-label="Cerrar"
@@ -184,14 +269,46 @@ export function PuertoRicoMap({ cooperatives }: Props) {
                 <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
-            <button
-              onClick={() => router.push(`/cooperativas/${tooltip.slug}`)}
-              className="rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors hover:opacity-90"
-              style={{ backgroundColor: "var(--verde-impulso)", color: "#fff" }}
-            >
-              Ver perfil →
-            </button>
           </div>
+
+          <ul className="max-h-48 overflow-auto divide-y" style={{ borderColor: "var(--border-subtle)" }}>
+            {tooltip.cooperatives.map((coop) => (
+                <li
+                  key={coop.slug}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => router.push(`/cooperativas/${coop.slug}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      router.push(`/cooperativas/${coop.slug}`);
+                    }
+                  }}
+                  className="flex items-center justify-between gap-3 py-2 rounded-md px-1.5 cursor-pointer transition-colors hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-verde-impulso"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <p className="min-w-0 flex-1 text-left text-sm">
+                    {coop.name}
+                  </p>
+                <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      router.push(`/cooperativas/${coop.slug}`);
+                    }}
+                  className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors hover:opacity-90"
+                  style={{ backgroundColor: "var(--verde-impulso)", color: "#fff" }}
+                >
+                  Ver perfil →
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {tooltip.cooperatives.length === 0 && (
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              No hay cooperativas para mostrar.
+            </p>
+          )}
         </div>
       )}
 
