@@ -29,8 +29,8 @@ type TooltipState = {
 } | null;
 
 function getLabelWidth(label: string) {
-  const estimated = Math.ceil(label.length * 4.2) + 12;
-  return Math.max(76, Math.min(estimated, 140));
+  const estimated = Math.ceil(label.length * 6.4) + 16;
+  return Math.max(96, Math.min(estimated, 180));
 }
 
 function getLabelLayout([lon, lat]: [number, number], labelWidth: number) {
@@ -51,8 +51,8 @@ function getLabelLayout([lon, lat]: [number, number], labelWidth: number) {
 
   // Municipios del norte: mover etiqueta debajo del marcador.
   const isNorthEdge = lat > 18.42;
-  const rectY = isNorthEdge ? 12 : -24;
-  const textY = rectY + 8.5;
+  const rectY = isNorthEdge ? 14 : -28;
+  const textY = rectY + 11;
 
   return { rectX, rectY, textX, textY };
 }
@@ -62,6 +62,7 @@ export function PuertoRicoMap({ cooperatives }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeMunicipalityCode, setActiveMunicipalityCode] = useState<string | null>(null);
+  const [hoveredMunicipalityCode, setHoveredMunicipalityCode] = useState<string | null>(null);
   const [compactMapLabel, setCompactMapLabel] = useState(false);
 
   useEffect(() => {
@@ -119,11 +120,26 @@ export function PuertoRicoMap({ cooperatives }: Props) {
       : `${coops.length} ${coops.length === 1 ? "cooperativa" : "cooperativas"}`;
     const labelWidth = getLabelWidth(labelText);
     const labelLayout = getLabelLayout(coords, labelWidth);
+    const showMarkerLabel = compactMapLabel
+      ? activeMunicipalityCode === code
+      : hoveredMunicipalityCode === code;
 
     return (
       <Marker
         key={code}
         coordinates={coords}
+        onMouseEnter={() => {
+          if (!compactMapLabel) {
+            setHoveredMunicipalityCode(code);
+          }
+        }}
+        onMouseLeave={() => {
+          if (!compactMapLabel) {
+            setHoveredMunicipalityCode(null);
+          }
+        }}
+        onFocus={() => setHoveredMunicipalityCode(code)}
+        onBlur={() => setHoveredMunicipalityCode(null)}
         onClick={() => {
           if (coops.length === 1) {
             handleMarkerClick(coops[0]);
@@ -163,16 +179,18 @@ export function PuertoRicoMap({ cooperatives }: Props) {
           </text>
         )}
 
-        {activeMunicipalityCode === code && (
+        {showMarkerLabel && (
           <>
             <rect
               x={labelLayout.rectX}
               y={labelLayout.rectY}
               width={labelWidth}
-              height={12}
-              rx={6}
+              height={16}
+              rx={8}
               fill="#003024"
-              opacity={0.92}
+              opacity={0.98}
+              stroke="#ffffff"
+              strokeWidth={0.7}
             />
             <text
               textAnchor="start"
@@ -180,10 +198,12 @@ export function PuertoRicoMap({ cooperatives }: Props) {
               y={labelLayout.textY}
               style={{
                 fill: "#ffffff",
-                fontSize: "6px",
-                fontWeight: "700",
+                fontSize: "9px",
+                fontWeight: "800",
+                letterSpacing: "0.1px",
                 userSelect: "none",
                 pointerEvents: "none",
+                textShadow: "0 1px 2px rgba(0,0,0,0.35)",
               }}
             >
               {labelText}
