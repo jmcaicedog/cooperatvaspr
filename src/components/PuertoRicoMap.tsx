@@ -93,8 +93,11 @@ export function PuertoRicoMap({ cooperatives }: Props) {
   }, {});
 
   const municipalityEntries = Object.entries(coopsByMunicipality);
-  const activeEntry = activeMunicipalityCode
-    ? municipalityEntries.find(([code]) => code === activeMunicipalityCode) ?? null
+  const highlightedMunicipalityCode = compactMapLabel
+    ? activeMunicipalityCode
+    : hoveredMunicipalityCode;
+  const highlightedEntry = highlightedMunicipalityCode
+    ? municipalityEntries.find(([code]) => code === highlightedMunicipalityCode) ?? null
     : null;
 
   const handleMarkerClick = (coop: CooperativeListItem) => {
@@ -262,11 +265,11 @@ export function PuertoRicoMap({ cooperatives }: Props) {
           }
         </Geographies>
 
-        {/* Cooperative markers — render activo al final para que su etiqueta quede por encima */}
+        {/* Cooperative markers — render resaltado al final para que su etiqueta quede por encima */}
         {municipalityEntries
-          .filter(([code]) => code !== activeMunicipalityCode)
+          .filter(([code]) => code !== highlightedMunicipalityCode)
           .map((entry) => renderMarker(entry as [string, CooperativeListItem[]]))}
-        {activeEntry && renderMarker(activeEntry as [string, CooperativeListItem[]])}
+        {highlightedEntry && renderMarker(highlightedEntry as [string, CooperativeListItem[]])}
       </ComposableMap>
 
       {/* Tooltip panel */}
