@@ -7,6 +7,7 @@ import { deleteCooperativeByPlatformAction } from "@/app/(admin)/admin/cooperati
 type ConfirmDeleteCooperativeButtonProps = {
   cooperativeId: string;
   cooperativeName: string;
+  triggerClassName?: string;
 };
 
 const CONFIRM_TEXT = "ELIMINAR";
@@ -14,6 +15,7 @@ const CONFIRM_TEXT = "ELIMINAR";
 export function ConfirmDeleteCooperativeButton({
   cooperativeId,
   cooperativeName,
+  triggerClassName,
 }: ConfirmDeleteCooperativeButtonProps) {
   const [open, setOpen] = useState(false);
   const [confirmValue, setConfirmValue] = useState("");
@@ -27,7 +29,7 @@ export function ConfirmDeleteCooperativeButton({
   return (
     <>
       <button
-        className="rounded-md bg-rose-600 px-3 py-1.5 text-xs text-white hover:bg-rose-700"
+        className={`rounded-md bg-rose-600 px-3 py-1.5 text-xs text-white hover:bg-rose-700 ${triggerClassName ?? ""}`}
         onClick={() => setOpen(true)}
         type="button"
       >

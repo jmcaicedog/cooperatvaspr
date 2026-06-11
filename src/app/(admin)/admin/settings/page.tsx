@@ -75,12 +75,12 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
   return (
     <section className="space-y-6">
-      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #053428 0%, #0a4a39 100%)" }}>
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#8fd6b3" }}>
+      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#5f7d72" }}>
           Configuracion del portal
         </p>
-        <h2 className="mt-2 text-2xl font-semibold text-white">Ajustes de visibilidad</h2>
-        <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.78)" }}>
+        <h2 className="mt-2 text-2xl font-semibold" style={{ color: "#0f2c24" }}>Ajustes de visibilidad</h2>
+        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
           Controla el modo Proximamente y las secciones activas del home.
         </p>
       </header>

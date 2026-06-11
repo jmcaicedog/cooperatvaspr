@@ -27,12 +27,12 @@ export default async function AdminPage() {
 
   return (
     <section className="space-y-6">
-      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #003024 0%, #0a4a39 100%)" }}>
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--verde-cooperativo)" }}>
+      <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#5f7d72" }}>
           Vista general
         </p>
-        <h2 className="mt-2 text-2xl font-semibold text-white">Panel de control</h2>
-        <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.78)" }}>
+        <h2 className="mt-2 text-2xl font-semibold" style={{ color: "#0f2c24" }}>Panel de control</h2>
+        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
           Gestiona cooperativas, contenido y flujo editorial desde un solo lugar.
         </p>
       </header>
