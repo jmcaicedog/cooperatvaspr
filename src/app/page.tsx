@@ -7,6 +7,8 @@ import { CooperativeDirectory } from "@/components/CooperativeDirectory";
 import { db } from "@/lib/db";
 import { CooperativeStatus, PostStatus } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 async function getActiveBanners(slot: "HERO" | "SIDEBAR_TOP" | "SIDEBAR_BOTTOM"): Promise<BannerItem[]> {
   const now = new Date();
   return db.homeBanner.findMany({
