@@ -331,29 +331,35 @@ export function PuertoRicoMap({ cooperatives }: Props) {
 
           <ul className="max-h-48 overflow-auto divide-y" style={{ borderColor: "var(--border-subtle)" }}>
             {tooltip.cooperatives.map((coop) => (
-                <li
-                  key={coop.slug}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => router.push(`/cooperativas/${coop.slug}`)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      router.push(`/cooperativas/${coop.slug}`);
-                    }
-                  }}
-                  className="flex items-center justify-between gap-3 py-2 rounded-md px-1.5 cursor-pointer transition-colors hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-verde-impulso"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  <p className="min-w-0 flex-1 text-left text-sm">
-                    {coop.name}
-                  </p>
+              <li
+                key={coop.slug}
+                role="button"
+                tabIndex={0}
+                onClick={() => router.push(`/cooperativas/${coop.slug}`)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    router.push(`/cooperativas/${coop.slug}`);
+                  }
+                }}
+                className="flex items-center justify-between gap-3 py-2 rounded-md px-1.5 cursor-pointer transition-colors hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-verde-impulso"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                <p className="min-w-0 flex-1 text-left text-sm">{coop.name}</p>
                 <button
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      router.push(`/cooperativas/${coop.slug}`);
-                    }}
-                        openMunicipalityList(code);
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    router.push(`/cooperativas/${coop.slug}`);
+                  }}
+                  className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors hover:opacity-90"
+                  style={{ backgroundColor: "var(--verde-impulso)", color: "#fff" }}
+                >
+                  Ver perfil →
+                </button>
+              </li>
+            ))}
+          </ul>
+
           {tooltip.cooperatives.length === 0 && (
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               No hay cooperativas para mostrar.
