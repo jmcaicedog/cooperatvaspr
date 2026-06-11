@@ -113,6 +113,24 @@ export function PuertoRicoMap({ cooperatives }: Props) {
     }
   };
 
+  const openMunicipalityList = (municipalityCode: string) => {
+    const coops = coopsByMunicipality[municipalityCode] ?? [];
+    if (coops.length === 0) {
+      return;
+    }
+
+    const sortedCoops = coops
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+
+    setTooltip({
+      municipality: sortedCoops[0].municipalityName,
+      cooperatives: sortedCoops.map((coop) => ({ name: coop.name, slug: coop.slug })),
+    });
+    setActiveMunicipalityCode(municipalityCode);
+    setActiveSlug(sortedCoops.length === 1 ? sortedCoops[0].slug : null);
+  };
+
   const renderMarker = ([code, coops]: [string, CooperativeListItem[]]) => {
     const coords = municipalityCentroids[code];
     if (!coords) return null;
@@ -239,12 +257,18 @@ export function PuertoRicoMap({ cooperatives }: Props) {
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
+                  onClick={() => {
+                    if (code && hasCoops) {
+                      openMunicipalityList(code);
+                    }
+                  }}
                   style={{
                     default: {
                       fill: hasCoops ? "#003024" : "#c8d4c8",
                       stroke: "#ffffff",
                       strokeWidth: 0.6,
                       outline: "none",
+                      cursor: hasCoops ? "pointer" : "default",
                     },
                     hover: {
                       fill: hasCoops ? "#00482e" : "#a8bca8",
@@ -329,15 +353,7 @@ export function PuertoRicoMap({ cooperatives }: Props) {
                       event.stopPropagation();
                       router.push(`/cooperativas/${coop.slug}`);
                     }}
-                  className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors hover:opacity-90"
-                  style={{ backgroundColor: "var(--verde-impulso)", color: "#fff" }}
-                >
-                  Ver perfil →
-                </button>
-              </li>
-            ))}
-          </ul>
-
+                        openMunicipalityList(code);
           {tooltip.cooperatives.length === 0 && (
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               No hay cooperativas para mostrar.
