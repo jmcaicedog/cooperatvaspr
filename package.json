@@ -12,12 +12,15 @@
     "prisma:migrate": "prisma migrate dev",
     "admin:create": "node scripts/create-platform-admin.mjs",
     "seed:municipalities": "node scripts/seed-municipalities.mjs",
-    "neon-auth:create-user": "node scripts/neon-auth-create-user.mjs"
+    "neon-auth:create-user": "node scripts/neon-auth-create-user.mjs",
+    "import:cooperatives:dry-run": "node scripts/import-cooperatives.mjs --mode dry-run",
+    "import:cooperatives": "node scripts/import-cooperatives.mjs --mode commit"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
     "@vercel/speed-insights": "^2.0.0",
     "bcryptjs": "^3.0.3",
+    "csv-parse": "^6.2.1",
     "image-size": "^2.0.2",
     "next": "16.2.6",
     "prisma": "^6.16.3",
@@ -25,6 +28,7 @@
     "react-dom": "19.2.4",
     "react-simple-maps": "^3.0.0",
     "server-only": "^0.0.1",
+    "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {

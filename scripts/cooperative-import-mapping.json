@@ -1,0 +1,53 @@
+{
+  "categoryMap": {
+    "ahorro y credito": "CONSUMIDORES_USUARIOS",
+    "movimiento cooperativo": "CONSUMIDORES_USUARIOS",
+    "tipos diversos": "TRABAJO_ASOCIADO",
+    "trabajo asociado": "TRABAJO_ASOCIADO",
+    "trabajo-asociado": "TRABAJO_ASOCIADO",
+    "consumo": "CONSUMIDORES_USUARIOS",
+    "consumidores": "CONSUMIDORES_USUARIOS",
+    "consumidores y usuarios": "CONSUMIDORES_USUARIOS",
+    "usuarios": "CONSUMIDORES_USUARIOS",
+    "vivienda": "VIVIENDA",
+    "energia": "ENERGIA",
+    "energetica": "ENERGIA"
+  },
+  "classificationMap": {
+    "agricolas": "TRABAJO_ASOCIADO",
+    "cafeterias": "TRABAJO_ASOCIADO",
+    "comerciales": "TRABAJO_ASOCIADO",
+    "construccion e ingenieria": "TRABAJO_ASOCIADO",
+    "consumo": "CONSUMIDORES_USUARIOS",
+    "costura": "TRABAJO_ASOCIADO",
+    "diverso": "TRABAJO_ASOCIADO",
+    "energia": "ENERGIA",
+    "estacionamiento": "TRABAJO_ASOCIADO",
+    "farmacias": "TRABAJO_ASOCIADO",
+    "gasolineras": "TRABAJO_ASOCIADO",
+    "otros servicios": "TRABAJO_ASOCIADO",
+    "salud": "TRABAJO_ASOCIADO",
+    "servicios educativos": "TRABAJO_ASOCIADO",
+    "servicios turisticos": "TRABAJO_ASOCIADO",
+    "transportacion": "TRABAJO_ASOCIADO",
+    "vivienda": "VIVIENDA",
+    "trabajo asociado": "TRABAJO_ASOCIADO",
+    "consumidores/usuarios": "CONSUMIDORES_USUARIOS",
+    "consumidores usuarios": "CONSUMIDORES_USUARIOS",
+    "vivienda": "VIVIENDA",
+    "energia": "ENERGIA"
+  },
+  "municipalityMap": {
+    "san juan": "san-juan",
+    "bayamon": "bayamon",
+    "penuelas": "penuelas",
+    "loiza": "loaiza"
+  },
+  "socialPlatforms": {
+    "facebook": "https://facebook.com/",
+    "instagram": "https://instagram.com/",
+    "x": "https://x.com/",
+    "twitter": "https://x.com/",
+    "linkedin": "https://www.linkedin.com/in/"
+  }
+}
