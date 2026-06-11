@@ -45,6 +45,7 @@ export default async function AdminLayout({
     { href: "/admin/testimonios", label: "Testimonios" },
   ];
 
+
   return (
     <div className="min-h-screen text-zinc-950" data-scope="admin" style={{ background: "linear-gradient(180deg, #eef4f2 0%, #f6f8fb 100%)" }}>
       <header className="border-b" style={{ borderColor: "#d7e4dd", backgroundColor: "#f3f8f5cc", backdropFilter: "blur(10px)" }}>
