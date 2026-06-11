@@ -91,6 +91,11 @@ export function PuertoRicoMap({ cooperatives }: Props) {
     return acc;
   }, {});
 
+  const municipalityEntries = Object.entries(coopsByMunicipality);
+  const activeEntry = activeMunicipalityCode
+    ? municipalityEntries.find(([code]) => code === activeMunicipalityCode) ?? null
+    : null;
+
   const handleMarkerClick = (coop: CooperativeListItem) => {
     if (activeSlug === coop.slug) {
       router.push(`/cooperativas/${coop.slug}`);
@@ -102,6 +107,91 @@ export function PuertoRicoMap({ cooperatives }: Props) {
         cooperatives: [{ name: coop.name, slug: coop.slug }],
       });
     }
+  };
+
+  const renderMarker = ([code, coops]: [string, CooperativeListItem[]]) => {
+    const coords = municipalityCentroids[code];
+    if (!coords) return null;
+
+    const isMultiple = coops.length > 1;
+    const labelText = compactMapLabel
+      ? `${coops.length} ${coops.length === 1 ? "coop." : "coops."}`
+      : `${coops.length} ${coops.length === 1 ? "cooperativa" : "cooperativas"}`;
+    const labelWidth = getLabelWidth(labelText);
+    const labelLayout = getLabelLayout(coords, labelWidth);
+
+    return (
+      <Marker
+        key={code}
+        coordinates={coords}
+        onClick={() => {
+          if (coops.length === 1) {
+            handleMarkerClick(coops[0]);
+          } else {
+            setTooltip({
+              municipality: coops[0].municipalityName,
+              cooperatives: coops
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name, "es"))
+                .map((coop) => ({ name: coop.name, slug: coop.slug })),
+            });
+            setActiveMunicipalityCode(code);
+            setActiveSlug(null);
+          }
+        }}
+        style={{ cursor: "pointer" }}
+      >
+        <circle
+          r={isMultiple ? 9 : 7}
+          fill={activeSlug && coops.some((c) => c.slug === activeSlug) ? "#fffe00" : "#a5ec48"}
+          stroke="#003024"
+          strokeWidth={2}
+        />
+        {isMultiple && (
+          <text
+            textAnchor="middle"
+            dy="3.5"
+            style={{
+              fill: "#003024",
+              fontSize: "7px",
+              fontWeight: "700",
+              userSelect: "none",
+              pointerEvents: "none",
+            }}
+          >
+            {coops.length}
+          </text>
+        )}
+
+        {activeMunicipalityCode === code && (
+          <>
+            <rect
+              x={labelLayout.rectX}
+              y={labelLayout.rectY}
+              width={labelWidth}
+              height={12}
+              rx={6}
+              fill="#003024"
+              opacity={0.92}
+            />
+            <text
+              textAnchor="start"
+              x={labelLayout.textX}
+              y={labelLayout.textY}
+              style={{
+                fill: "#ffffff",
+                fontSize: "6px",
+                fontWeight: "700",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+            >
+              {labelText}
+            </text>
+          </>
+        )}
+      </Marker>
+    );
   };
 
   return (
@@ -152,90 +242,11 @@ export function PuertoRicoMap({ cooperatives }: Props) {
           }
         </Geographies>
 
-        {/* Cooperative markers — one per municipality (grouped) */}
-        {Object.entries(coopsByMunicipality).map(([code, coops]) => {
-          const coords = municipalityCentroids[code];
-          if (!coords) return null;
-          const isMultiple = coops.length > 1;
-          const labelText = compactMapLabel
-            ? `${coops.length} ${coops.length === 1 ? "coop." : "coops."}`
-            : `${coops.length} ${coops.length === 1 ? "cooperativa" : "cooperativas"}`;
-          const labelWidth = getLabelWidth(labelText);
-          const labelLayout = getLabelLayout(coords, labelWidth);
-
-          return (
-            <Marker
-              key={code}
-              coordinates={coords}
-              onClick={() => {
-                if (coops.length === 1) {
-                  handleMarkerClick(coops[0]);
-                } else {
-                  setTooltip({
-                    municipality: coops[0].municipalityName,
-                    cooperatives: coops
-                      .slice()
-                      .sort((a, b) => a.name.localeCompare(b.name, "es"))
-                      .map((coop) => ({ name: coop.name, slug: coop.slug })),
-                  });
-                  setActiveMunicipalityCode(code);
-                  setActiveSlug(null);
-                }
-              }}
-              style={{ cursor: "pointer" }}
-            >
-              <circle
-                r={isMultiple ? 9 : 7}
-                fill={activeSlug && coops.some((c) => c.slug === activeSlug) ? "#fffe00" : "#a5ec48"}
-                stroke="#003024"
-                strokeWidth={2}
-              />
-              {isMultiple && (
-                <text
-                  textAnchor="middle"
-                  dy="3.5"
-                  style={{
-                    fill: "#003024",
-                    fontSize: "7px",
-                    fontWeight: "700",
-                    userSelect: "none",
-                    pointerEvents: "none",
-                  }}
-                >
-                  {coops.length}
-                </text>
-              )}
-
-                {activeMunicipalityCode === code && (
-                  <>
-                    <rect
-                      x={labelLayout.rectX}
-                      y={labelLayout.rectY}
-                      width={labelWidth}
-                      height={12}
-                      rx={6}
-                      fill="#003024"
-                      opacity={0.92}
-                    />
-                    <text
-                      textAnchor="start"
-                      x={labelLayout.textX}
-                      y={labelLayout.textY}
-                      style={{
-                        fill: "#ffffff",
-                        fontSize: "6px",
-                        fontWeight: "700",
-                        userSelect: "none",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      {labelText}
-                    </text>
-                  </>
-                )}
-            </Marker>
-          );
-        })}
+        {/* Cooperative markers — render activo al final para que su etiqueta quede por encima */}
+        {municipalityEntries
+          .filter(([code]) => code !== activeMunicipalityCode)
+          .map((entry) => renderMarker(entry as [string, CooperativeListItem[]]))}
+        {activeEntry && renderMarker(activeEntry as [string, CooperativeListItem[]])}
       </ComposableMap>
 
       {/* Tooltip panel */}
