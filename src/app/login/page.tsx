@@ -61,9 +61,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <Image
             src="/brand/logo-verde.svg"
             alt="cooperativas.pr"
-            width={160}
-            height={17}
-            className="h-7 w-auto mb-1"
+            width={272}
+            height={28}
+            className="mb-1"
           />
           <p className="text-white/60 text-sm mt-1">Acceso administrativo</p>
         </div>

@@ -5,19 +5,31 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const NAV_LINKS = [
+const NAV_LINKS_BASE = [
   { href: "/", label: "Inicio" },
   { href: "/#directorio", label: "Directorio" },
-  { href: "/eventos", label: "Eventos" },
-  { href: "/blog", label: "Blog" },
   { href: "/quienes-somos", label: "Quiénes somos" },
   { href: "/servicios", label: "Servicios" },
   { href: "/contacto", label: "Contacto" },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({
+  showEventsLink = true,
+  showBlogLink = true,
+}: {
+  showEventsLink?: boolean;
+  showBlogLink?: boolean;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  const navLinks = [...NAV_LINKS_BASE];
+  if (showEventsLink) {
+    navLinks.splice(2, 0, { href: "/eventos", label: "Eventos" });
+  }
+  if (showBlogLink) {
+    navLinks.splice(showEventsLink ? 3 : 2, 0, { href: "/blog", label: "Blog" });
+  }
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -39,16 +51,15 @@ export function SiteHeader() {
           <Image
             src="/brand/logo-verde.svg"
             alt="cooperativas.pr"
-            width={160}
-            height={17}
+            width={310}
+            height={32}
             priority
-            className="h-8 w-auto"
           />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1" aria-label="Navegación principal">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -109,7 +120,7 @@ export function SiteHeader() {
           style={{ borderColor: "rgba(255,255,255,0.1)", backgroundColor: "var(--verde-impulso)" }}
         >
           <nav className="flex flex-col px-4 py-3 gap-0.5" aria-label="Navegación móvil">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

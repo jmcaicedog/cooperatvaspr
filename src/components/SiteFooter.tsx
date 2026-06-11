@@ -1,14 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const FOOTER_LINKS = [
+const FOOTER_LINKS_BASE = [
   {
     heading: "Portal",
     links: [
       { href: "/", label: "Inicio" },
       { href: "/#directorio", label: "Directorio" },
-      { href: "/eventos", label: "Eventos" },
-      { href: "/blog", label: "Blog" },
       { href: "/quienes-somos", label: "Quiénes somos" },
     ],
   },
@@ -22,7 +20,26 @@ const FOOTER_LINKS = [
   },
 ];
 
-export function SiteFooter() {
+export function SiteFooter({
+  showEventsLink = true,
+  showBlogLink = true,
+}: {
+  showEventsLink?: boolean;
+  showBlogLink?: boolean;
+}) {
+  const portalLinks = [...FOOTER_LINKS_BASE[0].links];
+  if (showEventsLink) {
+    portalLinks.splice(2, 0, { href: "/eventos", label: "Eventos" });
+  }
+  if (showBlogLink) {
+    portalLinks.splice(showEventsLink ? 3 : 2, 0, { href: "/blog", label: "Blog" });
+  }
+
+  const footerColumns = [
+    { ...FOOTER_LINKS_BASE[0], links: portalLinks },
+    FOOTER_LINKS_BASE[1],
+  ];
+
   return (
     <footer
       className="mt-auto w-full"
@@ -36,9 +53,8 @@ export function SiteFooter() {
               <Image
                 src="/brand/logo-verde.svg"
                 alt="cooperativas.pr"
-                width={160}
-                height={17}
-                className="h-8 w-auto"
+                width={310}
+                height={32}
               />
             </Link>
             <p className="text-sm leading-relaxed max-w-xs" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -47,7 +63,7 @@ export function SiteFooter() {
           </div>
 
           {/* Nav columns */}
-          {FOOTER_LINKS.map((col) => (
+          {footerColumns.map((col) => (
             <div key={col.heading} className="flex flex-col gap-3">
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">
                 {col.heading}

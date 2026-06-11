@@ -2,9 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ComingSoonPage } from "@/components/ComingSoonPage";
 import { HeroBanner, SidebarBanner, type BannerItem } from "@/components/BannerComponents";
 import { CooperativeDirectory } from "@/components/CooperativeDirectory";
 import { db } from "@/lib/db";
+import { getPlatformSettings } from "@/lib/platform-settings";
 import { CooperativeStatus, PostStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +26,17 @@ async function getActiveBanners(slot: "HERO" | "SIDEBAR_TOP" | "SIDEBAR_BOTTOM")
 }
 
 export default async function Home() {
+  const settings = await getPlatformSettings();
+
+  if (settings.comingSoonEnabled) {
+    return (
+      <ComingSoonPage
+        message={settings.comingSoonMessage}
+        launchAtIso={settings.comingSoonLaunchAt ? settings.comingSoonLaunchAt.toISOString() : null}
+      />
+    );
+  }
+
   const now = new Date();
   const [
     heroBanners,
@@ -58,50 +71,56 @@ export default async function Home() {
         orderBy: { name: "asc" },
         select: { code: true, name: true },
       }),
-      db.event.findMany({
-        where: { isPublished: true, startsAt: { gte: now } },
-        orderBy: { startsAt: "asc" },
-        take: 3,
-        select: {
-          id: true,
-          title: true,
-          location: true,
-          startsAt: true,
-          endsAt: true,
-          coverImageUrl: true,
-          infoUrl: true,
-        },
-      }),
-      db.testimonial.findMany({
-        where: { isPublished: true },
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-        take: 3,
-        select: {
-          id: true,
-          authorName: true,
-          authorRole: true,
-          authorOrganization: true,
-          avatarUrl: true,
-          body: true,
-        },
-      }),
-      db.blogPost.findMany({
-        where: {
-          status: PostStatus.PUBLISHED,
-          OR: [{ publishedAt: null }, { publishedAt: { lte: now } }],
-        },
-        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-        take: 3,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          excerpt: true,
-          coverImageUrl: true,
-          publishedAt: true,
-          category: { select: { name: true } },
-        },
-      }),
+      settings.homeShowEvents
+        ? db.event.findMany({
+            where: { isPublished: true, startsAt: { gte: now } },
+            orderBy: { startsAt: "asc" },
+            take: 3,
+            select: {
+              id: true,
+              title: true,
+              location: true,
+              startsAt: true,
+              endsAt: true,
+              coverImageUrl: true,
+              infoUrl: true,
+            },
+          })
+        : Promise.resolve([]),
+      settings.homeShowTestimonials
+        ? db.testimonial.findMany({
+            where: { isPublished: true },
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+            take: 3,
+            select: {
+              id: true,
+              authorName: true,
+              authorRole: true,
+              authorOrganization: true,
+              avatarUrl: true,
+              body: true,
+            },
+          })
+        : Promise.resolve([]),
+      settings.homeShowBlog
+        ? db.blogPost.findMany({
+            where: {
+              status: PostStatus.PUBLISHED,
+              OR: [{ publishedAt: null }, { publishedAt: { lte: now } }],
+            },
+            orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+            take: 3,
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              excerpt: true,
+              coverImageUrl: true,
+              publishedAt: true,
+              category: { select: { name: true } },
+            },
+          })
+        : Promise.resolve([]),
     ]);
 
   const cooperatives = rawCoops.map((c) => ({
@@ -118,7 +137,7 @@ export default async function Home() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader showEventsLink={settings.homeShowEvents} showBlogLink={settings.homeShowBlog} />
       <main className="flex-1">
         {/* Hero banner */}
         {heroBanners.length > 0 && (
@@ -189,6 +208,7 @@ export default async function Home() {
         </div>
 
         {/* Próximos eventos */}
+        {settings.homeShowEvents ? (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-10">
           <div className="mb-5 flex items-end justify-between gap-3">
             <div>
@@ -242,8 +262,10 @@ export default async function Home() {
             </div>
           )}
         </section>
+        ) : null}
 
         {/* Testimonios */}
+        {settings.homeShowTestimonials ? (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-10">
           <div className="mb-5">
             <h2 className="text-2xl font-bold" style={{ color: "var(--verde-impulso)" }}>
@@ -285,8 +307,10 @@ export default async function Home() {
             </div>
           )}
         </section>
+        ) : null}
 
         {/* Últimos artículos */}
+        {settings.homeShowBlog ? (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-14">
           <div className="mb-5 flex items-end justify-between gap-3">
             <div>
@@ -339,8 +363,9 @@ export default async function Home() {
             </div>
           )}
         </section>
+        ) : null}
       </main>
-      <SiteFooter />
+      <SiteFooter showEventsLink={settings.homeShowEvents} showBlogLink={settings.homeShowBlog} />
     </>
   );
 }

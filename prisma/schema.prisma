@@ -275,6 +275,18 @@ model Testimonial {
   @@index([isPublished, sortOrder])
 }
 
+model PlatformSettings {
+  id                   Int      @id @default(1)
+  comingSoonEnabled    Boolean  @default(false)
+  comingSoonMessage    String   @default("Proximamente estaremos al aire.")
+  comingSoonLaunchAt   DateTime?
+  homeShowEvents       Boolean  @default(true)
+  homeShowTestimonials Boolean  @default(true)
+  homeShowBlog         Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
 // ─── Enums (Blog) ─────────────────────────────────────────────────────────────
 
 enum PostStatus {

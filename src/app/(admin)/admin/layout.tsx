@@ -32,6 +32,7 @@ export default async function AdminLayout({
 
   const navItems = [
     { href: "/admin", label: "Resumen" },
+    { href: "/admin/settings", label: "Ajustes" },
     { href: "/admin/cooperatives", label: "Cooperativas" },
     { href: "/admin/users", label: "Usuarios" },
     { href: "/admin/banners", label: "Banners" },
@@ -53,10 +54,9 @@ export default async function AdminLayout({
               <Image
                 src="/brand/logo-verde-claro.svg"
                 alt="cooperativas.pr"
-                width={180}
-                height={19}
+                width={266}
+                height={28}
                 priority
-                className="h-7 w-auto"
               />
               <p className="mt-1 text-xs uppercase tracking-widest" style={{ color: "#54736a" }}>Panel Administrativo</p>
             </div>
