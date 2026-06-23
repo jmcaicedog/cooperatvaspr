@@ -27,14 +27,14 @@ export function CooperativeCard({ coop }: { coop: CooperativeListItem }) {
       href={`/cooperativas/${coop.slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       style={{
-        backgroundColor: "var(--bg-card)",
+        backgroundColor: "#ffffff",
         borderColor: "var(--border-subtle)",
       }}
     >
       {/* Logo area */}
       <div
         className="relative flex h-36 w-full items-center justify-center overflow-hidden"
-        style={{ backgroundColor: "#f0f5f0" }}
+        style={{ backgroundColor: "#ffffff" }}
       >
         {/* Top accent bar */}
         <div
