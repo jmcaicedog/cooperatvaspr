@@ -311,7 +311,7 @@ export default async function CooperativaDetailPage({ params }: Props) {
                           )}`}
                           style={{ color: "var(--azul-compromiso)" }}
                         >
-                          {socialPlatformLabels[socialLink.platform]}: {socialLink.url.replace(/^https?:\/\//, "")}
+                          {socialPlatformLabels[socialLink.platform]}
                         </a>
                       </li>
                     ))}
