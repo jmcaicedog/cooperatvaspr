@@ -57,12 +57,37 @@ export default async function CooperativaDetailPage({ params }: Props) {
 
   if (!coop) notFound();
 
+  const richTextPayload =
+    coop.descriptionRich &&
+    typeof coop.descriptionRich === "object" &&
+    "text" in (coop.descriptionRich as Record<string, unknown>)
+      ? (coop.descriptionRich as { text: string }).text
+      : null;
+
   const richHtml =
     coop.descriptionRich &&
     typeof coop.descriptionRich === "object" &&
     "html" in (coop.descriptionRich as Record<string, unknown>)
       ? (coop.descriptionRich as { html: string }).html
       : null;
+
+  const plainDescription = coop.descriptionText?.trim() ?? "";
+  const richText = richTextPayload?.trim() ?? "";
+
+  const normalizeText = (value: string): string =>
+    value
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+  const normalizedPlain = normalizeText(plainDescription);
+  const normalizedRich = normalizeText(richText || richHtml || "");
+
+  const hasPlainDescription = normalizedPlain.length > 0;
+  const hasRichDescription = normalizedRich.length > 0;
+  const richAlreadyIncludesPlain =
+    hasPlainDescription && hasRichDescription && normalizedRich.startsWith(normalizedPlain);
 
   return (
     <div>
@@ -130,19 +155,30 @@ export default async function CooperativaDetailPage({ params }: Props) {
         {/* Main content */}
         <div className="lg:col-span-2 flex flex-col gap-8">
           {/* Description */}
-          {(richHtml || coop.descriptionText) && (
+          {(hasPlainDescription || hasRichDescription) && (
             <section>
               <SectionHeading>Sobre la cooperativa</SectionHeading>
-              {richHtml ? (
-                <div
-                  className="prose-coop text-sm"
-                  dangerouslySetInnerHTML={{ __html: richHtml }}
-                />
-              ) : (
+              {hasPlainDescription && !richAlreadyIncludesPlain && (
                 <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {coop.descriptionText}
+                  {plainDescription}
                 </p>
               )}
+
+              {hasRichDescription ? (
+                richHtml ? (
+                  <div
+                    className="prose-coop text-sm"
+                    dangerouslySetInnerHTML={{ __html: richHtml }}
+                  />
+                ) : (
+                  <p
+                    className="text-sm leading-relaxed whitespace-pre-line"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {richText}
+                  </p>
+                )
+              ) : null}
             </section>
           )}
 
