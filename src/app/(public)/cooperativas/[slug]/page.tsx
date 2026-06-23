@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { cooperativeTypeLabels } from "@/lib/cooperative-taxonomy";
+import { socialPlatformLabels } from "@/lib/social-links";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -31,6 +32,7 @@ export default async function CooperativaDetailPage({ params }: Props) {
       id: true,
       name: true,
       slug: true,
+      foundedYear: true,
       logoUrl: true,
       slogan: true,
       descriptionText: true,
@@ -47,6 +49,10 @@ export default async function CooperativaDetailPage({ params }: Props) {
       contacts: {
         orderBy: { sortOrder: "asc" },
         select: { id: true, type: true, label: true, value: true },
+      },
+      socialLinks: {
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, platform: true, url: true },
       },
       gallery: {
         orderBy: { sortOrder: "asc" },
@@ -89,6 +95,12 @@ export default async function CooperativaDetailPage({ params }: Props) {
   const richAlreadyIncludesPlain =
     hasPlainDescription && hasRichDescription && normalizedRich.startsWith(normalizedPlain);
 
+  const primaryAddress =
+    coop.contacts.find((contact) => contact.type === "ADDRESS")?.value.trim() ?? "";
+  const mapEmbedSrc = primaryAddress
+    ? `https://www.google.com/maps?q=${encodeURIComponent(primaryAddress)}&output=embed`
+    : null;
+
   return (
     <div>
       {/* Hero header */}
@@ -99,14 +111,14 @@ export default async function CooperativaDetailPage({ params }: Props) {
         <div className="mx-auto max-w-4xl flex flex-col sm:flex-row items-center gap-6">
           {/* Logo */}
           <div
-            className="relative shrink-0 h-24 w-24 sm:h-32 sm:w-32 rounded-2xl overflow-hidden border-2 border-white/20 bg-white/10"
+            className="relative shrink-0 h-24 w-24 sm:h-32 sm:w-32 rounded-2xl overflow-hidden border-2 border-white/40 bg-white shadow-[0_12px_28px_rgba(0,0,0,0.22)]"
           >
             {coop.logoUrl ? (
               <Image
                 src={coop.logoUrl}
                 alt={`Logo de ${coop.name}`}
                 fill
-                className="object-contain p-2"
+                className="object-contain p-2.5"
                 sizes="128px"
                 priority
               />
@@ -130,7 +142,12 @@ export default async function CooperativaDetailPage({ params }: Props) {
             </p>
             <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">{coop.name}</h1>
             {coop.slogan && (
-              <p className="mt-2 text-white/70 text-sm italic">"{coop.slogan}"</p>
+              <p className="mt-2 text-white/70 text-sm italic">&quot;{coop.slogan}&quot;</p>
+            )}
+            {coop.foundedYear && (
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/80">
+                Fundada en {coop.foundedYear}
+              </p>
             )}
             {/* Type badges */}
             {coop.cooperativeTypes.length > 0 && (
@@ -179,6 +196,22 @@ export default async function CooperativaDetailPage({ params }: Props) {
                   </p>
                 )
               ) : null}
+            </section>
+          )}
+
+          {/* Map */}
+          {mapEmbedSrc && (
+            <section>
+              <SectionHeading>Ubicación</SectionHeading>
+              <div className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
+                <iframe
+                  title={`Mapa de ${coop.name}`}
+                  src={mapEmbedSrc}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="h-72 w-full border-0"
+                />
+              </div>
             </section>
           )}
 
@@ -234,7 +267,7 @@ export default async function CooperativaDetailPage({ params }: Props) {
         {/* Sidebar */}
         <aside className="flex flex-col gap-6">
           {/* Contact info */}
-          {coop.contacts.length > 0 && (
+          {(coop.contacts.length > 0 || coop.socialLinks.length > 0) && (
             <div
               className="rounded-2xl border p-5"
               style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
@@ -242,21 +275,49 @@ export default async function CooperativaDetailPage({ params }: Props) {
               <h3 className="text-sm font-bold mb-4" style={{ color: "var(--verde-impulso)" }}>
                 Contacto
               </h3>
-              <ul className="flex flex-col gap-3">
-                {coop.contacts.map((c) => (
-                  <li key={c.id} className="flex items-start gap-2.5">
-                    <ContactIcon type={c.type} />
-                    <div className="text-sm min-w-0">
-                      {c.label && (
-                        <p className="text-xs mb-0.5" style={{ color: "var(--text-muted)" }}>
-                          {c.label}
-                        </p>
-                      )}
-                      <ContactValue type={c.type} value={c.value} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {coop.contacts.length > 0 && (
+                <ul className="flex flex-col gap-3">
+                  {coop.contacts.map((c) => (
+                    <li key={c.id} className="flex items-start gap-2.5">
+                      <ContactIcon type={c.type} />
+                      <div className="text-sm min-w-0">
+                        {c.label && (
+                          <p className="text-xs mb-0.5" style={{ color: "var(--text-muted)" }}>
+                            {c.label}
+                          </p>
+                        )}
+                        <ContactValue type={c.type} value={c.value} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {coop.socialLinks.length > 0 && (
+                <div className="mt-5 border-t pt-4" style={{ borderColor: "var(--border-subtle)" }}>
+                  <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+                    Redes sociales
+                  </p>
+                  <ul className="mt-2 flex flex-col gap-2">
+                    {coop.socialLinks.map((socialLink) => (
+                      <li key={socialLink.id} className="flex items-start gap-2.5">
+                        <SocialPlatformIcon platform={socialLink.platform} />
+                        <a
+                          href={socialLink.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`text-sm break-all hover:underline transition-colors ${getSocialHoverClass(
+                            socialLink.platform,
+                          )}`}
+                          style={{ color: "var(--azul-compromiso)" }}
+                        >
+                          {socialPlatformLabels[socialLink.platform]}: {socialLink.url.replace(/^https?:\/\//, "")}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
@@ -380,4 +441,135 @@ function ContactValue({ type, value }: { type: string; value: string }) {
     default:
       return <span className={baseClass} style={style}>{value}</span>;
   }
+}
+
+function getSocialHoverClass(platform: string): string {
+  switch (platform) {
+    case "FACEBOOK":
+      return "hover:text-[#1877F2]";
+    case "INSTAGRAM":
+      return "hover:text-[#E4405F]";
+    case "YOUTUBE":
+      return "hover:text-[#FF0000]";
+    case "LINKEDIN":
+      return "hover:text-[#0A66C2]";
+    case "TIKTOK":
+    case "X":
+      return "hover:text-[#111111]";
+    default:
+      return "hover:text-verde-impulso";
+  }
+}
+
+function SocialPlatformIcon({ platform }: { platform: string }) {
+  if (platform === "FACEBOOK") {
+    return (
+      <svg
+        className="mt-0.5 shrink-0 text-azul-compromiso"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M8.2 4.3h-1c-.8 0-1.3.4-1.3 1.3v1h2l-.3 1.5H5.9V11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  if (platform === "INSTAGRAM") {
+    return (
+      <svg
+        className="mt-0.5 shrink-0 text-azul-compromiso"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <rect x="2" y="2" width="10" height="10" rx="2.5" stroke="currentColor" strokeWidth="1.2" />
+        <circle cx="7" cy="7" r="2.3" stroke="currentColor" strokeWidth="1.2" />
+        <circle cx="10" cy="4" r="0.8" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (platform === "YOUTUBE") {
+    return (
+      <svg
+        className="mt-0.5 shrink-0 text-azul-compromiso"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <rect x="1.7" y="3.3" width="10.6" height="7.4" rx="2" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M6 5.6 8.9 7 6 8.4V5.6z" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (platform === "LINKEDIN") {
+    return (
+      <svg
+        className="mt-0.5 shrink-0 text-azul-compromiso"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
+        <circle cx="4.4" cy="5" r="0.8" fill="currentColor" />
+        <path d="M4.4 6.4V9.8M6.2 9.8V7.6c0-1.3 1.8-1.4 1.8 0v2.2M6.2 7.4h1.8" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  if (platform === "TIKTOK") {
+    return (
+      <svg
+        className="mt-0.5 shrink-0 text-azul-compromiso"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <circle cx="5.2" cy="9.3" r="1.6" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M6.8 9.3V3.5c.5 1 1.5 1.7 2.6 1.7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (platform === "X") {
+    return (
+      <svg
+        className="mt-0.5 shrink-0 text-azul-compromiso"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <path d="M3 3h2.1l2.1 2.8L9.6 3H11l-3 3.8L11 11H8.9L6.7 8.1 4.4 11H3l3.1-4L3 3z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      className="mt-0.5 shrink-0 text-azul-compromiso"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      aria-hidden
+    >
+      <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M4 7h6M7 4v6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
 }

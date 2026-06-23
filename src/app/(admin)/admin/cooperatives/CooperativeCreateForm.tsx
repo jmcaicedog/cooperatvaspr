@@ -67,6 +67,11 @@ export function CooperativeCreateForm({ municipalities }: { municipalities: Muni
       </div>
 
       <div className="grid gap-1 text-sm">
+        <AdminLabel className="mb-0">Año de fundación</AdminLabel>
+        <AdminInput max={new Date().getFullYear()} min={1700} name="foundedYear" placeholder="Ej. 1968" type="number" />
+      </div>
+
+      <div className="grid gap-1 text-sm">
         <AdminLabel className="mb-0">Descripción breve</AdminLabel>
         <AdminTextarea className="min-h-28" name="descriptionText" />
       </div>

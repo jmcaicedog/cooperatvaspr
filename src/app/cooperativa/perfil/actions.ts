@@ -88,6 +88,7 @@ export async function updateCooperativeProfileAction(
       id: true,
       name: true,
       municipalityCode: true,
+      foundedYear: true,
       slogan: true,
       descriptionText: true,
       descriptionRich: true,
@@ -103,6 +104,7 @@ export async function updateCooperativeProfileAction(
   const parsedCore = cooperativeCreateSchema.safeParse({
     name: formData.get("name"),
     municipalityCode: formData.get("municipalityCode"),
+    foundedYear: formData.get("foundedYear"),
     slogan: formData.get("slogan"),
     descriptionText: formData.get("descriptionText"),
     cooperativeTypes: formData.getAll("cooperativeTypes"),
@@ -131,6 +133,7 @@ export async function updateCooperativeProfileAction(
   const newData = {
     name: parsedCore.data.name,
     municipalityCode: parsedCore.data.municipalityCode,
+    foundedYear: parsedCore.data.foundedYear ?? null,
     slogan: parsedCore.data.slogan || null,
     descriptionText: parsedCore.data.descriptionText || null,
     cooperativeTypes: parsedCore.data.cooperativeTypes,

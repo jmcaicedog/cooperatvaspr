@@ -40,6 +40,7 @@ model Cooperative {
   name             String
   slug             String                     @unique
   municipalityCode String
+  foundedYear      Int?
   logoUrl          String?
   slogan           String?
   descriptionText  String?
@@ -59,6 +60,7 @@ model Cooperative {
   updatedBy        User?                      @relation("CooperativeUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   services         CooperativeService[]
   contacts         ContactPoint[]
+  socialLinks      SocialLink[]
   gallery          GalleryImage[]
   changeRequests   CooperativeChangeRequest[]
 
@@ -93,6 +95,19 @@ model ContactPoint {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   cooperative   Cooperative @relation(fields: [cooperativeId], references: [id], onDelete: Cascade)
+
+  @@index([cooperativeId, sortOrder])
+}
+
+model SocialLink {
+  id            String         @id @default(cuid())
+  cooperativeId String
+  platform      SocialPlatform
+  url           String
+  sortOrder     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  cooperative   Cooperative    @relation(fields: [cooperativeId], references: [id], onDelete: Cascade)
 
   @@index([cooperativeId, sortOrder])
 }
@@ -182,6 +197,16 @@ enum ContactType {
   WEBSITE
   WHATSAPP
   ADDRESS
+}
+
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  X
+  LINKEDIN
+  YOUTUBE
+  TIKTOK
+  OTHER
 }
 
 enum BannerSlot {

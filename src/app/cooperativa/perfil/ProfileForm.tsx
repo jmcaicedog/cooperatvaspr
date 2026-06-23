@@ -16,6 +16,7 @@ type CooperativeProfileData = {
   id: string;
   name: string;
   municipalityCode: string;
+  foundedYear: number | null;
   logoUrl: string | null;
   slogan: string | null;
   descriptionText: string | null;
@@ -186,6 +187,19 @@ export function ProfileForm({
             className="rounded-md border border-zinc-300 px-3 py-2"
             defaultValue={cooperative.slogan ?? ""}
             name="slogan"
+          />
+        </label>
+
+        <label className="grid gap-1 text-sm">
+          <span>Año de fundación</span>
+          <input
+            className="rounded-md border border-zinc-300 px-3 py-2"
+            defaultValue={cooperative.foundedYear ?? ""}
+            max={new Date().getFullYear()}
+            min={1700}
+            name="foundedYear"
+            placeholder="Ej. 1968"
+            type="number"
           />
         </label>
 

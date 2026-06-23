@@ -60,6 +60,7 @@ export async function createCooperativeAction(
   const parsed = cooperativeCreateSchema.safeParse({
     name: formData.get("name"),
     municipalityCode: formData.get("municipalityCode"),
+    foundedYear: formData.get("foundedYear"),
     slogan: formData.get("slogan"),
     descriptionText: formData.get("descriptionText"),
     cooperativeTypes: formData.getAll("cooperativeTypes"),
@@ -94,6 +95,7 @@ export async function createCooperativeAction(
       name: parsed.data.name,
       slug: finalSlug,
       municipalityCode: parsed.data.municipalityCode,
+      foundedYear: parsed.data.foundedYear ?? null,
       slogan: parsed.data.slogan || null,
       descriptionText: parsed.data.descriptionText || null,
       cooperativeTypes: parsed.data.cooperativeTypes,
@@ -126,6 +128,7 @@ export async function updateCooperativeByAdminAction(
   const parsed = cooperativeCreateSchema.safeParse({
     name: formData.get("name"),
     municipalityCode: formData.get("municipalityCode"),
+    foundedYear: formData.get("foundedYear"),
     slogan: formData.get("slogan"),
     descriptionText: formData.get("descriptionText"),
     cooperativeTypes: formData.getAll("cooperativeTypes"),
@@ -162,6 +165,7 @@ export async function updateCooperativeByAdminAction(
     data: {
       name: parsed.data.name,
       municipalityCode: parsed.data.municipalityCode,
+      foundedYear: parsed.data.foundedYear ?? null,
       slogan: parsed.data.slogan || null,
       descriptionText: parsed.data.descriptionText || null,
       cooperativeTypes: parsed.data.cooperativeTypes,

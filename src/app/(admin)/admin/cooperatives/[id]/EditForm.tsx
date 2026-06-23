@@ -1,6 +1,6 @@
 "use client";
 
-import { ContactType } from "@prisma/client";
+import { ContactType, SocialPlatform } from "@prisma/client";
 import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
 
@@ -26,6 +26,11 @@ import {
   deleteContactAction,
   updateContactAction,
 } from "@/app/cooperativa/contactos/actions";
+import {
+  createSocialLinkAction,
+  deleteSocialLinkAction,
+  updateSocialLinkAction,
+} from "@/app/cooperativa/redes/actions";
 import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
 import {
   AdminCard,
@@ -36,11 +41,13 @@ import {
   AdminTextarea,
 } from "@/components/admin/ui";
 import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
+import { socialPlatformLabels, socialPlatformOptions } from "@/lib/social-links";
 
 type CooperativeEditData = {
   id: string;
   name: string;
   municipalityCode: string;
+  foundedYear: number | null;
   logoUrl: string | null;
   slogan: string | null;
   descriptionText: string | null;
@@ -58,6 +65,11 @@ type CooperativeEditData = {
     type: ContactType;
     label: string | null;
     value: string;
+  }>;
+  socialLinks: Array<{
+    id: string;
+    platform: SocialPlatform;
+    url: string;
   }>;
   gallery: Array<{
     id: string;
@@ -300,6 +312,18 @@ export function EditForm({
           <AdminInput
             defaultValue={cooperative.slogan ?? ""}
             name="slogan"
+          />
+        </div>
+
+        <div className="grid gap-1 text-sm">
+          <AdminLabel className="mb-0">Año de fundación</AdminLabel>
+          <AdminInput
+            defaultValue={cooperative.foundedYear ?? ""}
+            max={new Date().getFullYear()}
+            min={1700}
+            name="foundedYear"
+            placeholder="Ej. 1968"
+            type="number"
           />
         </div>
 
@@ -625,6 +649,70 @@ export function EditForm({
 
           <AdminButton className="rounded-md px-4 py-2" type="submit">
             Agregar contacto
+          </AdminButton>
+        </form>
+      </AdminCard>
+
+      <AdminCard className="space-y-4 p-6">
+        <header className="space-y-1">
+          <h3 className="text-base font-semibold">Redes sociales</h3>
+          <p className="text-xs text-zinc-600">Agrega enlaces por plataforma para mostrarlos en la ficha pública.</p>
+        </header>
+
+        <div className="space-y-3">
+          {cooperative.socialLinks.length === 0 ? (
+            <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
+              Aun no hay redes sociales cargadas.
+            </article>
+          ) : (
+            cooperative.socialLinks.map((socialLink) => (
+              <article className="rounded-lg border border-zinc-200 bg-white p-4" key={socialLink.id}>
+                <form action={updateSocialLinkAction} className="grid gap-2">
+                  <input name="socialLinkId" type="hidden" value={socialLink.id} />
+
+                  <AdminSelect defaultValue={socialLink.platform} name="platform" required>
+                    {socialPlatformOptions.map((platform) => (
+                      <option key={platform} value={platform}>
+                        {socialPlatformLabels[platform]}
+                      </option>
+                    ))}
+                  </AdminSelect>
+
+                  <AdminInput defaultValue={socialLink.url} name="url" placeholder="https://..." required />
+
+                  <div className="flex flex-wrap gap-2">
+                    <AdminButton className="w-fit rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
+                      Guardar edicion
+                    </AdminButton>
+                  </div>
+                </form>
+
+                <form action={deleteSocialLinkAction.bind(null, socialLink.id)} className="mt-3">
+                  <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="danger">
+                    Eliminar
+                  </AdminButton>
+                </form>
+              </article>
+            ))
+          )}
+        </div>
+
+        <form action={createSocialLinkAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+          <input name="cooperativeId" type="hidden" value={cooperative.id} />
+          <h4 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nueva red social</h4>
+
+          <AdminSelect defaultValue={SocialPlatform.FACEBOOK} name="platform" required>
+            {socialPlatformOptions.map((platform) => (
+              <option key={platform} value={platform}>
+                {socialPlatformLabels[platform]}
+              </option>
+            ))}
+          </AdminSelect>
+
+          <AdminInput name="url" placeholder="https://..." required />
+
+          <AdminButton className="rounded-md px-4 py-2" type="submit">
+            Agregar red social
           </AdminButton>
         </form>
       </AdminCard>

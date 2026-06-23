@@ -21,6 +21,7 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
         name: true,
         slug: true,
         municipalityCode: true,
+        foundedYear: true,
         logoUrl: true,
         slogan: true,
         descriptionText: true,
@@ -45,6 +46,14 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
             type: true,
             label: true,
             value: true,
+          },
+        },
+        socialLinks: {
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            id: true,
+            platform: true,
+            url: true,
           },
         },
         gallery: {

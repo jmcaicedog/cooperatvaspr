@@ -6,9 +6,15 @@ import {
   deleteContactAction,
   updateContactAction,
 } from "@/app/cooperativa/contactos/actions";
+import {
+  createSocialLinkAction,
+  deleteSocialLinkAction,
+  updateSocialLinkAction,
+} from "@/app/cooperativa/redes/actions";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { getScopedCooperative } from "@/lib/cooperative-scope";
 import { db } from "@/lib/db";
+import { socialPlatformLabels, socialPlatformOptions } from "@/lib/social-links";
 
 function ContactTypeIcon({ type }: { type: ContactType }) {
   if (type === ContactType.PHONE || type === ContactType.WHATSAPP) {
@@ -89,6 +95,16 @@ export default async function CooperativaContactosPage() {
       type: true,
       label: true,
       value: true,
+    },
+  });
+
+  const socialLinks = await db.socialLink.findMany({
+    where: { cooperativeId: cooperative.id },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      platform: true,
+      url: true,
     },
   });
 
@@ -199,6 +215,87 @@ export default async function CooperativaContactosPage() {
 
         <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
           Agregar contacto
+        </button>
+      </form>
+
+      <div className="space-y-3">
+        {socialLinks.length === 0 ? (
+          <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
+            Aun no hay redes sociales cargadas.
+          </article>
+        ) : (
+          socialLinks.map((socialLink) => (
+            <article className="rounded-lg border border-zinc-200 bg-white p-4" key={socialLink.id}>
+              <form action={updateSocialLinkAction} className="grid gap-2">
+                <input name="socialLinkId" type="hidden" value={socialLink.id} />
+
+                <select
+                  className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                  defaultValue={socialLink.platform}
+                  name="platform"
+                  required
+                >
+                  {socialPlatformOptions.map((platform) => (
+                    <option key={platform} value={platform}>
+                      {socialPlatformLabels[platform]}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                  defaultValue={socialLink.url}
+                  name="url"
+                  placeholder="https://..."
+                  required
+                />
+
+                <button
+                  className="w-fit rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                  type="submit"
+                >
+                  Guardar edicion
+                </button>
+              </form>
+
+              <form
+                action={async () => {
+                  "use server";
+                  await deleteSocialLinkAction(socialLink.id);
+                  revalidatePath("/cooperativa/contactos");
+                }}
+                className="mt-3"
+              >
+                <button className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white" type="submit">
+                  Eliminar
+                </button>
+              </form>
+            </article>
+          ))
+        )}
+      </div>
+
+      <form action={createSocialLinkAction} className="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4">
+        <input name="cooperativeId" type="hidden" value={cooperative.id} />
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nueva red social</h2>
+
+        <select className="rounded-md border border-zinc-300 px-3 py-2 text-sm" defaultValue={socialPlatformOptions[0]} name="platform" required>
+          {socialPlatformOptions.map((platform) => (
+            <option key={platform} value={platform}>
+              {socialPlatformLabels[platform]}
+            </option>
+          ))}
+        </select>
+
+        <input
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          name="url"
+          placeholder="https://..."
+          required
+        />
+
+        <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
+          Agregar red social
         </button>
       </form>
     </section>

@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 type RequestedPayload = {
   name?: string;
   municipalityCode?: string;
+  foundedYear?: number | null;
   slogan?: string | null;
   descriptionText?: string | null;
   descriptionRich?: { text?: string; html?: string } | null;
@@ -63,6 +64,7 @@ export default async function ReviewsPage() {
               name: true,
             },
           },
+          foundedYear: true,
           slogan: true,
           descriptionText: true,
           descriptionRich: true,
@@ -119,6 +121,11 @@ export default async function ReviewsPage() {
                     label: "Slogan",
                     from: item.cooperative.slogan ?? "",
                     to: payload.slogan ?? "",
+                  },
+                  {
+                    label: "Año de fundación",
+                    from: item.cooperative.foundedYear?.toString() ?? "",
+                    to: payload.foundedYear?.toString() ?? "",
                   },
                   {
                     label: "Descripcion breve",

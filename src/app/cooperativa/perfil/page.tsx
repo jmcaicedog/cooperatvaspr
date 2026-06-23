@@ -38,6 +38,7 @@ export default async function CooperativeProfilePage() {
         id: true,
         name: true,
         municipalityCode: true,
+        foundedYear: true,
         logoUrl: true,
         slogan: true,
         descriptionText: true,
