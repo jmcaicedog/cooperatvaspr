@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const NAV_ITEMS = [
   { href: "/cooperativa/perfil", label: "Perfil" },
@@ -35,25 +36,25 @@ export function CooperativeMobileMenu({ displayName, profileLabel }: Cooperative
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  return (
-    <>
-      <button
-        aria-expanded={open}
-        aria-label="Abrir menu"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
-        onClick={() => setOpen(true)}
-        type="button"
-      >
-        <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
-          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-        </svg>
-      </button>
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
 
-      {open ? (
-        <div className="fixed inset-0 z-50 bg-black/50 lg:hidden" onClick={() => setOpen(false)} role="presentation">
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  const menu = open && typeof document !== "undefined"
+    ? createPortal(
+        <div className="fixed inset-0 z-[1000] bg-black/50 lg:hidden" onClick={() => setOpen(false)} role="presentation">
           <div
             aria-modal="true"
-            className="absolute right-0 top-0 h-full w-72 bg-white p-4 shadow-xl"
+            className="absolute right-0 top-0 h-dvh w-72 max-w-[calc(100vw-1rem)] overflow-y-auto bg-white p-4 shadow-xl"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
           >
@@ -101,8 +102,26 @@ export function CooperativeMobileMenu({ displayName, profileLabel }: Cooperative
               })}
             </nav>
           </div>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        aria-expanded={open}
+        aria-label="Abrir menu"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
+        onClick={() => setOpen(true)}
+        type="button"
+      >
+        <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+        </svg>
+      </button>
+
+      {menu}
     </>
   );
 }
