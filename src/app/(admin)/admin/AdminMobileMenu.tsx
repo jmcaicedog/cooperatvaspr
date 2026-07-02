@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Resumen" },
@@ -36,34 +37,28 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  return (
-    <>
-      <button
-        aria-expanded={open}
-        aria-label="Abrir menú"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-zinc-700"
-        style={{ borderColor: "#c8dad1", backgroundColor: "#f7fbf9", color: "#1f3f35" }}
-        onClick={() => setOpen(true)}
-        type="button"
-      >
-        <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
-          <path
-            d="M4 7h16M4 12h16M4 17h16"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="1.8"
-          />
-        </svg>
-      </button>
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
 
-      {open ? (
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  const menu = open && typeof document !== "undefined"
+    ? createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-[1000] bg-black/50 lg:hidden"
           onClick={() => setOpen(false)}
           role="presentation"
         >
           <div
-            className="absolute right-0 top-0 h-full w-80 p-4 shadow-xl"
+            className="absolute right-0 top-0 h-dvh w-80 max-w-[calc(100vw-1rem)] overflow-y-auto p-4 shadow-xl"
             style={{ backgroundColor: "#ffffff" }}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -133,8 +128,32 @@ export function AdminMobileMenu({ displayName }: { displayName: string }) {
               })}
             </nav>
           </div>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        aria-expanded={open}
+        aria-label="Abrir menú"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-zinc-700"
+        style={{ borderColor: "#c8dad1", backgroundColor: "#f7fbf9", color: "#1f3f35" }}
+        onClick={() => setOpen(true)}
+        type="button"
+      >
+        <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M4 7h16M4 12h16M4 17h16"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeWidth="1.8"
+          />
+        </svg>
+      </button>
+
+      {menu}
     </>
   );
 }
