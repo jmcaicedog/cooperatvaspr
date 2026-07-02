@@ -6,6 +6,8 @@ import { AdminMobileMenu } from "@/app/(admin)/admin/AdminMobileMenu";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({
   children,
 }: Readonly<{

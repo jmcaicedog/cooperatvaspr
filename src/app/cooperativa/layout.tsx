@@ -6,6 +6,8 @@ import { CooperativeTabs } from "@/app/cooperativa/CooperativeTabs";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export default async function CooperativaLayout({
   children,
 }: Readonly<{

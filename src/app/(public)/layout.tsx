@@ -3,6 +3,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { ComingSoonPage } from "@/components/ComingSoonPage";
 import { getPlatformSettings } from "@/lib/platform-settings";
 
+export const dynamic = "force-dynamic";
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const settings = await getPlatformSettings();
 
