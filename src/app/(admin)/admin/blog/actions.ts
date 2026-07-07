@@ -322,7 +322,7 @@ export async function deletePostAction(
 
   const post = await db.blogPost.findUnique({
     where: { id },
-    select: { coverImageUrl: true },
+    select: { coverImageUrl: true, slug: true },
   });
   if (!post) return { ok: false, message: "Artículo no encontrado" };
 
