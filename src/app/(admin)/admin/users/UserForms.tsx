@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import {
   assignExistingUserAction,
   createCoopAdminUserAction,
+  createPlatformAdminUserAction,
   type AdminUserActionState,
 } from "@/app/(admin)/admin/users/actions";
 import {
@@ -26,6 +27,11 @@ const initialState: AdminUserActionState = {
 };
 
 export function UserForms({ cooperatives }: { cooperatives: CooperativeOption[] }) {
+  const [platformState, platformAction, platformPending] = useActionState(
+    createPlatformAdminUserAction,
+    initialState
+  );
+
   const [createState, createAction, createPending] = useActionState(
     createCoopAdminUserAction,
     initialState
@@ -37,7 +43,47 @@ export function UserForms({ cooperatives }: { cooperatives: CooperativeOption[] 
   );
 
   return (
-    <div className="admin-themed grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="admin-themed grid grid-cols-1 gap-4 xl:grid-cols-3">
+      <AdminCard className="grid gap-3 p-4">
+        <form action={platformAction} className="grid gap-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
+            Crear admin de plataforma
+          </h3>
+
+          <AdminInput
+            name="displayName"
+            placeholder="Nombre completo"
+            required
+          />
+          <AdminInput
+            name="email"
+            placeholder="correo@dominio.com"
+            required
+            type="email"
+          />
+          <AdminInput
+            name="password"
+            placeholder="Contraseña inicial"
+            required
+            type="password"
+          />
+
+          <AdminButton
+            className="rounded-md px-4 py-2"
+            disabled={platformPending}
+            type="submit"
+          >
+            {platformPending ? "Creando..." : "Crear administrador"}
+          </AdminButton>
+
+          {platformState.message ? (
+            <p className={`text-sm ${platformState.ok ? "text-emerald-700" : "text-rose-700"}`}>
+              {platformState.message}
+            </p>
+          ) : null}
+        </form>
+      </AdminCard>
+
       <AdminCard className="grid gap-3 p-4">
         <form action={createAction} className="grid gap-3">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
