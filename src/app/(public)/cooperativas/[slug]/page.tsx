@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Prisma } from "@prisma/client";
+import { BranchMapPanel } from "@/app/(public)/cooperativas/[slug]/BranchMapPanel";
 import { isMissingCooperativeBranchStorage } from "@/lib/cooperative-branches";
 import { db } from "@/lib/db";
 import { cooperativeTypeLabels } from "@/lib/cooperative-taxonomy";
@@ -225,31 +226,8 @@ export default async function CooperativaDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Branches */}
-          {coop.branches.length > 0 && (
-            <section>
-              <SectionHeading>Sucursales</SectionHeading>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {coop.branches.map((branch) => (
-                  <article
-                    key={branch.id}
-                    className="rounded-xl border p-4"
-                    style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
-                  >
-                    <p className="text-sm font-semibold" style={{ color: "var(--verde-impulso)" }}>
-                      {branch.label?.trim() || branch.municipality.name}
-                    </p>
-                    <p className="mt-1 text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-                      {branch.municipality.name}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>
-                      {branch.address}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
+          {/* Map */}
+          {coop.branches.length > 0 ? <BranchMapPanel cooperativeName={coop.name} branches={coop.branches} /> : null}
 
           {/* Services */}
           {coop.services.length > 0 && (
@@ -302,6 +280,37 @@ export default async function CooperativaDetailPage({ params }: Props) {
 
         {/* Sidebar */}
         <aside className="flex flex-col gap-6">
+          {/* Branches */}
+          {coop.branches.length > 0 && (
+            <div
+              className="rounded-2xl border p-5"
+              style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
+            >
+              <h3 className="text-sm font-bold mb-4" style={{ color: "var(--verde-impulso)" }}>
+                Sucursales
+              </h3>
+              <div className="space-y-3">
+                {coop.branches.map((branch) => (
+                  <article
+                    key={branch.id}
+                    className="rounded-xl border p-4"
+                    style={{ borderColor: "var(--border-subtle)", backgroundColor: "#fff" }}
+                  >
+                    <p className="text-sm font-semibold" style={{ color: "var(--verde-impulso)" }}>
+                      {branch.label?.trim() || branch.municipality.name}
+                    </p>
+                    <p className="mt-1 text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+                      {branch.municipality.name}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>
+                      {branch.address}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Contact info */}
           {(coop.contacts.length > 0 || coop.socialLinks.length > 0) && (
             <div
