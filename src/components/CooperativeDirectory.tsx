@@ -67,6 +67,7 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
         const haystack = [
           c.name,
           c.municipalityName,
+          ...c.searchableMunicipalityNames,
           c.slogan ?? "",
           ...c.tags,
         ]
@@ -74,7 +75,7 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
           .toLowerCase();
         if (!haystack.includes(q)) return false;
       }
-      if (selectedMunicipality && c.municipalityCode !== selectedMunicipality) return false;
+      if (selectedMunicipality && !c.municipalityCodes.includes(selectedMunicipality)) return false;
       if (selectedTypes.length > 0 && !selectedTypes.every((t) => c.cooperativeTypes.includes(t)))
         return false;
       if (selectedTags.length > 0 && !selectedTags.every((t) => c.tags.includes(t)))

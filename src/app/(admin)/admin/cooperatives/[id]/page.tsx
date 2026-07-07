@@ -39,7 +39,18 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
             isActive: true,
           },
         },
+        branches: {
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            id: true,
+            label: true,
+            address: true,
+            municipalityCode: true,
+            municipality: { select: { name: true } },
+          },
+        },
         contacts: {
+          where: { type: { not: "ADDRESS" } },
           orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
           select: {
             id: true,

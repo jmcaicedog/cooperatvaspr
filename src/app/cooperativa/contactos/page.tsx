@@ -88,7 +88,7 @@ export default async function CooperativaContactosPage() {
   }
 
   const contacts = await db.contactPoint.findMany({
-    where: { cooperativeId: cooperative.id },
+    where: { cooperativeId: cooperative.id, type: { not: ContactType.ADDRESS } },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     select: {
       id: true,
@@ -142,7 +142,6 @@ export default async function CooperativaContactosPage() {
                       <option value={ContactType.EMAIL}>Correo</option>
                       <option value={ContactType.WEBSITE}>Sitio web</option>
                       <option value={ContactType.WHATSAPP}>WhatsApp</option>
-                      <option value={ContactType.ADDRESS}>Direccion</option>
                     </select>
 
                     <input
@@ -197,7 +196,6 @@ export default async function CooperativaContactosPage() {
           <option value={ContactType.EMAIL}>Correo</option>
           <option value={ContactType.WEBSITE}>Sitio web</option>
           <option value={ContactType.WHATSAPP}>WhatsApp</option>
-          <option value={ContactType.ADDRESS}>Direccion</option>
         </select>
 
         <input

@@ -15,6 +15,15 @@ export type CooperativeListItem = {
   slug: string;
   municipalityCode: string;
   municipalityName: string;
+  municipalityEntries: Array<{ code: string; name: string }>;
+  municipalityCodes: string[];
+  searchableMunicipalityNames: string[];
+  branchLocations: Array<{
+    label: string | null;
+    address: string;
+    municipalityCode: string;
+    municipalityName: string;
+  }>;
   logoUrl: string | null;
   slogan: string | null;
   cooperativeTypes: string[];
@@ -22,6 +31,11 @@ export type CooperativeListItem = {
 };
 
 export function CooperativeCard({ coop }: { coop: CooperativeListItem }) {
+  const branchCount = coop.branchLocations.length;
+  const branchMunicipalityCount = new Set(
+    coop.branchLocations.map((branch) => branch.municipalityCode),
+  ).size;
+
   return (
     <Link
       href={`/cooperativas/${coop.slug}`}
@@ -65,15 +79,23 @@ export function CooperativeCard({ coop }: { coop: CooperativeListItem }) {
             {coop.name}
           </h3>
           {coop.municipalityName && (
-            <p className="mt-1 flex items-center gap-1 text-xs" style={{ color: "var(--text-muted)" }}>
-              <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true" className="shrink-0">
-                <path
-                  d="M5.5 0C3.01 0 1 2.01 1 4.5c0 3.38 4.5 8.5 4.5 8.5s4.5-5.12 4.5-8.5C10 2.01 7.99 0 5.5 0zm0 6.1a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2z"
-                  fill="currentColor"
-                />
-              </svg>
-              {coop.municipalityName}
-            </p>
+            <div className="mt-1 space-y-1">
+              <p className="flex items-center gap-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true" className="shrink-0">
+                  <path
+                    d="M5.5 0C3.01 0 1 2.01 1 4.5c0 3.38 4.5 8.5 4.5 8.5s4.5-5.12 4.5-8.5C10 2.01 7.99 0 5.5 0zm0 6.1a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2z"
+                    fill="currentColor"
+                  />
+                </svg>
+                {coop.municipalityName}
+              </p>
+
+              {branchCount > 0 ? (
+                <p className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>
+                  {branchCount} {branchCount === 1 ? "sucursal" : "sucursales"} en {branchMunicipalityCount} {branchMunicipalityCount === 1 ? "municipio" : "municipios"}
+                </p>
+              ) : null}
+            </div>
           )}
         </div>
 

@@ -25,8 +25,26 @@ type TooltipState = {
   cooperatives: Array<{
     name: string;
     slug: string;
+    branches: Array<{
+      label: string | null;
+      address: string;
+    }>;
   }>;
 } | null;
+
+function getBranchesForMunicipality(coop: CooperativeListItem, municipalityCode: string) {
+  return coop.branchLocations
+    .filter((branch) => branch.municipalityCode === municipalityCode)
+    .sort((a, b) => {
+      const labelA = (a.label?.trim() || a.address).toLocaleLowerCase("es");
+      const labelB = (b.label?.trim() || b.address).toLocaleLowerCase("es");
+      return labelA.localeCompare(labelB, "es");
+    })
+    .map((branch) => ({
+      label: branch.label,
+      address: branch.address,
+    }));
+}
 
 function getLabelWidth(label: string) {
   const estimated = Math.ceil(label.length * 6.4) + 16;
@@ -81,14 +99,23 @@ export function PuertoRicoMap({ cooperatives }: Props) {
   }, []);
 
   /** Set of municipality codes that have at least one cooperative */
-  const activeMunicipalities = new Set(cooperatives.map((c) => c.municipalityCode));
+  const activeMunicipalities = new Set(
+    cooperatives.flatMap((cooperative) => cooperative.municipalityCodes),
+  );
 
   /** Group cooperatives by municipality for the markers */
   const coopsByMunicipality = cooperatives.reduce<
     Record<string, CooperativeListItem[]>
   >((acc, coop) => {
-    if (!acc[coop.municipalityCode]) acc[coop.municipalityCode] = [];
-    acc[coop.municipalityCode].push(coop);
+    coop.municipalityCodes.forEach((municipalityCode) => {
+      if (!acc[municipalityCode]) {
+        acc[municipalityCode] = [];
+      }
+
+      if (!acc[municipalityCode].some((entry) => entry.id === coop.id)) {
+        acc[municipalityCode].push(coop);
+      }
+    });
     return acc;
   }, {});
 
@@ -100,15 +127,23 @@ export function PuertoRicoMap({ cooperatives }: Props) {
     ? municipalityEntries.find(([code]) => code === highlightedMunicipalityCode) ?? null
     : null;
 
-  const handleMarkerClick = (coop: CooperativeListItem) => {
+  const handleMarkerClick = (
+    coop: CooperativeListItem,
+    municipalityCode: string,
+    municipalityName: string,
+  ) => {
     if (activeSlug === coop.slug) {
       router.push(`/cooperativas/${coop.slug}`);
     } else {
       setActiveSlug(coop.slug);
-      setActiveMunicipalityCode(coop.municipalityCode);
+      setActiveMunicipalityCode(municipalityCode);
       setTooltip({
-        municipality: coop.municipalityName,
-        cooperatives: [{ name: coop.name, slug: coop.slug }],
+        municipality: municipalityName,
+        cooperatives: [{
+          name: coop.name,
+          slug: coop.slug,
+          branches: getBranchesForMunicipality(coop, municipalityCode),
+        }],
       });
     }
   };
@@ -124,8 +159,14 @@ export function PuertoRicoMap({ cooperatives }: Props) {
       .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
     setTooltip({
-      municipality: sortedCoops[0].municipalityName,
-      cooperatives: sortedCoops.map((coop) => ({ name: coop.name, slug: coop.slug })),
+      municipality:
+        sortedCoops[0]?.municipalityEntries.find((entry) => entry.code === municipalityCode)?.name ??
+        sortedCoops[0]?.municipalityName ?? "",
+      cooperatives: sortedCoops.map((coop) => ({
+        name: coop.name,
+        slug: coop.slug,
+        branches: getBranchesForMunicipality(coop, municipalityCode),
+      })),
     });
     setActiveMunicipalityCode(municipalityCode);
     setActiveSlug(sortedCoops.length === 1 ? sortedCoops[0].slug : null);
@@ -134,6 +175,8 @@ export function PuertoRicoMap({ cooperatives }: Props) {
   const renderMarker = ([code, coops]: [string, CooperativeListItem[]]) => {
     const coords = municipalityCentroids[code];
     if (!coords) return null;
+    const municipalityName =
+      coops[0]?.municipalityEntries.find((entry) => entry.code === code)?.name ?? coops[0]?.municipalityName ?? "";
 
     const isMultiple = coops.length > 1;
     const labelText = compactMapLabel
@@ -163,14 +206,18 @@ export function PuertoRicoMap({ cooperatives }: Props) {
         onBlur={() => setHoveredMunicipalityCode(null)}
         onClick={() => {
           if (coops.length === 1) {
-            handleMarkerClick(coops[0]);
+            handleMarkerClick(coops[0], code, municipalityName);
           } else {
             setTooltip({
-              municipality: coops[0].municipalityName,
+              municipality: municipalityName,
               cooperatives: coops
                 .slice()
                 .sort((a, b) => a.name.localeCompare(b.name, "es"))
-                .map((coop) => ({ name: coop.name, slug: coop.slug })),
+                .map((coop) => ({
+                  name: coop.name,
+                  slug: coop.slug,
+                  branches: getBranchesForMunicipality(coop, code),
+                })),
             });
             setActiveMunicipalityCode(code);
             setActiveSlug(null);
@@ -345,7 +392,25 @@ export function PuertoRicoMap({ cooperatives }: Props) {
                 className="flex items-center justify-between gap-3 py-2 rounded-md px-1.5 cursor-pointer transition-colors hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-verde-impulso"
                 style={{ color: "var(--text-secondary)" }}
               >
-                <p className="min-w-0 flex-1 text-left text-sm">{coop.name}</p>
+                <div className="min-w-0 flex-1 text-left">
+                  <p className="text-sm font-medium">{coop.name}</p>
+                  {coop.branches.length > 0 ? (
+                    <div className="mt-1 space-y-1.5">
+                      {coop.branches.map((branch, index) => (
+                        <div key={`${coop.slug}-branch-${index}`} className="rounded-md bg-black/5 px-2 py-1.5">
+                          {branch.label ? (
+                            <p className="text-[11px] font-semibold" style={{ color: "var(--verde-impulso)" }}>
+                              {branch.label}
+                            </p>
+                          ) : null}
+                          <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                            {branch.address}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
                 <button
                   onClick={(event) => {
                     event.stopPropagation();

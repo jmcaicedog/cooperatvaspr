@@ -41,12 +41,23 @@ export default async function CooperativaDetailPage({ params }: Props) {
       tags: true,
       municipalityCode: true,
       municipality: { select: { name: true } },
+      branches: {
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          label: true,
+          address: true,
+          municipalityCode: true,
+          municipality: { select: { name: true } },
+        },
+      },
       services: {
         where: { isActive: true },
         orderBy: { sortOrder: "asc" },
         select: { id: true, title: true, description: true },
       },
       contacts: {
+        where: { type: { not: "ADDRESS" } },
         orderBy: { sortOrder: "asc" },
         select: { id: true, type: true, label: true, value: true },
       },
@@ -94,12 +105,6 @@ export default async function CooperativaDetailPage({ params }: Props) {
   const hasRichDescription = normalizedRich.length > 0;
   const shouldShowPlainDescription =
     hasPlainDescription && (!hasRichDescription || normalizedPlain !== normalizedRich);
-
-  const primaryAddress =
-    coop.contacts.find((contact) => contact.type === "ADDRESS")?.value.trim() ?? "";
-  const mapEmbedSrc = primaryAddress
-    ? `https://www.google.com/maps?q=${encodeURIComponent(primaryAddress)}&output=embed`
-    : null;
 
   return (
     <div>
@@ -199,18 +204,28 @@ export default async function CooperativaDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Map */}
-          {mapEmbedSrc && (
+          {/* Branches */}
+          {coop.branches.length > 0 && (
             <section>
-              <SectionHeading>Ubicación</SectionHeading>
-              <div className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
-                <iframe
-                  title={`Mapa de ${coop.name}`}
-                  src={mapEmbedSrc}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="h-72 w-full border-0"
-                />
+              <SectionHeading>Sucursales</SectionHeading>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {coop.branches.map((branch) => (
+                  <article
+                    key={branch.id}
+                    className="rounded-xl border p-4"
+                    style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
+                  >
+                    <p className="text-sm font-semibold" style={{ color: "var(--verde-impulso)" }}>
+                      {branch.label?.trim() || branch.municipality.name}
+                    </p>
+                    <p className="mt-1 text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+                      {branch.municipality.name}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>
+                      {branch.address}
+                    </p>
+                  </article>
+                ))}
               </div>
             </section>
           )}

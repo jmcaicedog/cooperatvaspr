@@ -61,6 +61,14 @@ export default async function Home() {
           slug: true,
           municipalityCode: true,
           municipality: { select: { name: true } },
+          branches: {
+            select: {
+              label: true,
+              address: true,
+              municipalityCode: true,
+              municipality: { select: { name: true } },
+            },
+          },
           logoUrl: true,
           slogan: true,
           cooperativeTypes: true,
@@ -124,11 +132,29 @@ export default async function Home() {
     ]);
 
   const cooperatives = rawCoops.map((c) => ({
+    municipalityEntries: Array.from(
+      new Map(
+        [
+          { code: c.municipalityCode, name: c.municipality.name },
+          ...c.branches.map((branch) => ({ code: branch.municipalityCode, name: branch.municipality.name })),
+        ].map((entry) => [entry.code, entry]),
+      ).values(),
+    ),
     id: c.id,
     name: c.name,
     slug: c.slug,
     municipalityCode: c.municipalityCode,
     municipalityName: c.municipality.name,
+    municipalityCodes: Array.from(new Set([c.municipalityCode, ...c.branches.map((branch) => branch.municipalityCode)])),
+    searchableMunicipalityNames: Array.from(
+      new Set([c.municipality.name, ...c.branches.map((branch) => branch.municipality.name)]),
+    ),
+    branchLocations: c.branches.map((branch) => ({
+      label: branch.label,
+      address: branch.address,
+      municipalityCode: branch.municipalityCode,
+      municipalityName: branch.municipality.name,
+    })),
     logoUrl: c.logoUrl,
     slogan: c.slogan,
     cooperativeTypes: c.cooperativeTypes as string[],

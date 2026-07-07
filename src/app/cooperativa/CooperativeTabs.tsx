@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const tabs = [
   { href: "/cooperativa/perfil", label: "Perfil" },
   { href: "/cooperativa/servicios", label: "Servicios" },
+  { href: "/cooperativa/sucursales", label: "Sucursales" },
   { href: "/cooperativa/contactos", label: "Contactos" },
   { href: "/cooperativa/galeria", label: "Galeria" },
 ];

@@ -8,16 +8,23 @@ import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { canMutateCooperative } from "@/lib/cooperative-scope";
 import { db } from "@/lib/db";
 
+const contactTypeSchema = z.enum([
+  ContactType.PHONE,
+  ContactType.EMAIL,
+  ContactType.WEBSITE,
+  ContactType.WHATSAPP,
+]);
+
 const createContactSchema = z.object({
   cooperativeId: z.string().min(1),
-  type: z.nativeEnum(ContactType),
+  type: contactTypeSchema,
   label: z.string().trim().max(100).optional().or(z.literal("")),
   value: z.string().trim().min(2, "El valor de contacto es obligatorio."),
 });
 
 const updateContactSchema = z.object({
   contactId: z.string().min(1),
-  type: z.nativeEnum(ContactType),
+  type: contactTypeSchema,
   label: z.string().trim().max(100).optional().or(z.literal("")),
   value: z.string().trim().min(2, "El valor de contacto es obligatorio."),
 });
