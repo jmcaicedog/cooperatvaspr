@@ -176,7 +176,7 @@ export default async function CooperativaDetailPage({ params }: Props) {
             <section>
               <SectionHeading>Sobre la cooperativa</SectionHeading>
               {shouldShowPlainDescription ? (
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p className="mb-5 text-sm leading-[1.7]" style={{ color: "var(--text-secondary)" }}>
                   {plainDescription}
                 </p>
               ) : null}
