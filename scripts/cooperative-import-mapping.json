@@ -1,8 +1,8 @@
 {
   "categoryMap": {
-    "ahorro y credito": "CONSUMIDORES_USUARIOS",
-    "movimiento cooperativo": "CONSUMIDORES_USUARIOS",
-    "tipos diversos": "TRABAJO_ASOCIADO",
+    "ahorro y credito": "AHORRO_CREDITO",
+    "movimiento cooperativo": "MOVIMIENTO_COOPERATIVO",
+    "tipos diversos": "TIPOS_DIVERSOS",
     "trabajo asociado": "TRABAJO_ASOCIADO",
     "trabajo-asociado": "TRABAJO_ASOCIADO",
     "consumo": "CONSUMIDORES_USUARIOS",

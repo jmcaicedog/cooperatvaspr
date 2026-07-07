@@ -23,6 +23,9 @@ const REQUIRED_HEADERS = [
 ];
 
 const COOPERATIVE_TYPES = new Set([
+  "AHORRO_CREDITO",
+  "MOVIMIENTO_COOPERATIVO",
+  "TIPOS_DIVERSOS",
   "TRABAJO_ASOCIADO",
   "CONSUMIDORES_USUARIOS",
   "VIVIENDA",
@@ -30,6 +33,9 @@ const COOPERATIVE_TYPES = new Set([
 ]);
 
 const DEFAULT_TYPE_MAP = {
+  "ahorro y credito": "AHORRO_CREDITO",
+  "movimiento cooperativo": "MOVIMIENTO_COOPERATIVO",
+  "tipos diversos": "TIPOS_DIVERSOS",
   "trabajo asociado": "TRABAJO_ASOCIADO",
   "trabajo-asociado": "TRABAJO_ASOCIADO",
   trabajo: "TRABAJO_ASOCIADO",

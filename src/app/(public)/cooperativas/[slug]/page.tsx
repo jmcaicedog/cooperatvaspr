@@ -289,25 +289,23 @@ export default async function CooperativaDetailPage({ params }: Props) {
               <h3 className="text-sm font-bold mb-4" style={{ color: "var(--verde-impulso)" }}>
                 Sucursales
               </h3>
-              <div className="space-y-3">
+              <ul className="flex flex-col gap-3">
                 {coop.branches.map((branch) => (
-                  <article
-                    key={branch.id}
-                    className="rounded-xl border p-4"
-                    style={{ borderColor: "var(--border-subtle)", backgroundColor: "#fff" }}
-                  >
-                    <p className="text-sm font-semibold" style={{ color: "var(--verde-impulso)" }}>
-                      {branch.label?.trim() || branch.municipality.name}
-                    </p>
-                    <p className="mt-1 text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-                      {branch.municipality.name}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>
-                      {branch.address}
-                    </p>
-                  </article>
+                  <li key={branch.id} className="flex items-start gap-2.5">
+                    <ContactIcon type="ADDRESS" />
+                    <div className="min-w-0 text-sm">
+                      {branch.label?.trim() ? (
+                        <p className="mb-0.5 text-xs" style={{ color: "var(--text-muted)" }}>
+                          {branch.label.trim()}
+                        </p>
+                      ) : null}
+                      <p className="whitespace-pre-line leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                        {branch.address}
+                      </p>
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
 

@@ -1,4 +1,7 @@
 export const cooperativeTypeValues = [
+  "AHORRO_CREDITO",
+  "MOVIMIENTO_COOPERATIVO",
+  "TIPOS_DIVERSOS",
   "TRABAJO_ASOCIADO",
   "CONSUMIDORES_USUARIOS",
   "VIVIENDA",
@@ -8,6 +11,9 @@ export const cooperativeTypeValues = [
 export type CooperativeTypeValue = (typeof cooperativeTypeValues)[number];
 
 export const cooperativeTypeLabels: Record<CooperativeTypeValue, string> = {
+  AHORRO_CREDITO: "Ahorro y credito",
+  MOVIMIENTO_COOPERATIVO: "Movimiento cooperativo",
+  TIPOS_DIVERSOS: "Tipos diversos",
   TRABAJO_ASOCIADO: "Trabajo asociado",
   CONSUMIDORES_USUARIOS: "Consumidores/Usuarios",
   VIVIENDA: "Vivienda",
