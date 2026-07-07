@@ -25,7 +25,7 @@ import {
 } from "../actions";
 import type { BlogActionState } from "../actions";
 
-type Category = { id: string; name: string };
+type Category = { id: string; name: string; _count: { posts: number } };
 type Post = {
   id: string;
   title: string;
@@ -134,7 +134,7 @@ export function EditPostForm({
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name}
+                    {c.name} ({c._count.posts})
                   </option>
                 ))}
               </AdminSelect>

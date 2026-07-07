@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -37,24 +38,48 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         author: { select: { displayName: true } },
       },
     }),
-    db.blogCategory.findMany({ orderBy: { name: "asc" } }),
+    db.blogCategory.findMany({
+      orderBy: { name: "asc" },
+      include: {
+        _count: {
+          select: {
+            posts: true,
+          },
+        },
+      },
+    }),
   ]);
 
   if (!post) notFound();
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
-        <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Editar artículo</h1>
-        <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
-          Actualizado el{" "}
-          {post.updatedAt.toLocaleDateString("es-PR", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-          {post.author ? ` · ${post.author.displayName}` : ""}
-        </p>
+      <div
+        className="rounded-2xl border p-5 sm:p-6"
+        style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: "#0f2c24" }}>Editar artículo</h1>
+            <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
+              Actualizado el{" "}
+              {post.updatedAt.toLocaleDateString("es-PR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+              {post.author ? ` · ${post.author.displayName}` : ""}
+            </p>
+          </div>
+
+          <Link
+            href="/admin/blog/categories"
+            className="inline-flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm font-medium"
+            style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
+          >
+            Gestionar categorías
+          </Link>
+        </div>
       </div>
       <EditPostForm post={post} categories={categories} />
     </div>
