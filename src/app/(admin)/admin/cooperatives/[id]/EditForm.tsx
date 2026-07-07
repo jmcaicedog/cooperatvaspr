@@ -1,8 +1,9 @@
 "use client";
 
 import { ContactType, SocialPlatform } from "@prisma/client";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import {
   addGalleryImageByAdminAction,
@@ -164,6 +165,7 @@ export function EditForm({
   cooperative: CooperativeEditData;
   municipalities: MunicipalityOption[];
 }) {
+  const router = useRouter();
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const [selectedLogoName, setSelectedLogoName] = useState("");
   const [state, action, pending] = useActionState(updateCooperativeByAdminAction, initialState);
@@ -175,6 +177,12 @@ export function EditForm({
     addGalleryImageByAdminAction,
     initialMediaState
   );
+
+  useEffect(() => {
+    if (state.ok || logoState.ok || galleryState.ok) {
+      router.refresh();
+    }
+  }, [galleryState.ok, logoState.ok, router, state.ok]);
 
   const galleryLimitReached = cooperative.gallery.length >= 5;
   const rich =

@@ -5,6 +5,21 @@ export const richTextPayloadSchema = z.object({
   text: z.string().trim().max(4000),
 });
 
+export function normalizeRichTextValue(input: { html: string; text: string }): {
+  html: string;
+  text: string;
+} {
+  const normalizedText = input.text.trim();
+  if (!normalizedText) {
+    return { html: "", text: "" };
+  }
+
+  return {
+    html: sanitizeBasicHtml(input.html),
+    text: normalizedText,
+  };
+}
+
 export function sanitizeBasicHtml(input: string): string {
   return input
     // Remove script tags and their entire content

@@ -149,3 +149,16 @@ html {
   color: var(--azul-compromiso);
   text-decoration: underline;
 }
+
+.prose-coop strong,
+.prose-coop b {
+  font-weight: 700;
+  color: inherit;
+}
+
+.prose-coop span[style*="font-weight:bold"],
+.prose-coop span[style*="font-weight: bold"],
+.prose-coop span[style*="font-weight:700"],
+.prose-coop span[style*="font-weight: 700"] {
+  font-weight: 700;
+}

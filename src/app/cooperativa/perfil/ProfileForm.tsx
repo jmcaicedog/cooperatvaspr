@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import {
   removeCooperativeLogoAction,
@@ -42,10 +43,17 @@ export function ProfileForm({
   cooperative: CooperativeProfileData;
   municipalities: MunicipalityOption[];
 }) {
+  const router = useRouter();
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const [selectedLogoName, setSelectedLogoName] = useState("");
   const [state, action, pending] = useActionState(updateCooperativeProfileAction, initialState);
   const [logoState, logoAction, logoPending] = useActionState(uploadCooperativeLogoAction, initialState);
+
+  useEffect(() => {
+    if (state.ok || logoState.ok) {
+      router.refresh();
+    }
+  }, [logoState.ok, router, state.ok]);
 
   const rich =
     cooperative.descriptionRich &&

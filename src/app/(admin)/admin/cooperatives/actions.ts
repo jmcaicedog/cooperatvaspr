@@ -11,7 +11,7 @@ import {
 import { parseTagListInput } from "@/lib/cooperative-taxonomy";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { sanitizeBasicHtml, richTextPayloadSchema } from "@/lib/validators/rich-text";
+import { normalizeRichTextValue, richTextPayloadSchema } from "@/lib/validators/rich-text";
 import { cooperativeCreateSchema, toSlug } from "@/lib/validators/cooperative";
 
 export type CooperativeActionState = {
@@ -153,7 +153,7 @@ export async function updateCooperativeByAdminAction(
 
   const cooperative = await db.cooperative.findUnique({
     where: { id: cooperativeId },
-    select: { id: true },
+    select: { id: true, slug: true },
   });
 
   if (!cooperative) {
@@ -170,10 +170,7 @@ export async function updateCooperativeByAdminAction(
       descriptionText: parsed.data.descriptionText || null,
       cooperativeTypes: parsed.data.cooperativeTypes,
       tags: parsed.data.tags,
-      descriptionRich: {
-        html: sanitizeBasicHtml(parsedRich.data.html),
-        text: parsedRich.data.text,
-      },
+      descriptionRich: normalizeRichTextValue(parsedRich.data),
       reviewStatus: ReviewStatus.APPROVED,
       updatedById: actor.userId,
     },
@@ -181,6 +178,8 @@ export async function updateCooperativeByAdminAction(
 
   revalidatePath(`/admin/cooperatives/${cooperative.id}`);
   revalidatePath("/admin/cooperatives");
+  revalidatePath("/cooperativas");
+  revalidatePath(`/cooperativas/${cooperative.slug}`);
 
   return {
     ok: true,

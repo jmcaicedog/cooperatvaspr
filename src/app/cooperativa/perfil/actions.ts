@@ -12,7 +12,7 @@ import { parseTagListInput } from "@/lib/cooperative-taxonomy";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { canMutateCooperative } from "@/lib/cooperative-scope";
 import { db } from "@/lib/db";
-import { sanitizeBasicHtml, richTextPayloadSchema } from "@/lib/validators/rich-text";
+import { normalizeRichTextValue, richTextPayloadSchema } from "@/lib/validators/rich-text";
 import { cooperativeCreateSchema } from "@/lib/validators/cooperative";
 
 export type ProfileActionState = {
@@ -86,6 +86,7 @@ export async function updateCooperativeProfileAction(
     where: { id: cooperativeIdFromForm },
     select: {
       id: true,
+      slug: true,
       name: true,
       municipalityCode: true,
       foundedYear: true,
@@ -130,6 +131,8 @@ export async function updateCooperativeProfileAction(
     };
   }
 
+  const normalizedRich = normalizeRichTextValue(parsedRich.data);
+
   const newData = {
     name: parsedCore.data.name,
     municipalityCode: parsedCore.data.municipalityCode,
@@ -138,10 +141,7 @@ export async function updateCooperativeProfileAction(
     descriptionText: parsedCore.data.descriptionText || null,
     cooperativeTypes: parsedCore.data.cooperativeTypes,
     tags: parsedCore.data.tags,
-    descriptionRich: {
-      html: sanitizeBasicHtml(parsedRich.data.html),
-      text: parsedRich.data.text,
-    },
+    descriptionRich: normalizedRich,
   };
 
   const isMajorChange =
@@ -180,6 +180,8 @@ export async function updateCooperativeProfileAction(
 
     revalidatePath("/cooperativa/perfil");
     revalidatePath("/admin/cooperatives");
+    revalidatePath("/cooperativas");
+    revalidatePath(`/cooperativas/${cooperative.slug}`);
 
     return {
       ok: true,
@@ -477,6 +479,11 @@ export async function reviewChangeRequestAction(
       id: true,
       status: true,
       cooperativeId: true,
+      cooperative: {
+        select: {
+          slug: true,
+        },
+      },
       payload: true,
     },
   });
@@ -533,4 +540,9 @@ export async function reviewChangeRequestAction(
 
   revalidatePath("/admin/reviews");
   revalidatePath("/cooperativa/perfil");
+  revalidatePath("/cooperativas");
+
+  if (request.cooperative?.slug) {
+    revalidatePath(`/cooperativas/${request.cooperative.slug}`);
+  }
 }
