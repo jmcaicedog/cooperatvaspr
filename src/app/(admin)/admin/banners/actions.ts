@@ -30,6 +30,19 @@ const createBannerSchema = z.object({
     }),
 });
 
+const updateBannerDetailsSchema = z.object({
+  bannerId: z.string().trim().min(1, "Banner inválido."),
+  title: z.string().trim().min(2, "El título es obligatorio.").max(120, "Máximo 120 caracteres."),
+  targetUrl: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal(""))
+    .refine((value) => !value || /^https?:\/\//i.test(value), {
+      message: "La URL debe comenzar con http:// o https://",
+    }),
+});
+
 export type BannerActionState = {
   ok: boolean;
   message: string;
@@ -158,6 +171,40 @@ export async function toggleBannerActiveAction(bannerId: string): Promise<void> 
   await db.homeBanner.update({
     where: { id: banner.id },
     data: { isActive: !banner.isActive },
+  });
+
+  revalidatePath("/admin/banners");
+}
+
+export async function updateBannerTargetUrlAction(formData: FormData): Promise<void> {
+  const actor = await requirePlatformAdmin();
+
+  const parsed = updateBannerDetailsSchema.safeParse({
+    bannerId: formData.get("bannerId"),
+    title: formData.get("title"),
+    targetUrl: formData.get("targetUrl"),
+  });
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Datos inválidos.");
+  }
+
+  const banner = await db.homeBanner.findUnique({
+    where: { id: parsed.data.bannerId },
+    select: { id: true },
+  });
+
+  if (!banner) {
+    throw new Error("Banner no encontrado.");
+  }
+
+  await db.homeBanner.update({
+    where: { id: banner.id },
+    data: {
+      title: parsed.data.title,
+      targetUrl: parsed.data.targetUrl || null,
+      updatedById: actor.userId,
+    },
   });
 
   revalidatePath("/admin/banners");

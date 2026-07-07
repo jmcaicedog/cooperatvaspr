@@ -8,6 +8,7 @@ import {
   deleteBannerAction,
   type BannerActionState,
   toggleBannerActiveAction,
+  updateBannerTargetUrlAction,
 } from "@/app/(admin)/admin/banners/actions";
 import type { BannerSlotKey } from "@/lib/banner-config";
 
@@ -78,6 +79,32 @@ export function BannerSlotCard({
               <p className="mt-2 text-sm font-medium">{banner.title}</p>
               <p className="text-xs text-zinc-500">{banner.targetUrl ?? "Sin enlace"}</p>
               <p className="mt-1 text-xs">{banner.isActive ? "Activo" : "Inactivo"}</p>
+
+              <form action={updateBannerTargetUrlAction} className="mt-2 grid gap-2">
+                <input name="bannerId" type="hidden" value={banner.id} />
+                <input
+                  className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-xs"
+                  defaultValue={banner.title}
+                  maxLength={120}
+                  minLength={2}
+                  name="title"
+                  placeholder="Título del banner"
+                  required
+                />
+                <input
+                  className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-xs"
+                  defaultValue={banner.targetUrl ?? ""}
+                  name="targetUrl"
+                  placeholder="https://enlace-opcional.com"
+                  type="url"
+                />
+                <button
+                  className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
+                  type="submit"
+                >
+                  Guardar cambios
+                </button>
+              </form>
 
               <div className="mt-2 flex gap-2">
                 <form action={toggleBannerActiveAction.bind(null, banner.id)}>
