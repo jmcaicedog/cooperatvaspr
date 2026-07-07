@@ -92,6 +92,8 @@ export default async function CooperativaDetailPage({ params }: Props) {
 
   const hasPlainDescription = normalizedPlain.length > 0;
   const hasRichDescription = normalizedRich.length > 0;
+  const shouldShowPlainDescription =
+    hasPlainDescription && (!hasRichDescription || normalizedPlain !== normalizedRich);
 
   const primaryAddress =
     coop.contacts.find((contact) => contact.type === "ADDRESS")?.value.trim() ?? "";
@@ -173,6 +175,12 @@ export default async function CooperativaDetailPage({ params }: Props) {
           {(hasPlainDescription || hasRichDescription) && (
             <section>
               <SectionHeading>Sobre la cooperativa</SectionHeading>
+              {shouldShowPlainDescription ? (
+                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {plainDescription}
+                </p>
+              ) : null}
+
               {hasRichDescription ? (
                 richHtml ? (
                   <div
@@ -187,10 +195,6 @@ export default async function CooperativaDetailPage({ params }: Props) {
                     {richText}
                   </p>
                 )
-              ) : hasPlainDescription ? (
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {plainDescription}
-                </p>
               ) : null}
             </section>
           )}
