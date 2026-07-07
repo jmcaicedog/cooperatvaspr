@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Prisma } from "@prisma/client";
+import { isMissingCooperativeBranchStorage } from "@/lib/cooperative-branches";
 import { db } from "@/lib/db";
 import { cooperativeTypeLabels } from "@/lib/cooperative-taxonomy";
 import { socialPlatformLabels } from "@/lib/social-links";
@@ -26,51 +28,70 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CooperativaDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  const coop = await db.cooperative.findUnique({
-    where: { slug, status: "PUBLISHED" },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      foundedYear: true,
-      logoUrl: true,
-      slogan: true,
-      descriptionText: true,
-      descriptionRich: true,
-      cooperativeTypes: true,
-      tags: true,
-      municipalityCode: true,
-      municipality: { select: { name: true } },
-      branches: {
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-        select: {
-          id: true,
-          label: true,
-          address: true,
-          municipalityCode: true,
-          municipality: { select: { name: true } },
-        },
-      },
-      services: {
-        where: { isActive: true },
-        orderBy: { sortOrder: "asc" },
-        select: { id: true, title: true, description: true },
-      },
-      contacts: {
-        where: { type: { not: "ADDRESS" } },
-        orderBy: { sortOrder: "asc" },
-        select: { id: true, type: true, label: true, value: true },
-      },
-      socialLinks: {
-        orderBy: { sortOrder: "asc" },
-        select: { id: true, platform: true, url: true },
-      },
-      gallery: {
-        orderBy: { sortOrder: "asc" },
-        select: { id: true, imageUrl: true, altText: true, isPrimary: true },
-      },
+  const baseSelect = Prisma.validator<Prisma.CooperativeSelect>()({
+    id: true,
+    name: true,
+    slug: true,
+    foundedYear: true,
+    logoUrl: true,
+    slogan: true,
+    descriptionText: true,
+    descriptionRich: true,
+    cooperativeTypes: true,
+    tags: true,
+    municipalityCode: true,
+    municipality: { select: { name: true } },
+    services: {
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, title: true, description: true },
+    },
+    contacts: {
+      where: { type: { not: "ADDRESS" } },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, type: true, label: true, value: true },
+    },
+    socialLinks: {
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, platform: true, url: true },
+    },
+    gallery: {
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, imageUrl: true, altText: true, isPrimary: true },
     },
   });
+
+  let coop;
+
+  try {
+    coop = await db.cooperative.findUnique({
+      where: { slug, status: "PUBLISHED" },
+      select: {
+        ...baseSelect,
+        branches: {
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            id: true,
+            label: true,
+            address: true,
+            municipalityCode: true,
+            municipality: { select: { name: true } },
+          },
+        },
+      },
+    });
+  } catch (error) {
+    if (!isMissingCooperativeBranchStorage(error)) {
+      throw error;
+    }
+
+    const fallback = await db.cooperative.findUnique({
+      where: { slug, status: "PUBLISHED" },
+      select: baseSelect,
+    });
+
+    coop = fallback ? { ...fallback, branches: [] } : null;
+  }
 
   if (!coop) notFound();
 

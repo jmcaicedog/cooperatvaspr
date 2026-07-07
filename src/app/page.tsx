@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { ComingSoonPage } from "@/components/ComingSoonPage";
 import { HeroBanner, SidebarBanner, type BannerItem } from "@/components/BannerComponents";
 import { CooperativeDirectory } from "@/components/CooperativeDirectory";
+import { isMissingCooperativeBranchStorage } from "@/lib/cooperative-branches";
 import { db } from "@/lib/db";
 import { getPlatformSettings } from "@/lib/platform-settings";
 import { CooperativeStatus, PostStatus } from "@prisma/client";
@@ -23,6 +24,56 @@ async function getActiveBanners(slot: "HERO" | "SIDEBAR_TOP" | "SIDEBAR_BOTTOM")
     orderBy: { sortOrder: "asc" },
     select: { id: true, title: true, imageUrl: true, targetUrl: true },
   });
+}
+
+async function getPublishedCooperatives() {
+  try {
+    return await db.cooperative.findMany({
+      where: { status: CooperativeStatus.PUBLISHED },
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        municipalityCode: true,
+        municipality: { select: { name: true } },
+        branches: {
+          select: {
+            label: true,
+            address: true,
+            municipalityCode: true,
+            municipality: { select: { name: true } },
+          },
+        },
+        logoUrl: true,
+        slogan: true,
+        cooperativeTypes: true,
+        tags: true,
+      },
+    });
+  } catch (error) {
+    if (!isMissingCooperativeBranchStorage(error)) {
+      throw error;
+    }
+
+    const cooperatives = await db.cooperative.findMany({
+      where: { status: CooperativeStatus.PUBLISHED },
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        municipalityCode: true,
+        municipality: { select: { name: true } },
+        logoUrl: true,
+        slogan: true,
+        cooperativeTypes: true,
+        tags: true,
+      },
+    });
+
+    return cooperatives.map((cooperative) => ({ ...cooperative, branches: [] }));
+  }
 }
 
 export default async function Home() {
@@ -52,29 +103,7 @@ export default async function Home() {
       getActiveBanners("HERO"),
       getActiveBanners("SIDEBAR_TOP"),
       getActiveBanners("SIDEBAR_BOTTOM"),
-      db.cooperative.findMany({
-        where: { status: CooperativeStatus.PUBLISHED },
-        orderBy: { name: "asc" },
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          municipalityCode: true,
-          municipality: { select: { name: true } },
-          branches: {
-            select: {
-              label: true,
-              address: true,
-              municipalityCode: true,
-              municipality: { select: { name: true } },
-            },
-          },
-          logoUrl: true,
-          slogan: true,
-          cooperativeTypes: true,
-          tags: true,
-        },
-      }),
+      getPublishedCooperatives(),
       db.municipality.findMany({
         orderBy: { name: "asc" },
         select: { code: true, name: true },

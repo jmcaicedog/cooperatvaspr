@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Prisma } from "@prisma/client";
 
 import { EditForm } from "@/app/(admin)/admin/cooperatives/[id]/EditForm";
 import { requirePlatformAdmin } from "@/lib/auth/session";
+import { isMissingCooperativeBranchStorage } from "@/lib/cooperative-branches";
 import { db } from "@/lib/db";
 
 type CooperativeDetailPageProps = {
@@ -13,71 +15,90 @@ export default async function CooperativeDetailPage({ params }: CooperativeDetai
   await requirePlatformAdmin();
   const { id } = await params;
 
-  const [cooperative, municipalities] = await Promise.all([
-    db.cooperative.findUnique({
-      where: { id },
+  const cooperativeBaseSelect = Prisma.validator<Prisma.CooperativeSelect>()({
+    id: true,
+    name: true,
+    slug: true,
+    municipalityCode: true,
+    foundedYear: true,
+    logoUrl: true,
+    slogan: true,
+    descriptionText: true,
+    descriptionRich: true,
+    cooperativeTypes: true,
+    tags: true,
+    status: true,
+    reviewStatus: true,
+    services: {
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
       select: {
         id: true,
-        name: true,
-        slug: true,
-        municipalityCode: true,
-        foundedYear: true,
-        logoUrl: true,
-        slogan: true,
-        descriptionText: true,
-        descriptionRich: true,
-        cooperativeTypes: true,
-        tags: true,
-        status: true,
-        reviewStatus: true,
-        services: {
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            isActive: true,
-          },
-        },
-        branches: {
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          select: {
-            id: true,
-            label: true,
-            address: true,
-            municipalityCode: true,
-            municipality: { select: { name: true } },
-          },
-        },
-        contacts: {
-          where: { type: { not: "ADDRESS" } },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          select: {
-            id: true,
-            type: true,
-            label: true,
-            value: true,
-          },
-        },
-        socialLinks: {
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          select: {
-            id: true,
-            platform: true,
-            url: true,
-          },
-        },
-        gallery: {
-          orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
-          select: {
-            id: true,
-            imageUrl: true,
-            altText: true,
-            isPrimary: true,
-          },
-        },
+        title: true,
+        description: true,
+        isActive: true,
       },
-    }),
+    },
+    contacts: {
+      where: { type: { not: "ADDRESS" } },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        type: true,
+        label: true,
+        value: true,
+      },
+    },
+    socialLinks: {
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        platform: true,
+        url: true,
+      },
+    },
+    gallery: {
+      orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        imageUrl: true,
+        altText: true,
+        isPrimary: true,
+      },
+    },
+  });
+
+  const [cooperative, municipalities] = await Promise.all([
+    (async () => {
+      try {
+        return await db.cooperative.findUnique({
+          where: { id },
+          select: {
+            ...cooperativeBaseSelect,
+            branches: {
+              orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+              select: {
+                id: true,
+                label: true,
+                address: true,
+                municipalityCode: true,
+                municipality: { select: { name: true } },
+              },
+            },
+          },
+        });
+      } catch (error) {
+        if (!isMissingCooperativeBranchStorage(error)) {
+          throw error;
+        }
+
+        const fallback = await db.cooperative.findUnique({
+          where: { id },
+          select: cooperativeBaseSelect,
+        });
+
+        return fallback ? { ...fallback, branches: [] } : null;
+      }
+    })(),
     db.municipality.findMany({
       orderBy: { name: "asc" },
       select: {
