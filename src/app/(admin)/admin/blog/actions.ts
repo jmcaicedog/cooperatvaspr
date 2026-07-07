@@ -12,7 +12,7 @@ import {
 } from "@/lib/cloudinary";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { sanitizeBasicHtml, richTextPayloadSchema } from "@/lib/validators/rich-text";
+import { normalizeRichTextValue, richTextPayloadSchema } from "@/lib/validators/rich-text";
 import { toSlug } from "@/lib/validators/cooperative";
 
 export type BlogActionState = {
@@ -61,6 +61,13 @@ async function ensureUniqueCategorySlug(
     const existing = await db.blogCategory.findUnique({ where: { slug: candidate } });
     if (!existing || existing.id === excludeId) return candidate;
     suffix++;
+  }
+}
+
+function revalidatePublicBlogPaths(slug?: string | null): void {
+  revalidatePath("/blog");
+  if (slug) {
+    revalidatePath(`/blog/${slug}`);
   }
 }
 
@@ -211,8 +218,16 @@ export async function updatePostAction(
 
   const { title, slug: rawSlug, excerpt, categoryId } = parsed.data;
   const slug = await ensureUniqueSlug(rawSlug ?? title, id);
-  const bodyHtml = sanitizeBasicHtml(richParsed.data.html);
-  const bodyText = richParsed.data.text;
+  const normalizedRich = normalizeRichTextValue(richParsed.data);
+
+  const previous = await db.blogPost.findUnique({
+    where: { id },
+    select: { slug: true },
+  });
+
+  if (!previous) {
+    return { ok: false, message: "Artículo no encontrado" };
+  }
 
   await db.blogPost.update({
     where: { id },
@@ -220,14 +235,18 @@ export async function updatePostAction(
       title,
       slug,
       excerpt: excerpt || null,
-      bodyHtml: bodyHtml || null,
-      bodyText: bodyText || null,
+      bodyHtml: normalizedRich.html || null,
+      bodyText: normalizedRich.text || null,
       categoryId,
     },
   });
 
   revalidatePath("/admin/blog");
   revalidatePath(`/admin/blog/${id}`);
+  revalidatePublicBlogPaths(previous.slug);
+  if (previous.slug !== slug) {
+    revalidatePublicBlogPaths(slug);
+  }
   return { ok: true, message: "Artículo guardado" };
 }
 
@@ -240,7 +259,10 @@ export async function publishPostAction(
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
 
-  const post = await db.blogPost.findUnique({ where: { id }, select: { status: true } });
+  const post = await db.blogPost.findUnique({
+    where: { id },
+    select: { status: true, slug: true },
+  });
   if (!post) return { ok: false, message: "Artículo no encontrado" };
 
   const newStatus: PostStatus =
@@ -256,6 +278,7 @@ export async function publishPostAction(
 
   revalidatePath("/admin/blog");
   revalidatePath(`/admin/blog/${id}`);
+  revalidatePublicBlogPaths(post.slug);
   return {
     ok: true,
     message: newStatus === "PUBLISHED" ? "Artículo publicado" : "Artículo despublicado",
@@ -271,6 +294,12 @@ export async function archivePostAction(
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
 
+  const post = await db.blogPost.findUnique({
+    where: { id },
+    select: { slug: true },
+  });
+  if (!post) return { ok: false, message: "Artículo no encontrado" };
+
   await db.blogPost.update({
     where: { id },
     data: { status: "ARCHIVED", publishedAt: null },
@@ -278,6 +307,7 @@ export async function archivePostAction(
 
   revalidatePath("/admin/blog");
   revalidatePath(`/admin/blog/${id}`);
+  revalidatePublicBlogPaths(post.slug);
   return { ok: true, message: "Artículo archivado" };
 }
 
@@ -304,6 +334,7 @@ export async function deletePostAction(
   await db.blogPost.delete({ where: { id } });
 
   revalidatePath("/admin/blog");
+  revalidatePublicBlogPaths(post.slug ?? undefined);
   redirect("/admin/blog");
 }
 
@@ -324,7 +355,7 @@ export async function uploadPostCoverAction(
 
     const post = await db.blogPost.findUnique({
       where: { id },
-      select: { coverImageUrl: true },
+      select: { coverImageUrl: true, slug: true },
     });
     if (!post) return { ok: false, message: "Artículo no encontrado" };
 
@@ -345,6 +376,7 @@ export async function uploadPostCoverAction(
     });
 
     revalidatePath(`/admin/blog/${id}`);
+    revalidatePublicBlogPaths(post.slug);
     return { ok: true, message: "Imagen de portada actualizada" };
   } catch (error) {
     return {
@@ -366,7 +398,7 @@ export async function removePostCoverAction(
 
     const post = await db.blogPost.findUnique({
       where: { id },
-      select: { coverImageUrl: true },
+      select: { coverImageUrl: true, slug: true },
     });
     if (!post || !post.coverImageUrl) return { ok: false, message: "No hay imagen" };
 
@@ -379,6 +411,7 @@ export async function removePostCoverAction(
     });
 
     revalidatePath(`/admin/blog/${id}`);
+    revalidatePublicBlogPaths(post.slug);
     return { ok: true, message: "Imagen eliminada" };
   } catch (error) {
     return {

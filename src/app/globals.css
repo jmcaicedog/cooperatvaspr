@@ -116,6 +116,14 @@ html {
 }
 
 /* ─── Cooperative detail rich text ─────────────── */
+.prose-coop h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--verde-impulso);
+  margin-top: 1.75rem;
+  margin-bottom: 0.65rem;
+}
+
 .prose-coop h2 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -140,6 +148,14 @@ html {
   padding-left: 1.5rem;
   margin-bottom: 0.75rem;
   color: var(--text-secondary);
+}
+
+.prose-coop ul {
+  list-style: disc;
+}
+
+.prose-coop ol {
+  list-style: decimal;
 }
 .prose-coop li {
   margin-bottom: 0.3rem;

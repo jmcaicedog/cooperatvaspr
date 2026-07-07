@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
 import {
@@ -46,6 +48,7 @@ export function EditPostForm({
   post: Post;
   categories: Category[];
 }) {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
 
@@ -58,6 +61,25 @@ export function EditPostForm({
     removePostCoverAction,
     initial,
   );
+
+  useEffect(() => {
+    if (
+      saveState.ok ||
+      publishState.ok ||
+      archiveState.ok ||
+      uploadState.ok ||
+      removeCoverState.ok
+    ) {
+      router.refresh();
+    }
+  }, [
+    archiveState.ok,
+    publishState.ok,
+    removeCoverState.ok,
+    router,
+    saveState.ok,
+    uploadState.ok,
+  ]);
 
   const statusColor: Record<string, string> = {
     DRAFT: "bg-zinc-100 text-zinc-700",
