@@ -56,9 +56,19 @@ async function validateBannerDimensions(file: File, slot: BannerSlotKey): Promis
     throw new Error("No se pudo leer el tamaño de la imagen.");
   }
 
-  if (dimensions.width !== config.width || dimensions.height !== config.height) {
+  if (dimensions.width < config.width || dimensions.height < config.height) {
     throw new Error(
-      `Dimensiones inválidas para ${config.label}. Requerido: ${config.width}x${config.height}px.`
+      `Dimensiones insuficientes para ${config.label}. Mínimo recomendado: ${config.width}x${config.height}px.`
+    );
+  }
+
+  const requiredRatio = config.width / config.height;
+  const uploadedRatio = dimensions.width / dimensions.height;
+  const ratioDelta = Math.abs(uploadedRatio - requiredRatio);
+
+  if (ratioDelta > 0.03) {
+    throw new Error(
+      `Proporción inválida para ${config.label}. Usa una imagen ${config.width}:${config.height} (ej. ${config.width}x${config.height}px).`
     );
   }
 }

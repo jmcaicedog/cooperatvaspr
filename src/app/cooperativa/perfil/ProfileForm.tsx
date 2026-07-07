@@ -88,7 +88,7 @@ export function ProfileForm({
         <form action={logoAction} className="grid gap-3 md:max-w-md">
           <input name="cooperativeId" type="hidden" value={cooperative.id} />
           <input
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/jpg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
             className="hidden"
             name="logoFile"
             onChange={(event) => {

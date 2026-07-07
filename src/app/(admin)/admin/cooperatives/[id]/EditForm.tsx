@@ -218,7 +218,7 @@ export function EditForm({
         <form action={logoAction} className="grid gap-3 md:max-w-md">
           <input name="cooperativeId" type="hidden" value={cooperative.id} />
           <input
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/jpg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
             className="hidden"
             name="logoFile"
             onChange={(event) => {
@@ -455,7 +455,7 @@ export function EditForm({
         <form action={galleryAction} className="grid gap-3 rounded-md border border-zinc-200 p-4 md:max-w-lg">
           <input name="cooperativeId" type="hidden" value={cooperative.id} />
           <AdminInput
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/jpg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
             disabled={galleryLimitReached || galleryPending}
             name="galleryFile"
             required

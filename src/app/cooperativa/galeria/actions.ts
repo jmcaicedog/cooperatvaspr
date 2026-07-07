@@ -13,7 +13,7 @@ import {
 } from "@/lib/cloudinary";
 
 const MAX_GALLERY_IMAGES = 5;
-const GALLERY_MAX_BYTES = 2 * 1024 * 1024;
+const GALLERY_MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const createGalleryImageSchema = z.object({

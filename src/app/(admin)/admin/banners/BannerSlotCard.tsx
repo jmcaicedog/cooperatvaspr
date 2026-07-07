@@ -125,7 +125,7 @@ export function BannerSlotCard({
         />
 
         <input
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/jpg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           className="sr-only"
           disabled={limitReached || pending}
           name="imageFile"

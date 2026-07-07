@@ -19,6 +19,46 @@ type CloudinaryConfig = {
   apiSecret: string;
 };
 
+const MIME_TYPE_ALIASES: Record<string, string> = {
+  "image/jpg": "image/jpeg",
+  "image/pjpeg": "image/jpeg",
+};
+
+function normalizeMimeType(value: string): string {
+  const lower = value.trim().toLowerCase();
+  if (!lower) {
+    return "";
+  }
+
+  return MIME_TYPE_ALIASES[lower] ?? lower;
+}
+
+function inferMimeTypeFromFilename(fileName: string): string {
+  const lower = fileName.trim().toLowerCase();
+  if (lower.endsWith(".jpeg") || lower.endsWith(".jpg")) {
+    return "image/jpeg";
+  }
+
+  if (lower.endsWith(".png")) {
+    return "image/png";
+  }
+
+  if (lower.endsWith(".webp")) {
+    return "image/webp";
+  }
+
+  return "";
+}
+
+function getNormalizedFileMimeType(file: File): string {
+  const fromBrowser = normalizeMimeType(file.type);
+  if (fromBrowser) {
+    return fromBrowser;
+  }
+
+  return inferMimeTypeFromFilename(file.name);
+}
+
 function getCloudinaryConfigFromUrl(value: string): CloudinaryConfig | null {
   try {
     const parsed = new URL(value);
@@ -95,13 +135,17 @@ export async function uploadImageToCloudinary(
   options: UploadImageOptions
 ): Promise<CloudinaryUploadResult> {
   const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
+  const normalizedAllowedTypes = options.allowedMimeTypes.map((mimeType) => normalizeMimeType(mimeType));
+  const fileMimeType = getNormalizedFileMimeType(file);
 
   if (file.size <= 0) {
     throw new Error("Selecciona un archivo de imagen.");
   }
 
-  if (!options.allowedMimeTypes.includes(file.type)) {
-    throw new Error("Formato no permitido. Usa JPG, PNG o WEBP.");
+  if (!fileMimeType || !normalizedAllowedTypes.includes(fileMimeType)) {
+    throw new Error(
+      `Formato no permitido${file.type ? ` (${file.type})` : ""}. Usa JPG, PNG o WEBP.`
+    );
   }
 
   if (file.size > options.maxBytes) {

@@ -120,7 +120,7 @@ export default async function CooperativaGaleriaPage() {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nueva imagen</h2>
 
         <input
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/jpg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
           name="imageFile"
           required
