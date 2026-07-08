@@ -129,7 +129,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     const queryMunicipality = searchParams.get("muni") ?? "";
     const queryTypes = parseListParam(searchParams.get("types")).filter((type) => cooperativeTypeSet.has(type));
     const queryTags = parseListParam(searchParams.get("tags"));
-    const queryView = searchParams.get("view") === "map" ? "map" : "cards";
     const queryPageRaw = Number.parseInt(searchParams.get("page") ?? "1", 10);
     const queryPage = Number.isFinite(queryPageRaw) && queryPageRaw > 0 ? queryPageRaw : 1;
 
@@ -137,7 +136,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     if (selectedMunicipality !== queryMunicipality) setSelectedMunicipality(queryMunicipality);
     if (!arraysEqual(selectedTypes, queryTypes)) setSelectedTypes(queryTypes);
     if (!arraysEqual(selectedTags, queryTags)) setSelectedTags(queryTags);
-    if (view !== queryView) setView(queryView);
     if (currentPage !== queryPage) setCurrentPage(queryPage);
   }, [searchParams]);
 
@@ -156,9 +154,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
     else params.delete("tags");
 
-    if (view === "map") params.set("view", "map");
-    else params.delete("view");
-
     if (currentPageSafe > 1) params.set("page", String(currentPageSafe));
     else params.delete("page");
 
@@ -172,7 +167,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     selectedMunicipality,
     selectedTypes,
     selectedTags,
-    view,
     currentPageSafe,
     pathname,
     router,
