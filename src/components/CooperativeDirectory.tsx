@@ -31,11 +31,6 @@ function parseListParam(raw: string | null): string[] {
   );
 }
 
-function arraysEqual(a: string[], b: string[]): boolean {
-  if (a.length !== b.length) return false;
-  return a.every((value, index) => value === b[index]);
-}
-
 export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -125,43 +120,32 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
   };
 
   useEffect(() => {
-    const querySearch = searchParams.get("q") ?? "";
-    const queryMunicipality = searchParams.get("muni") ?? "";
-    const queryTypes = parseListParam(searchParams.get("types")).filter((type) => cooperativeTypeSet.has(type));
-    const queryTags = parseListParam(searchParams.get("tags"));
-    const queryPageRaw = Number.parseInt(searchParams.get("page") ?? "1", 10);
-    const queryPage = Number.isFinite(queryPageRaw) && queryPageRaw > 0 ? queryPageRaw : 1;
+    const timer = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    if (search !== querySearch) setSearch(querySearch);
-    if (selectedMunicipality !== queryMunicipality) setSelectedMunicipality(queryMunicipality);
-    if (!arraysEqual(selectedTypes, queryTypes)) setSelectedTypes(queryTypes);
-    if (!arraysEqual(selectedTags, queryTags)) setSelectedTags(queryTags);
-    if (currentPage !== queryPage) setCurrentPage(queryPage);
-  }, [searchParams]);
+      if (search.trim()) params.set("q", search.trim());
+      else params.delete("q");
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+      if (selectedMunicipality) params.set("muni", selectedMunicipality);
+      else params.delete("muni");
 
-    if (search.trim()) params.set("q", search.trim());
-    else params.delete("q");
+      if (selectedTypes.length > 0) params.set("types", selectedTypes.join(","));
+      else params.delete("types");
 
-    if (selectedMunicipality) params.set("muni", selectedMunicipality);
-    else params.delete("muni");
+      if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
+      else params.delete("tags");
 
-    if (selectedTypes.length > 0) params.set("types", selectedTypes.join(","));
-    else params.delete("types");
+      if (currentPageSafe > 1) params.set("page", String(currentPageSafe));
+      else params.delete("page");
 
-    if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
-    else params.delete("tags");
+      const currentQuery = searchParams.toString();
+      const nextQuery = params.toString();
+      if (nextQuery !== currentQuery) {
+        router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+      }
+    }, 180);
 
-    if (currentPageSafe > 1) params.set("page", String(currentPageSafe));
-    else params.delete("page");
-
-    const currentQuery = searchParams.toString();
-    const nextQuery = params.toString();
-    if (nextQuery !== currentQuery) {
-      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
-    }
+    return () => window.clearTimeout(timer);
   }, [
     search,
     selectedMunicipality,
@@ -172,12 +156,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     router,
     searchParams,
   ]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
 
   const paginationNumbers = useMemo(() => {
     const pages = new Set<number>([1, totalPages, currentPageSafe - 1, currentPageSafe, currentPageSafe + 1]);

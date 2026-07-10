@@ -14,10 +14,6 @@ export function CooperativesSearchInput({ initialQuery }: CooperativesSearchInpu
   const [query, setQuery] = useState(initialQuery);
 
   useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
-
-  useEffect(() => {
     const timer = window.setTimeout(() => {
       const trimmed = query.trim();
       const initialTrimmed = initialQuery.trim();

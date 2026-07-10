@@ -145,7 +145,7 @@ export default async function CooperativesPage({ searchParams }: CooperativesPag
       </header>
 
       <div className="rounded-2xl border p-4 sm:p-5" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
-        <CooperativesSearchInput initialQuery={searchQuery} />
+        <CooperativesSearchInput key={searchQuery} initialQuery={searchQuery} />
 
         <p className="mt-3 text-xs" style={{ color: "#68867b" }}>
           Mostrando {pageStart}-{pageEnd} de {filteredCount} resultado{filteredCount === 1 ? "" : "s"}
