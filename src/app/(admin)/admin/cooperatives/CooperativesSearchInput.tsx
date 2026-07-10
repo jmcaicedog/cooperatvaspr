@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type CooperativesSearchInputProps = {
@@ -11,31 +10,36 @@ type CooperativesSearchInputProps = {
 export function CooperativesSearchInput({ initialQuery }: CooperativesSearchInputProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const trimmed = query.trim();
-      const initialTrimmed = initialQuery.trim();
+      const currentTrimmed = (searchParams.get("q") ?? "").trim();
 
       // Evita navegación redundante al hidratar, refrescar o paginar.
-      if (trimmed === initialTrimmed) {
+      if (trimmed === currentTrimmed) {
         return;
       }
 
-      const params = new URLSearchParams();
+      const params = new URLSearchParams(searchParams.toString());
 
       if (trimmed) {
         params.set("q", trimmed);
+      } else {
+        params.delete("q");
       }
+
+      params.delete("page");
 
       const nextQuery = params.toString();
       const nextHref = nextQuery ? `${pathname}?${nextQuery}` : pathname;
       router.replace(nextHref, { scroll: false });
-    }, 250);
+    }, 180);
 
     return () => window.clearTimeout(timer);
-  }, [initialQuery, pathname, query, router]);
+  }, [pathname, query, router, searchParams]);
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -57,13 +61,17 @@ export function CooperativesSearchInput({ initialQuery }: CooperativesSearchInpu
       </div>
 
       <div className="flex gap-2">
-        <Link
+        <button
+          type="button"
           className="rounded-lg border px-4 py-2 text-sm font-medium"
-          href="/admin/cooperatives"
           style={{ borderColor: "#c8dad1", color: "#2f5f51" }}
+          onClick={() => {
+            setQuery("");
+            router.replace(pathname, { scroll: false });
+          }}
         >
           Limpiar
-        </Link>
+        </button>
       </div>
     </div>
   );
