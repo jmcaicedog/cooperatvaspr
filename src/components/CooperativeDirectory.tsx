@@ -286,9 +286,7 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
-            {filtered.length === cooperatives.length
-              ? `${cooperatives.length} cooperativas`
-              : `${filtered.length} de ${cooperatives.length} cooperativas`}
+            {`${filtered.length} de ${cooperatives.length}`}
           </p>
           {view === "cards" && filtered.length > 0 && (
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
