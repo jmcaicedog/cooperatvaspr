@@ -43,6 +43,13 @@ const FOOTER_LINKS_BASE = [
       { href: "/login", label: "Acceso cooperativa" },
     ],
   },
+  {
+    heading: "Legal",
+    links: [
+      { href: "/privacidad", label: "Privacidad" },
+      { href: "/terminos", label: "Términos" },
+    ],
+  },
 ];
 
 export function SiteFooter({
@@ -63,6 +70,7 @@ export function SiteFooter({
   const footerColumns = [
     { ...FOOTER_LINKS_BASE[0], links: portalLinks },
     FOOTER_LINKS_BASE[1],
+    FOOTER_LINKS_BASE[2],
   ];
 
   return (
@@ -71,7 +79,7 @@ export function SiteFooter({
       style={{ backgroundColor: "var(--verde-impulso)", color: "rgba(255,255,255,0.7)" }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center w-fit">
