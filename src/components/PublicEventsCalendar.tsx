@@ -38,10 +38,6 @@ function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
-function endOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-}
-
 function isSameDay(a: Date, b: Date) {
   return (
     a.getFullYear() === b.getFullYear() &&
@@ -73,7 +69,6 @@ export function PublicEventsCalendar({ events }: Props) {
   );
 
   const monthStart = startOfMonth(cursor);
-  const monthEnd = endOfMonth(cursor);
   const monthGridStart = startOfWeek(monthStart);
   const monthGridDays = Array.from({ length: 42 }, (_, i) => addDays(monthGridStart, i));
 

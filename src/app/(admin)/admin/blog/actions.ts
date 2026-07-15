@@ -77,7 +77,7 @@ export async function createCategoryAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const parsed = categorySchema.safeParse({
     name: formData.get("name"),
@@ -102,7 +102,7 @@ export async function updateCategoryAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -130,7 +130,7 @@ export async function deleteCategoryAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -156,7 +156,7 @@ export async function createPostAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const parsed = postBaseSchema.safeParse({
     title: formData.get("title"),
@@ -191,7 +191,7 @@ export async function updatePostAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -254,7 +254,7 @@ export async function publishPostAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -289,7 +289,7 @@ export async function archivePostAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -315,7 +315,7 @@ export async function deletePostAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };

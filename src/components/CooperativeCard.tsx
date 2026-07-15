@@ -108,7 +108,7 @@ export function CooperativeCard({ coop }: { coop: CooperativeListItem }) {
             className="text-xs leading-relaxed line-clamp-2"
             style={{ color: "var(--text-muted)", fontStyle: "italic" }}
           >
-            "{coop.slogan}"
+            &quot;{coop.slogan}&quot;
           </p>
         )}
 

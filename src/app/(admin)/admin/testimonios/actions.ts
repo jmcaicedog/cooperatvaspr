@@ -31,7 +31,7 @@ export async function createTestimonialAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const parsed = testimonialSchema.safeParse({
     authorName: formData.get("authorName"),
@@ -68,7 +68,7 @@ export async function updateTestimonialAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -104,7 +104,7 @@ export async function togglePublishTestimonialAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -131,7 +131,7 @@ export async function deleteTestimonialAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };

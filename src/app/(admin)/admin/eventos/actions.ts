@@ -47,7 +47,7 @@ export async function createEventAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const parsed = eventBaseSchema.safeParse({
     title: formData.get("title"),
@@ -85,7 +85,7 @@ export async function updateEventAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -140,7 +140,7 @@ export async function togglePublishEventAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
@@ -165,7 +165,7 @@ export async function deleteEventAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  const auth = await requirePlatformAdmin();
+  await requirePlatformAdmin();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) return { ok: false, message: "ID inválido" };
