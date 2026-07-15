@@ -31,7 +31,7 @@ export async function createTestimonialAction(
   _prev: TestimonialActionState,
   formData: FormData,
 ): Promise<TestimonialActionState> {
-  await requirePlatformAdmin();
+  const auth = await requirePlatformAdmin();
 
   const parsed = testimonialSchema.safeParse({
     authorName: formData.get("authorName"),

@@ -47,7 +47,7 @@ export async function createEventAction(
   _prev: EventActionState,
   formData: FormData,
 ): Promise<EventActionState> {
-  await requirePlatformAdmin();
+  const auth = await requirePlatformAdmin();
 
   const parsed = eventBaseSchema.safeParse({
     title: formData.get("title"),

@@ -156,7 +156,7 @@ export async function createPostAction(
   _prev: BlogActionState,
   formData: FormData,
 ): Promise<BlogActionState> {
-  await requirePlatformAdmin();
+  const auth = await requirePlatformAdmin();
 
   const parsed = postBaseSchema.safeParse({
     title: formData.get("title"),
