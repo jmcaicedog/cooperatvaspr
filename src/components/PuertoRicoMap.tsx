@@ -288,12 +288,12 @@ export function PuertoRicoMap({ cooperatives }: Props) {
         projection="geoMercator"
         projectionConfig={{
           center: [-66.25, 18.2],
-          scale: 17000,
+          scale: 23000,
         }}
-        width={800}
-        height={380}
+        width={900}
+        height={400}
         style={{ width: "100%", height: "auto" }}
-        viewBox="0 0 800 380"
+        viewBox="0 0 900 400"
       >
         <Geographies geography={GEO_URL}>
           {({ geographies }) =>

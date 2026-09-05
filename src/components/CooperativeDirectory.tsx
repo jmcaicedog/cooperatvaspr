@@ -399,7 +399,7 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
         )
       ) : (
         <div
-          className="rounded-2xl border p-1"
+          className="rounded-2xl border"
           style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
         >
           <PuertoRicoMap cooperatives={filtered} />

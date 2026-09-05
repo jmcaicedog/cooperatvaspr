@@ -201,32 +201,6 @@ export default async function Home() {
           </div>
         )}
 
-        {/* Intro strip (when no hero banner) */}
-        {heroBanners.length === 0 && (
-          <div
-            className="w-full py-16 px-4 text-center"
-            style={{
-              background: `linear-gradient(135deg, var(--verde-impulso) 0%, #00482e 100%)`,
-            }}
-          >
-            <p
-              className="text-sm font-semibold uppercase tracking-widest mb-3"
-              style={{ color: "var(--verde-cooperativo)", fontFamily: "var(--font-noka)" }}
-            >
-              Puerto Rico
-            </p>
-            <h1
-              className="text-3xl sm:text-5xl font-bold text-white max-w-3xl mx-auto leading-tight"
-              style={{ fontFamily: "var(--font-noka)" }}
-            >
-              Directorio de Cooperativas
-            </h1>
-            <p className="mt-4 text-white/70 text-lg max-w-xl mx-auto">
-              Descubre las cooperativas de tu comunidad en toda la isla.
-            </p>
-          </div>
-        )}
-
         {/* Main layout: directory + optional sidebar */}
         <div id="directorio" className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
           <div className="flex flex-col lg:flex-row gap-8">
