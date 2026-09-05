@@ -42,7 +42,7 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
   const [selectedTypes, setSelectedTypes] = useState<string[]>(() =>
     parseListParam(searchParams.get("types")).filter((type) => cooperativeTypeSet.has(type))
   );
-  const [view, setView] = useState<ViewMode>(() => (searchParams.get("view") === "map" ? "map" : "cards"));
+  const [view, setView] = useState<ViewMode>(() => (searchParams.get("view") === "cards" ? "cards" : "map"));
   const [selectedTags, setSelectedTags] = useState<string[]>(() => parseListParam(searchParams.get("tags")));
   const [currentPage, setCurrentPage] = useState(() => {
     const raw = Number.parseInt(searchParams.get("page") ?? "1", 10);
@@ -399,7 +399,7 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
         )
       ) : (
         <div
-          className="rounded-2xl border p-4"
+          className="rounded-2xl border p-1"
           style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
         >
           <PuertoRicoMap cooperatives={filtered} />
