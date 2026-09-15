@@ -1,8 +1,8 @@
 {
   "categoryMap": {
     "ahorro y credito": "AHORRO_CREDITO",
-    "movimiento cooperativo": "MOVIMIENTO_COOPERATIVO",
-    "tipos diversos": "TIPOS_DIVERSOS",
+    "movimiento cooperativo": "ORGANISMOS_CENTRALES",
+    "organismos centrales": "ORGANISMOS_CENTRALES",
     "trabajo asociado": "TRABAJO_ASOCIADO",
     "trabajo-asociado": "TRABAJO_ASOCIADO",
     "consumo": "CONSUMIDORES_USUARIOS",
@@ -34,8 +34,12 @@
     "trabajo asociado": "TRABAJO_ASOCIADO",
     "consumidores/usuarios": "CONSUMIDORES_USUARIOS",
     "consumidores usuarios": "CONSUMIDORES_USUARIOS",
+    "mixta": "MIXTAS",
+    "mixtas": "MIXTAS",
     "vivienda": "VIVIENDA",
-    "energia": "ENERGIA"
+    "energia": "ENERGIA",
+    "seguros": "SEGUROS",
+    "juveniles": "JUVENILES"
   },
   "municipalityMap": {
     "san juan": "san-juan",

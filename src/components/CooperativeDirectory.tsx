@@ -43,17 +43,10 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     parseListParam(searchParams.get("types")).filter((type) => cooperativeTypeSet.has(type))
   );
   const [view, setView] = useState<ViewMode>(() => (searchParams.get("view") === "cards" ? "cards" : "map"));
-  const [selectedTags, setSelectedTags] = useState<string[]>(() => parseListParam(searchParams.get("tags")));
   const [currentPage, setCurrentPage] = useState(() => {
     const raw = Number.parseInt(searchParams.get("page") ?? "1", 10);
     return Number.isFinite(raw) && raw > 0 ? raw : 1;
   });
-
-  const allTags = useMemo(() => {
-    const set = new Set<string>();
-    cooperatives.forEach((c) => c.tags.forEach((t) => set.add(t)));
-    return Array.from(set).sort();
-  }, [cooperatives]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -73,11 +66,9 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
       if (selectedMunicipality && !c.municipalityCodes.includes(selectedMunicipality)) return false;
       if (selectedTypes.length > 0 && !selectedTypes.every((t) => c.cooperativeTypes.includes(t)))
         return false;
-      if (selectedTags.length > 0 && !selectedTags.every((t) => c.tags.includes(t)))
-        return false;
       return true;
     });
-  }, [cooperatives, search, selectedMunicipality, selectedTypes, selectedTags]);
+  }, [cooperatives, search, selectedMunicipality, selectedTypes]);
 
   const toggleType = (type: string) => {
     setSelectedTypes((prev) => {
@@ -88,25 +79,15 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     });
   };
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags((prev) => {
-      const next =
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-      setCurrentPage(1);
-      return next;
-    });
-  };
-
   const clearFilters = () => {
     setSearch("");
     setSelectedMunicipality("");
     setSelectedTypes([]);
-    setSelectedTags([]);
     setCurrentPage(1);
   };
 
   const hasActiveFilters =
-    search || selectedMunicipality || selectedTypes.length > 0 || selectedTags.length > 0;
+    search || selectedMunicipality || selectedTypes.length > 0;
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPageSafe = Math.min(currentPage, totalPages);
@@ -132,9 +113,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
       if (selectedTypes.length > 0) params.set("types", selectedTypes.join(","));
       else params.delete("types");
 
-      if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
-      else params.delete("tags");
-
       if (currentPageSafe > 1) params.set("page", String(currentPageSafe));
       else params.delete("page");
 
@@ -150,7 +128,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
     search,
     selectedMunicipality,
     selectedTypes,
-    selectedTags,
     currentPageSafe,
     pathname,
     router,
@@ -250,36 +227,6 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
           </div>
         </div>
 
-        {/* Tag pills (only show if tags exist) */}
-        {allTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-3 pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-            <span className="text-xs self-center mr-1" style={{ color: "var(--text-muted)" }}>
-              Etiquetas:
-            </span>
-            {allTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className="rounded-full border px-2.5 py-0.5 text-xs transition-colors"
-                style={
-                  selectedTags.includes(tag)
-                    ? {
-                        backgroundColor: "var(--azul-compromiso)",
-                        borderColor: "var(--azul-compromiso)",
-                        color: "#fff",
-                      }
-                    : {
-                        borderColor: "var(--border-subtle)",
-                        color: "var(--text-muted)",
-                        backgroundColor: "transparent",
-                      }
-                }
-              >
-                #{tag}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Results header */}

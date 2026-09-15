@@ -4,12 +4,14 @@ import { cooperativeTypeLabels } from "@/lib/cooperative-taxonomy";
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   AHORRO_CREDITO:        { bg: "#0d3b660f", text: "#0d3b66" },
-  MOVIMIENTO_COOPERATIVO:{ bg: "#7c3aed14", text: "#5b21b6" },
-  TIPOS_DIVERSOS:        { bg: "#fb923c1f", text: "#9a3412" },
+  ORGANISMOS_CENTRALES:  { bg: "#7c3aed14", text: "#5b21b6" },
   TRABAJO_ASOCIADO:      { bg: "#003024",  text: "#a5ec48" },
   CONSUMIDORES_USUARIOS: { bg: "#14bfed22", text: "#006b8a" },
+  MIXTAS:                { bg: "#f973161f", text: "#9a3412" },
   VIVIENDA:              { bg: "#a5ec4822", text: "#2e6a00" },
   ENERGIA:               { bg: "#fffe0022", text: "#7a6800" },
+  SEGUROS:               { bg: "#0ea5e922", text: "#0369a1" },
+  JUVENILES:             { bg: "#ec489922", text: "#9d174d" },
 };
 
 export type CooperativeListItem = {

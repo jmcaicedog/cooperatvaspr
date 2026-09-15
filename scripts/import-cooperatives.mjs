@@ -24,18 +24,20 @@ const REQUIRED_HEADERS = [
 
 const COOPERATIVE_TYPES = new Set([
   "AHORRO_CREDITO",
-  "MOVIMIENTO_COOPERATIVO",
-  "TIPOS_DIVERSOS",
+  "ORGANISMOS_CENTRALES",
   "TRABAJO_ASOCIADO",
   "CONSUMIDORES_USUARIOS",
+  "MIXTAS",
   "VIVIENDA",
   "ENERGIA",
+  "SEGUROS",
+  "JUVENILES",
 ]);
 
 const DEFAULT_TYPE_MAP = {
   "ahorro y credito": "AHORRO_CREDITO",
-  "movimiento cooperativo": "MOVIMIENTO_COOPERATIVO",
-  "tipos diversos": "TIPOS_DIVERSOS",
+  "movimiento cooperativo": "ORGANISMOS_CENTRALES",
+  "organismos centrales": "ORGANISMOS_CENTRALES",
   "trabajo asociado": "TRABAJO_ASOCIADO",
   "trabajo-asociado": "TRABAJO_ASOCIADO",
   trabajo: "TRABAJO_ASOCIADO",
@@ -43,9 +45,13 @@ const DEFAULT_TYPE_MAP = {
   consumidores: "CONSUMIDORES_USUARIOS",
   usuarios: "CONSUMIDORES_USUARIOS",
   consumo: "CONSUMIDORES_USUARIOS",
+  mixta: "MIXTAS",
+  mixtas: "MIXTAS",
   vivienda: "VIVIENDA",
   energia: "ENERGIA",
   energetica: "ENERGIA",
+  seguros: "SEGUROS",
+  juveniles: "JUVENILES",
 };
 
 const DEFAULT_SOCIAL_PLATFORMS = {

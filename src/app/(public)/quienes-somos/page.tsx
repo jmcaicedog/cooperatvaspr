@@ -30,7 +30,12 @@ export default function QuienesSomosPage() {
             <strong>cooperativas.pr</strong> es el directorio oficial de cooperativas en Puerto Rico.
             Nuestro propósito es visibilizar el movimiento cooperativo boricua, conectar a los
             ciudadanos con las organizaciones que transforman su comunidad y ofrecer a cada
-            cooperativa un espacio digital digno donde presentar sus servicios y valores.
+            cooperativa un espacio digital digno donde presentar sus servicios.
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            Este directorio es una iniciativa del Fondo de Inversión y Desarrollo Cooperativo
+            (FIDECOOP), una corporación sin fines de lucro creada por el Movimiento Cooperativo
+            puertorriqueño y cuenta con el apoyo de múltiples organismos centrales del cooperativismo.
           </p>
         </section>
 

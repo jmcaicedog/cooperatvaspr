@@ -22,6 +22,15 @@ export default function ServiciosPage() {
       </div>
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-12 flex flex-col gap-12">
+        <section className="flex flex-col gap-4">
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            Una cooperativa es una asociación de personas que se unen voluntariamente para hacer frente a sus necesidades y aspiraciones económicas, sociales y culturales comunes, por medio de una empresa de propiedad conjunta y controlada democráticamente.
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            En Puerto Rico, la mayoría de las cooperativas están organizadas conforme a la Ley General de Sociedades Cooperativas, la Ley de Cooperativas de Ahorro y Crédito y la Ley Especial de Cooperativas Juveniles. Otras cooperativas y organizaciones del cooperativismo cuentan tambien con su propio marco legal.
+          </p>
+        </section>
+
         {/* Service categories */}
         <section>
           <h2 className="text-xl font-bold mb-6" style={{ color: "var(--verde-impulso)" }}>
@@ -92,28 +101,52 @@ export default function ServiciosPage() {
 
 const COOP_TYPES = [
   {
-    color: "#a5ec48",
-    title: "Trabajo asociado",
+    color: "#0d3b66",
+    title: "Ahorro y Crédito",
     description:
-      "Cooperativas donde los propios trabajadores son dueños y operan la empresa colectivamente.",
+      "Son instituciones financieras organizadas para satisfacer las necesidades financieras de sus socios: fomentan el ahorro, reciben depósitos, ofrecen financiamiento y otros servicios financieros.",
+  },
+  {
+    color: "#a5ec48",
+    title: "Trabajo Asociado",
+    description:
+      "Cooperativas donde los propios trabajadores pueden ser dueños y administran democráticamente la empresa compartiendo sus beneficios y responsabilidades.",
   },
   {
     color: "#14bfed",
     title: "Consumidores y Usuarios",
     description:
-      "Organizaciones que compran o consumen bienes y servicios de forma colectiva para obtener mejores condiciones.",
+      "La que ha sido creada para satisfacer las necesidades de sus socios consumidores o usuarios quienes se organizan para adquirir los bienes y servicios que la cooperativa provee, bajo condiciones más favorables.",
+  },
+  {
+    color: "#f97316",
+    title: "Mixta",
+    description:
+      "Son cooperativas en las que participan conjuntamente socios usuarios/consumidores y socios trabajadores, u otras categorías, compartiendo la propiedad, el control y los beneficios de la organización conforme a los principios cooperativos.",
   },
   {
     color: "#fffe00",
     title: "Vivienda",
     description:
-      "Proyectos cooperativos de vivienda que ofrecen hogares asequibles y comunidad sólida.",
+      "La que es formada por personas o familias que se unen para desarrollar, adquirir, administrar o disfrutar de vivienda asequible de manera colectiva, siendo los propios socios quienes controlan democráticamente la entidad y se benefician de sus servicios.",
   },
   {
     color: "#003024",
     title: "Energía",
     description:
-      "Cooperativas de energía renovable que empoderan a las comunidades con independencia energética.",
+      "Sociedad cooperativa cuyos socios se organizan para desarrollar, producir, adquirir, distribuir o proveer energía y servicios eléctricos a la comunidad de manera colectiva, siendo los propios socios los dueños y administradores democráticos de la entidad.",
+  },
+  {
+    color: "#0ea5e9",
+    title: "Seguros",
+    description:
+      "Aseguradora organizada bajo el modelo cooperativo, propiedad de sus socios y administrada por ellos cuyo propósito es proveer seguros a sus socios y clientes conforme a los principios del cooperativismo.",
+  },
+  {
+    color: "#ec4899",
+    title: "Juveniles",
+    description:
+      "Las cooperativas juveniles son talleres prácticos donde los jóvenes desarrollan destrezas de liderazgo, administración, toma de decisiones y trabajo colectivo, al tiempo que satisfacen necesidades de su escuela o comunidad.",
   },
 ];
 
