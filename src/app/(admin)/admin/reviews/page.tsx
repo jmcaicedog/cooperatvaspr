@@ -76,6 +76,11 @@ export default async function ReviewsPage() {
     },
   });
 
+  const municipalities = await db.municipality.findMany({
+    select: { code: true, name: true },
+  });
+  const municipalityNameByCode = new Map(municipalities.map((municipality) => [municipality.code, municipality.name]));
+
   return (
     <section className="space-y-6">
       <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
@@ -115,7 +120,10 @@ export default async function ReviewsPage() {
                   {
                     label: "Municipio",
                     from: item.cooperative.municipality?.name ?? item.cooperative.municipalityCode,
-                    to: payload.municipalityCode ?? item.cooperative.municipalityCode,
+                    to:
+                      municipalityNameByCode.get(payload.municipalityCode ?? item.cooperative.municipalityCode) ??
+                      payload.municipalityCode ??
+                      item.cooperative.municipalityCode,
                   },
                   {
                     label: "Slogan",

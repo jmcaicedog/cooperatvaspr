@@ -8,7 +8,7 @@ import {
   extractCloudinaryPublicIdFromUrl,
   uploadImageToCloudinary,
 } from "@/lib/cloudinary";
-import { parseTagListInput } from "@/lib/cooperative-taxonomy";
+import { normalizeCooperativeTypeValues, parseTagListInput } from "@/lib/cooperative-taxonomy";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { canMutateCooperative } from "@/lib/cooperative-scope";
 import { db } from "@/lib/db";
@@ -496,6 +496,7 @@ export async function reviewChangeRequestAction(
     const payload = request.payload as {
       name: string;
       municipalityCode: string;
+      foundedYear?: number | null;
       slogan: string | null;
       descriptionText: string | null;
       cooperativeTypes: string[];
@@ -508,10 +509,11 @@ export async function reviewChangeRequestAction(
       data: {
         name: payload.name,
         municipalityCode: payload.municipalityCode,
+        foundedYear: payload.foundedYear ?? null,
         slogan: payload.slogan,
         descriptionText: payload.descriptionText,
-        cooperativeTypes: payload.cooperativeTypes as CooperativeType[],
-        tags: payload.tags,
+        cooperativeTypes: normalizeCooperativeTypeValues(payload.cooperativeTypes) as CooperativeType[],
+        tags: Array.isArray(payload.tags) ? payload.tags : [],
         descriptionRich: payload.descriptionRich,
         reviewStatus: ReviewStatus.APPROVED,
         updatedById: actor.userId,
@@ -535,6 +537,17 @@ export async function reviewChangeRequestAction(
         reviewedAt: new Date(),
         notes: "Cambio rechazado por plataforma",
       },
+    });
+  }
+
+  const stillPending = await db.cooperativeChangeRequest.count({
+    where: { cooperativeId: request.cooperativeId, status: ChangeRequestStatus.PENDING },
+  });
+
+  if (stillPending === 0) {
+    await db.cooperative.update({
+      where: { id: request.cooperativeId },
+      data: { reviewStatus: ReviewStatus.APPROVED },
     });
   }
 

@@ -24,6 +24,38 @@ export const cooperativeTypeLabels: Record<CooperativeTypeValue, string> = {
   JUVENILES: "Juveniles",
 };
 
+const legacyCooperativeTypeMap: Record<string, CooperativeTypeValue | null> = {
+  MOVIMIENTO_COOPERATIVO: "ORGANISMOS_CENTRALES",
+  TIPOS_DIVERSOS: null,
+};
+
+/** Normaliza valores heredados guardados en payloads JSON antes del cambio de enum. */
+export function normalizeCooperativeTypeValues(rawValues: unknown): CooperativeTypeValue[] {
+  if (!Array.isArray(rawValues)) {
+    return [];
+  }
+
+  const unique = new Set<CooperativeTypeValue>();
+
+  for (const rawValue of rawValues) {
+    if (typeof rawValue !== "string") {
+      continue;
+    }
+
+    if (cooperativeTypeValues.includes(rawValue as CooperativeTypeValue)) {
+      unique.add(rawValue as CooperativeTypeValue);
+      continue;
+    }
+
+    const mapped = legacyCooperativeTypeMap[rawValue];
+    if (mapped) {
+      unique.add(mapped);
+    }
+  }
+
+  return Array.from(unique);
+}
+
 function normalizeTag(rawTag: string): string {
   return rawTag
     .trim()

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { CooperativeStatus } from "@prisma/client";
+import { ChangeRequestStatus, CooperativeStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
 
@@ -18,7 +18,7 @@ export default async function AdminPage() {
   ] = await Promise.all([
     db.cooperative.count(),
     db.cooperative.count({ where: { status: CooperativeStatus.PUBLISHED } }),
-    db.cooperative.count({ where: { reviewStatus: "PENDING" } }),
+    db.cooperativeChangeRequest.count({ where: { status: ChangeRequestStatus.PENDING } }),
     db.homeBanner.count(),
     db.blogPost.count({ where: { status: "PUBLISHED" } }),
     db.event.count({ where: { startsAt: { gte: now }, isPublished: true } }),
