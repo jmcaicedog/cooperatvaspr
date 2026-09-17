@@ -150,11 +150,31 @@ export async function updateCooperativeProfileAction(
     !areSameArray(newData.cooperativeTypes, cooperative.cooperativeTypes);
 
   if (actor.role === UserRole.PLATFORM_ADMIN || !isMajorChange) {
+    if (actor.role === UserRole.PLATFORM_ADMIN) {
+      await db.cooperativeChangeRequest.updateMany({
+        where: { cooperativeId: cooperative.id, status: ChangeRequestStatus.PENDING },
+        data: {
+          status: ChangeRequestStatus.REJECTED,
+          reviewedById: actor.userId,
+          reviewedAt: new Date(),
+          notes: "Reemplazada por un ajuste directo de plataforma",
+        },
+      });
+    }
+
+    // Un cambio menor no cancela una solicitud mayor que siga en revisión.
+    const stillPending =
+      actor.role === UserRole.PLATFORM_ADMIN
+        ? 0
+        : await db.cooperativeChangeRequest.count({
+            where: { cooperativeId: cooperative.id, status: ChangeRequestStatus.PENDING },
+          });
+
     await db.cooperative.update({
       where: { id: cooperative.id },
       data: {
         ...newData,
-        reviewStatus: ReviewStatus.APPROVED,
+        reviewStatus: stillPending > 0 ? ReviewStatus.PENDING : ReviewStatus.APPROVED,
         updatedById: actor.userId,
       },
     });
@@ -192,24 +212,34 @@ export async function updateCooperativeProfileAction(
     };
   }
 
-  await db.cooperativeChangeRequest.create({
-    data: {
-      cooperativeId: cooperative.id,
-      requestedById: actor.userId,
-      severity: ChangeSeverity.MAJOR,
-      status: ChangeRequestStatus.PENDING,
-      payload: newData,
-      notes: "Cambio mayor enviado a revisión",
-    },
-  });
-
-  await db.cooperative.update({
-    where: { id: cooperative.id },
-    data: {
-      reviewStatus: ReviewStatus.PENDING,
-      updatedById: actor.userId,
-    },
-  });
+  await db.$transaction([
+    // Una cooperativa solo puede tener una solicitud viva: la ultima reemplaza a las anteriores.
+    db.cooperativeChangeRequest.updateMany({
+      where: { cooperativeId: cooperative.id, status: ChangeRequestStatus.PENDING },
+      data: {
+        status: ChangeRequestStatus.REJECTED,
+        reviewedAt: new Date(),
+        notes: "Reemplazada por una solicitud más reciente",
+      },
+    }),
+    db.cooperativeChangeRequest.create({
+      data: {
+        cooperativeId: cooperative.id,
+        requestedById: actor.userId,
+        severity: ChangeSeverity.MAJOR,
+        status: ChangeRequestStatus.PENDING,
+        payload: newData,
+        notes: "Cambio mayor enviado a revisión",
+      },
+    }),
+    db.cooperative.update({
+      where: { id: cooperative.id },
+      data: {
+        reviewStatus: ReviewStatus.PENDING,
+        updatedById: actor.userId,
+      },
+    }),
+  ]);
 
   revalidatePath("/cooperativa/perfil");
   revalidatePath("/admin/reviews");
@@ -467,10 +497,10 @@ export async function deleteCooperativeGalleryImageAction(formData: FormData): P
 export async function reviewChangeRequestAction(
   requestId: string,
   decision: "approve" | "reject"
-): Promise<void> {
+): Promise<ProfileActionState> {
   const actor = await requireCoopAdminOrPlatform();
   if (actor.role !== UserRole.PLATFORM_ADMIN) {
-    throw new Error("Solo plataforma puede revisar cambios.");
+    return { ok: false, message: "Solo plataforma puede revisar cambios." };
   }
 
   const request = await db.cooperativeChangeRequest.findUnique({
@@ -489,32 +519,66 @@ export async function reviewChangeRequestAction(
   });
 
   if (!request || request.status !== ChangeRequestStatus.PENDING) {
-    throw new Error("Solicitud inválida o ya procesada.");
+    return { ok: false, message: "Solicitud inválida o ya procesada." };
   }
 
   if (decision === "approve") {
-    const payload = request.payload as {
-      name: string;
-      municipalityCode: string;
-      foundedYear?: number | null;
-      slogan: string | null;
-      descriptionText: string | null;
-      cooperativeTypes: string[];
-      tags: string[];
-      descriptionRich: { html: string; text: string };
-    };
+    const rawPayload = (request.payload ?? {}) as Record<string, unknown>;
+
+    const parsedCore = cooperativeCreateSchema.safeParse({
+      name: rawPayload.name,
+      municipalityCode: rawPayload.municipalityCode,
+      foundedYear: rawPayload.foundedYear ?? undefined,
+      slogan: rawPayload.slogan ?? "",
+      descriptionText: rawPayload.descriptionText ?? "",
+      cooperativeTypes: normalizeCooperativeTypeValues(rawPayload.cooperativeTypes),
+      tags: Array.isArray(rawPayload.tags) ? rawPayload.tags : [],
+    });
+
+    if (!parsedCore.success) {
+      return {
+        ok: false,
+        message: `La solicitud contiene datos que ya no son válidos (${
+          parsedCore.error.issues[0]?.message ?? "formato desconocido"
+        }). Pide a la cooperativa que la reenvíe desde su perfil.`,
+      };
+    }
+
+    const parsedRich = richTextPayloadSchema.safeParse({
+      html: (rawPayload.descriptionRich as { html?: string } | null)?.html ?? "",
+      text: (rawPayload.descriptionRich as { text?: string } | null)?.text ?? "",
+    });
+
+    if (!parsedRich.success) {
+      return {
+        ok: false,
+        message:
+          "La descripción enriquecida de la solicitud ya no es válida. Pide a la cooperativa que la reenvíe desde su perfil.",
+      };
+    }
+
+    const municipalityExists = await db.municipality.count({
+      where: { code: parsedCore.data.municipalityCode },
+    });
+
+    if (municipalityExists === 0) {
+      return {
+        ok: false,
+        message: "El municipio solicitado ya no existe en el catálogo. Pide a la cooperativa que la reenvíe.",
+      };
+    }
 
     await db.cooperative.update({
       where: { id: request.cooperativeId },
       data: {
-        name: payload.name,
-        municipalityCode: payload.municipalityCode,
-        foundedYear: payload.foundedYear ?? null,
-        slogan: payload.slogan,
-        descriptionText: payload.descriptionText,
-        cooperativeTypes: normalizeCooperativeTypeValues(payload.cooperativeTypes) as CooperativeType[],
-        tags: Array.isArray(payload.tags) ? payload.tags : [],
-        descriptionRich: payload.descriptionRich,
+        name: parsedCore.data.name,
+        municipalityCode: parsedCore.data.municipalityCode,
+        foundedYear: parsedCore.data.foundedYear ?? null,
+        slogan: parsedCore.data.slogan || null,
+        descriptionText: parsedCore.data.descriptionText || null,
+        cooperativeTypes: parsedCore.data.cooperativeTypes as CooperativeType[],
+        tags: parsedCore.data.tags,
+        descriptionRich: normalizeRichTextValue(parsedRich.data),
         reviewStatus: ReviewStatus.APPROVED,
         updatedById: actor.userId,
       },
@@ -558,4 +622,9 @@ export async function reviewChangeRequestAction(
   if (request.cooperative?.slug) {
     revalidatePath(`/cooperativas/${request.cooperative.slug}`);
   }
+
+  return {
+    ok: true,
+    message: decision === "approve" ? "Cambio aprobado y publicado." : "Cambio rechazado.",
+  };
 }

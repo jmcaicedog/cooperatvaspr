@@ -1,9 +1,16 @@
 import { ChangeRequestStatus } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { reviewChangeRequestAction } from "@/app/cooperativa/perfil/actions";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+
+type ReviewsPageProps = {
+  searchParams: Promise<{
+    ok?: string;
+    message?: string;
+  }>;
+};
 
 type RequestedPayload = {
   name?: string;
@@ -42,8 +49,18 @@ function severityLabel(raw: string): string {
   return raw;
 }
 
-export default async function ReviewsPage() {
+function buildReviewsUrl(result: { ok: boolean; message: string }): string {
+  const query = new URLSearchParams({ ok: result.ok ? "1" : "0", message: result.message });
+  return `/admin/reviews?${query.toString()}`;
+}
+
+export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
   await requirePlatformAdmin();
+
+  const params = await searchParams;
+  const feedback = params.message
+    ? { ok: params.ok === "1", message: params.message.slice(0, 300) }
+    : null;
 
   const pending = await db.cooperativeChangeRequest.findMany({
     where: { status: ChangeRequestStatus.PENDING },
@@ -91,6 +108,19 @@ export default async function ReviewsPage() {
             : `${pending.length} solicitud${pending.length === 1 ? "" : "es"} pendiente${pending.length === 1 ? "" : "s"} de revisión`}
         </p>
       </header>
+
+      {feedback ? (
+        <p
+          className="rounded-xl border p-4 text-sm"
+          style={
+            feedback.ok
+              ? { borderColor: "#bfe3d0", backgroundColor: "#f1faf5", color: "#1f5c43" }
+              : { borderColor: "#f3c7c7", backgroundColor: "#fdf2f2", color: "#8c2f2f" }
+          }
+        >
+          {feedback.message}
+        </p>
+      ) : null}
 
       <div className="space-y-3">
         {pending.length === 0 ? (
@@ -183,8 +213,8 @@ export default async function ReviewsPage() {
                   <form
                     action={async () => {
                       "use server";
-                      await reviewChangeRequestAction(item.id, "approve");
-                      revalidatePath("/admin/reviews");
+                      const result = await reviewChangeRequestAction(item.id, "approve");
+                      redirect(buildReviewsUrl(result));
                     }}
                   >
                     <button
@@ -198,8 +228,8 @@ export default async function ReviewsPage() {
                   <form
                     action={async () => {
                       "use server";
-                      await reviewChangeRequestAction(item.id, "reject");
-                      revalidatePath("/admin/reviews");
+                      const result = await reviewChangeRequestAction(item.id, "reject");
+                      redirect(buildReviewsUrl(result));
                     }}
                   >
                     <button
