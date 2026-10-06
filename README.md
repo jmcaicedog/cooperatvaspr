@@ -34,6 +34,30 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Migraciones con Neon
+
+`npm run build` ejecuta `npm run prisma:deploy` antes de generar Prisma Client y
+compilar Next.js. Las migraciones usan una conexión directa para que los bloqueos
+de sesión de PostgreSQL no pasen por el pool de conexiones.
+
+- La aplicación sigue usando `DATABASE_URL` con el endpoint pooled.
+- Opcionalmente, configura `DIRECT_URL` con la conexión directa en Vercel y en
+  local. Debe apuntar a la misma base de datos y rama que `DATABASE_URL`.
+- Si no hay `DIRECT_URL`, el script reconoce los endpoints pooled de Neon y
+  elimina `-pooler` del hostname solo para el proceso de migración.
+- Para otras bases de datos, configura `DIRECT_URL` si requieren una conexión
+  distinta para las migraciones.
+
+El bloqueo de Prisma permanece habilitado. Si la migración falla, el build se
+detiene y muestra el error; no se omiten migraciones pendientes.
+
+Si un despliegue anterior mediante el pool dejó un bloqueo de sesión ocupado,
+el cambio a conexión directa no lo libera por sí solo. Antes de volver a
+desplegar, revisa las sesiones y libera únicamente la sesión inactiva que
+conserve el bloqueo de Prisma, con autorización del responsable de la base.
+El script no termina sesiones automáticamente. Requiere Node.js 20.12 o posterior.
+
 # cooperatvaspr
 
 ## Cloudinary integration (logo y galeria)
