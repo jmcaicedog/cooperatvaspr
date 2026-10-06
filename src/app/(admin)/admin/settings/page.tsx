@@ -30,6 +30,10 @@ function getErrorMessage(code: string | undefined): string | null {
     return "El mensaje de Próximamente no puede superar 280 caracteres.";
   }
 
+  if (code === "invalid_contact_settings") {
+    return "Revisa la información de contacto: el correo debe ser válido y los demás campos no pueden quedar vacíos.";
+  }
+
   return "No se pudieron guardar los ajustes.";
 }
 
@@ -168,6 +172,101 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             description="Activa o desactiva la sección del blog en el inicio. También controla el enlace al blog en el menú."
             defaultChecked={settings.homeShowBlog}
           />
+        </div>
+
+        <div className="space-y-4 rounded-2xl border p-5" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
+          <div>
+            <h3 className="text-lg font-semibold" style={{ color: "#123a2f" }}>Sección de contacto</h3>
+            <p className="mt-1 text-sm" style={{ color: "#5f7d72" }}>
+              Administra la información pública y la disponibilidad del formulario.
+            </p>
+          </div>
+
+          <ToggleRow
+            name="contactFormEnabled"
+            label="Mostrar formulario de contacto"
+            description="Al desactivarlo, se ocultará el formulario en la página pública de contacto."
+            defaultChecked={settings.contactFormEnabled}
+          />
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold" style={{ color: "#123a2f" }} htmlFor="contactEmail">
+                Correo electrónico
+              </label>
+              <input
+                id="contactEmail"
+                name="contactEmail"
+                type="email"
+                required
+                maxLength={254}
+                defaultValue={settings.contactEmail}
+                className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                style={{ borderColor: "#c8dad1" }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold" style={{ color: "#123a2f" }} htmlFor="contactLocation">
+                Ubicación
+              </label>
+              <input
+                id="contactLocation"
+                name="contactLocation"
+                required
+                maxLength={180}
+                defaultValue={settings.contactLocation}
+                className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                style={{ borderColor: "#c8dad1" }}
+              />
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <label className="block text-sm font-semibold" style={{ color: "#123a2f" }} htmlFor="contactHours">
+                Horario
+              </label>
+              <input
+                id="contactHours"
+                name="contactHours"
+                required
+                maxLength={180}
+                defaultValue={settings.contactHours}
+                className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                style={{ borderColor: "#c8dad1" }}
+              />
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <label className="block text-sm font-semibold" style={{ color: "#123a2f" }} htmlFor="contactTitle">
+                Título de la página
+              </label>
+              <input
+                id="contactTitle"
+                name="contactTitle"
+                required
+                maxLength={120}
+                defaultValue={settings.contactTitle}
+                className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                style={{ borderColor: "#c8dad1" }}
+              />
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <label className="block text-sm font-semibold" style={{ color: "#123a2f" }} htmlFor="contactIntro">
+                Párrafo inicial
+              </label>
+              <textarea
+                id="contactIntro"
+                name="contactIntro"
+                rows={3}
+                required
+                maxLength={500}
+                defaultValue={settings.contactIntro}
+                className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                style={{ borderColor: "#c8dad1" }}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end">

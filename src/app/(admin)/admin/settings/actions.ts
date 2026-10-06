@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -28,6 +29,14 @@ function parseOptionalDate(value: FormDataEntryValue | null): Date | null {
   return parsed;
 }
 
+const contactSettingsSchema = z.object({
+  contactEmail: z.string().trim().email().max(254),
+  contactLocation: z.string().trim().min(1).max(180),
+  contactHours: z.string().trim().min(1).max(180),
+  contactTitle: z.string().trim().min(1).max(120),
+  contactIntro: z.string().trim().min(1).max(500),
+});
+
 export async function updatePlatformSettingsAction(formData: FormData): Promise<void> {
   await requirePlatformAdmin();
 
@@ -35,9 +44,21 @@ export async function updatePlatformSettingsAction(formData: FormData): Promise<
   const homeShowEvents = parseBoolean(formData, "homeShowEvents");
   const homeShowTestimonials = parseBoolean(formData, "homeShowTestimonials");
   const homeShowBlog = parseBoolean(formData, "homeShowBlog");
+  const contactFormEnabled = parseBoolean(formData, "contactFormEnabled");
 
   const rawMessage = formData.get("comingSoonMessage");
   const comingSoonMessage = typeof rawMessage === "string" ? rawMessage.trim() : "";
+  const parsedContactSettings = contactSettingsSchema.safeParse({
+    contactEmail: formData.get("contactEmail") ?? "",
+    contactLocation: formData.get("contactLocation") ?? "",
+    contactHours: formData.get("contactHours") ?? "",
+    contactTitle: formData.get("contactTitle") ?? "",
+    contactIntro: formData.get("contactIntro") ?? "",
+  });
+
+  if (!parsedContactSettings.success) {
+    redirect("/admin/settings?error=invalid_contact_settings");
+  }
 
   let comingSoonLaunchAt: Date | null = null;
 
@@ -65,6 +86,8 @@ export async function updatePlatformSettingsAction(formData: FormData): Promise<
       homeShowEvents,
       homeShowTestimonials,
       homeShowBlog,
+      contactFormEnabled,
+      ...parsedContactSettings.data,
     },
     update: {
       comingSoonEnabled,
@@ -73,6 +96,8 @@ export async function updatePlatformSettingsAction(formData: FormData): Promise<
       homeShowEvents,
       homeShowTestimonials,
       homeShowBlog,
+      contactFormEnabled,
+      ...parsedContactSettings.data,
     },
   });
 
@@ -80,6 +105,7 @@ export async function updatePlatformSettingsAction(formData: FormData): Promise<
   revalidatePath("/", "page");
   revalidatePath("/eventos", "page");
   revalidatePath("/blog", "page");
+  revalidatePath("/contacto", "page");
 
   redirect("/admin/settings?saved=1");
 }

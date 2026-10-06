@@ -331,6 +331,12 @@ model PlatformSettings {
   homeShowEvents       Boolean  @default(true)
   homeShowTestimonials Boolean  @default(true)
   homeShowBlog         Boolean  @default(true)
+  contactFormEnabled   Boolean  @default(true)
+  contactEmail         String   @default("hola@cooperativas.pr")
+  contactLocation      String   @default("Puerto Rico")
+  contactHours         String   @default("Lunes a viernes, 9am – 5pm AST")
+  contactTitle         String   @default("Contacto")
+  contactIntro         String   @default("¿Tienes preguntas o deseas registrar tu cooperativa?")
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }

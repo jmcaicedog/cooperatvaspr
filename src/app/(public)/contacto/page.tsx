@@ -1,11 +1,37 @@
 import type { Metadata } from "next";
+import { getPlatformSettings } from "@/lib/platform-settings";
 
-export const metadata: Metadata = {
-  title: "Contacto",
-  description: "Ponte en contacto con el equipo de cooperativas.pr.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPlatformSettings();
+  return {
+    title: settings.contactTitle,
+    description: settings.contactIntro,
+  };
+}
 
-export default function ContactoPage() {
+export default async function ContactoPage() {
+  const settings = await getPlatformSettings();
+  const contactItems = [
+    {
+      icon: "✉️",
+      label: "Correo",
+      value: settings.contactEmail,
+      href: `mailto:${settings.contactEmail}`,
+    },
+    {
+      icon: "📍",
+      label: "Ubicación",
+      value: settings.contactLocation,
+      href: null,
+    },
+    {
+      icon: "🕐",
+      label: "Horario",
+      value: settings.contactHours,
+      href: null,
+    },
+  ];
+
   return (
     <div>
       {/* Page header */}
@@ -13,13 +39,17 @@ export default function ContactoPage() {
         className="w-full py-14 px-4 text-center"
         style={{ background: `linear-gradient(135deg, var(--verde-impulso) 0%, #00482e 100%)` }}
       >
-        <h1 className="text-3xl sm:text-4xl font-bold text-white">Contacto</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-white">{settings.contactTitle}</h1>
         <p className="mt-3 text-white/70 max-w-xl mx-auto">
-          ¿Tienes preguntas o deseas registrar tu cooperativa?
+          {settings.contactIntro}
         </p>
       </div>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div
+        className={`mx-auto grid max-w-3xl grid-cols-1 gap-10 px-4 py-12 sm:px-6 ${
+          settings.contactFormEnabled ? "md:grid-cols-2" : ""
+        }`}
+      >
         {/* Info column */}
         <div className="flex flex-col gap-6">
           <div>
@@ -33,7 +63,7 @@ export default function ContactoPage() {
           </div>
 
           <div className="flex flex-col gap-4">
-            {CONTACT_ITEMS.map((item) => (
+            {contactItems.map((item) => (
               <div key={item.label} className="flex items-start gap-3">
                 <div
                   className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
@@ -65,15 +95,17 @@ export default function ContactoPage() {
         </div>
 
         {/* Form column */}
-        <div
-          className="rounded-2xl border p-6"
-          style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
-        >
-          <h2 className="text-base font-bold mb-5" style={{ color: "var(--verde-impulso)" }}>
-            Envíanos un mensaje
-          </h2>
-          <ContactForm />
-        </div>
+        {settings.contactFormEnabled ? (
+          <div
+            className="rounded-2xl border p-6"
+            style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
+          >
+            <h2 className="text-base font-bold mb-5" style={{ color: "var(--verde-impulso)" }}>
+              Envíanos un mensaje
+            </h2>
+            <ContactForm />
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -85,24 +117,3 @@ import { ContactFormClient } from "./ContactFormClient";
 function ContactForm() {
   return <ContactFormClient />;
 }
-
-const CONTACT_ITEMS = [
-  {
-    icon: "✉️",
-    label: "Correo",
-    value: "hola@cooperativas.pr",
-    href: "mailto:hola@cooperativas.pr",
-  },
-  {
-    icon: "📍",
-    label: "Ubicación",
-    value: "Puerto Rico",
-    href: null,
-  },
-  {
-    icon: "🕐",
-    label: "Horario de respuesta",
-    value: "Lunes a viernes, 9am – 5pm AST",
-    href: null,
-  },
-];
