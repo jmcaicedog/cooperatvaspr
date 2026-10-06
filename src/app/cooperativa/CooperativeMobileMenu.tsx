@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { href: "/cooperativa/servicios", label: "Servicios" },
   { href: "/cooperativa/sucursales", label: "Sucursales" },
   { href: "/cooperativa/contactos", label: "Contactos" },
-  { href: "/cooperativa/galeria", label: "Galeria" },
+  { href: "/cooperativa/galeria", label: "Galería" },
 ];
 
 type CooperativeMobileMenuProps = {
@@ -40,7 +40,7 @@ export function CooperativeMobileMenu({ displayName, profileLabel }: Cooperative
     <>
       <button
         aria-expanded={open}
-        aria-label="Abrir menu"
+        aria-label="Abrir menú"
         className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
         onClick={() => setOpen(true)}
         type="button"
@@ -59,9 +59,9 @@ export function CooperativeMobileMenu({ displayName, profileLabel }: Cooperative
             role="dialog"
           >
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm font-semibold text-zinc-800">Menu cooperativa</p>
+              <p className="text-sm font-semibold text-zinc-800">Menú cooperativa</p>
               <button
-                aria-label="Cerrar menu"
+                aria-label="Cerrar menú"
                 className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
                 onClick={() => setOpen(false)}
                 type="button"
@@ -79,7 +79,7 @@ export function CooperativeMobileMenu({ displayName, profileLabel }: Cooperative
                 className="mt-2 inline-flex rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
                 href="/auth/logout"
               >
-                Cerrar sesion
+                Cerrar sesión
               </a>
             </div>
 

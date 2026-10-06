@@ -212,7 +212,7 @@ export function EditForm({
       <AdminCard className="space-y-4 p-6">
         <header className="space-y-1">
           <h3 className="text-base font-semibold">Logo</h3>
-          <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Maximo 2 MB.</p>
+          <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Máximo 2 MB.</p>
         </header>
 
         {cooperative.logoUrl ? (
@@ -281,7 +281,7 @@ export function EditForm({
             </AdminButton>
           </div>
 
-          <p className="text-xs text-zinc-600">{selectedLogoName || "Ningun archivo seleccionado."}</p>
+          <p className="text-xs text-zinc-600">{selectedLogoName || "Ningún archivo seleccionado."}</p>
         </form>
 
         {cooperative.logoUrl ? (
@@ -350,7 +350,7 @@ export function EditForm({
         </div>
 
         <div className="grid gap-1 text-sm">
-          <AdminLabel className="mb-0">Descripcion breve</AdminLabel>
+          <AdminLabel className="mb-0">Descripción breve</AdminLabel>
           <RichTextEditor
             defaultHtml={shortDescription.html}
             defaultText={shortDescription.text}
@@ -380,13 +380,13 @@ export function EditForm({
           <AdminInput
             defaultValue={cooperative.tags.join(", ")}
             name="tags"
-            placeholder="Ej. cafe, turismo, agroecologia"
+            placeholder="Ej. café, turismo, agroecología"
           />
           <span className="text-xs text-zinc-500">Separa cada palabra clave por coma.</span>
         </div>
 
         <div className="grid gap-1 text-sm">
-          <span>Descripcion enriquecida</span>
+          <span>Descripción enriquecida</span>
           <RichTextEditor defaultHtml={rich.html} defaultText={rich.text} name="descriptionRich" />
         </div>
 
@@ -401,24 +401,24 @@ export function EditForm({
 
       <AdminCard className="space-y-4 p-6">
         <header className="space-y-1">
-          <h3 className="text-base font-semibold">Galeria de imagenes</h3>
+          <h3 className="text-base font-semibold">Galería de imágenes</h3>
           <p className="text-xs text-zinc-600">
-            Opcional. Maximo 5 fotos por cooperativa. Formatos JPG, PNG o WEBP. Maximo 5 MB por imagen.
+            Opcional. Máximo 5 fotos por cooperativa. Formatos JPG, PNG o WEBP. Máximo 5 MB por imagen.
           </p>
-          <p className="text-xs font-medium text-zinc-700">{cooperative.gallery.length}/5 imagenes</p>
+          <p className="text-xs font-medium text-zinc-700">{cooperative.gallery.length}/5 imágenes</p>
         </header>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {cooperative.gallery.length === 0 ? (
             <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-              No hay imagenes en la galeria.
+              No hay imágenes en la galería.
             </article>
           ) : (
             cooperative.gallery.map((image) => (
               <article className="rounded-lg border border-zinc-200 bg-white p-3" key={image.id}>
                 <div className="relative h-40 w-full overflow-hidden rounded-md bg-zinc-100">
                   <Image
-                    alt={image.altText ?? "Imagen de galeria"}
+                    alt={image.altText ?? "Imagen de galería"}
                     className="object-contain"
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -489,7 +489,7 @@ export function EditForm({
             {galleryPending ? "Subiendo..." : "Agregar imagen"}
           </AdminButton>
           {galleryLimitReached ? (
-            <p className="text-xs text-amber-700">Se alcanzo el limite de 5 imagenes.</p>
+            <p className="text-xs text-amber-700">Se alcanzó el límite de 5 imágenes.</p>
           ) : null}
         </form>
 
@@ -509,7 +509,7 @@ export function EditForm({
         <div className="space-y-3">
           {cooperative.services.length === 0 ? (
             <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-              Aun no hay servicios cargados.
+              Aún no hay servicios cargados.
             </article>
           ) : (
             cooperative.services.map((service, index) => (
@@ -525,18 +525,18 @@ export function EditForm({
                       <AdminInput
                         defaultValue={service.title}
                         name="title"
-                        placeholder="Titulo del servicio"
+                        placeholder="Título del servicio"
                         required
                       />
                       <AdminTextarea
                         className="min-h-20"
                         defaultValue={service.description ?? ""}
                         name="description"
-                        placeholder="Descripcion"
+                        placeholder="Descripción"
                       />
                       <div className="flex flex-wrap items-center gap-2">
                         <AdminButton className="rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
-                          Guardar edicion
+                          Guardar edición
                         </AdminButton>
                         <p className="text-xs text-zinc-500">{service.isActive ? "Activo" : "Inactivo"}</p>
                       </div>
@@ -567,13 +567,13 @@ export function EditForm({
           <h4 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo servicio</h4>
           <AdminInput
             name="title"
-            placeholder="Titulo del servicio"
+            placeholder="Título del servicio"
             required
           />
           <AdminTextarea
             className="min-h-24"
             name="description"
-            placeholder="Descripcion"
+            placeholder="Descripción"
           />
           <AdminButton className="rounded-md px-4 py-2" type="submit">
             Agregar servicio
@@ -590,7 +590,7 @@ export function EditForm({
         <div className="space-y-3">
           {cooperative.branches.length === 0 ? (
             <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-              Aun no hay sucursales cargadas.
+              Aún no hay sucursales cargadas.
             </article>
           ) : (
             cooperative.branches.map((branch, index) => (
@@ -629,7 +629,7 @@ export function EditForm({
                       />
 
                       <AdminButton className="w-fit rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
-                        Guardar edicion
+                        Guardar edición
                       </AdminButton>
                     </form>
 
@@ -686,7 +686,7 @@ export function EditForm({
         <div className="space-y-3">
           {cooperative.contacts.length === 0 ? (
             <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-              Aun no hay contactos cargados.
+              Aún no hay contactos cargados.
             </article>
           ) : (
             cooperative.contacts.map((contact) => (
@@ -705,7 +705,7 @@ export function EditForm({
                         name="type"
                         required
                       >
-                        <option value={ContactType.PHONE}>Telefono</option>
+                        <option value={ContactType.PHONE}>Teléfono</option>
                         <option value={ContactType.EMAIL}>Correo</option>
                         <option value={ContactType.WEBSITE}>Sitio web</option>
                         <option value={ContactType.WHATSAPP}>WhatsApp</option>
@@ -725,7 +725,7 @@ export function EditForm({
                       />
 
                       <AdminButton className="w-fit rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
-                        Guardar edicion
+                        Guardar edición
                       </AdminButton>
                     </form>
 
@@ -746,7 +746,7 @@ export function EditForm({
           <h4 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo contacto</h4>
 
           <AdminSelect name="type" required>
-            <option value={ContactType.PHONE}>Telefono</option>
+            <option value={ContactType.PHONE}>Teléfono</option>
             <option value={ContactType.EMAIL}>Correo</option>
             <option value={ContactType.WEBSITE}>Sitio web</option>
             <option value={ContactType.WHATSAPP}>WhatsApp</option>
@@ -778,7 +778,7 @@ export function EditForm({
         <div className="space-y-3">
           {cooperative.socialLinks.length === 0 ? (
             <article className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-              Aun no hay redes sociales cargadas.
+              Aún no hay redes sociales cargadas.
             </article>
           ) : (
             cooperative.socialLinks.map((socialLink) => (
@@ -798,7 +798,7 @@ export function EditForm({
 
                   <div className="flex flex-wrap gap-2">
                     <AdminButton className="w-fit rounded-md px-3 py-1.5 text-xs" type="submit" variant="secondary">
-                      Guardar edicion
+                      Guardar edición
                     </AdminButton>
                   </div>
                 </form>

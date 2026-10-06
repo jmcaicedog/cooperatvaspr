@@ -273,7 +273,7 @@ export async function uploadCooperativeLogoAction(
   const file = parseFormFile(formData.get("logoFile"));
 
   if (!cooperativeId) {
-    return { ok: false, message: "Cooperativa invalida." };
+    return { ok: false, message: "Cooperativa inválida." };
   }
 
   if (!file) {
@@ -332,7 +332,7 @@ export async function removeCooperativeLogoAction(formData: FormData): Promise<v
   const cooperativeId = toOptionalText(formData.get("cooperativeId"));
 
   if (!cooperativeId) {
-    throw new Error("Cooperativa invalida.");
+    throw new Error("Cooperativa inválida.");
   }
 
   if (!canMutateCooperative(actor, cooperativeId)) {
@@ -374,11 +374,11 @@ export async function addCooperativeGalleryImageAction(
   const altText = toOptionalText(formData.get("altText"));
 
   if (!cooperativeId) {
-    return { ok: false, message: "Cooperativa invalida." };
+    return { ok: false, message: "Cooperativa inválida." };
   }
 
   if (!file) {
-    return { ok: false, message: "Selecciona una imagen para la galeria." };
+    return { ok: false, message: "Selecciona una imagen para la galería." };
   }
 
   if (!canMutateCooperative(actor, cooperativeId)) {
@@ -396,7 +396,7 @@ export async function addCooperativeGalleryImageAction(
   }
 
   if (totalImages >= MAX_GALLERY_IMAGES) {
-    return { ok: false, message: "La galeria permite un maximo de 5 imagenes." };
+    return { ok: false, message: "La galería permite un máximo de 5 imágenes." };
   }
 
   try {
@@ -418,7 +418,7 @@ export async function addCooperativeGalleryImageAction(
 
     revalidateCooperativeMediaViews(cooperative.id);
 
-    return { ok: true, message: "Imagen agregada a la galeria." };
+    return { ok: true, message: "Imagen agregada a la galería." };
   } catch (error) {
     return {
       ok: false,
@@ -432,7 +432,7 @@ export async function setPrimaryCooperativeGalleryImageAction(formData: FormData
   const imageId = toOptionalText(formData.get("imageId"));
 
   if (!imageId) {
-    throw new Error("Imagen invalida.");
+    throw new Error("Imagen inválida.");
   }
 
   const image = await db.galleryImage.findUnique({
@@ -467,7 +467,7 @@ export async function deleteCooperativeGalleryImageAction(formData: FormData): P
   const imageId = toOptionalText(formData.get("imageId"));
 
   if (!imageId) {
-    throw new Error("Imagen invalida.");
+    throw new Error("Imagen inválida.");
   }
 
   const image = await db.galleryImage.findUnique({

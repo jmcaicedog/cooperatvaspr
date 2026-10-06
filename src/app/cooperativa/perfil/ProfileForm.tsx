@@ -70,7 +70,7 @@ export function ProfileForm({
       <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
         <header className="space-y-1">
           <h2 className="text-base font-semibold">Logo</h2>
-          <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Maximo 2 MB.</p>
+          <p className="text-xs text-zinc-600">Opcional. Formatos JPG, PNG o WEBP. Máximo 2 MB.</p>
         </header>
 
         {cooperative.logoUrl ? (
@@ -138,7 +138,7 @@ export function ProfileForm({
             </button>
           </div>
 
-          <p className="text-xs text-zinc-600">{selectedLogoName || "Ningun archivo seleccionado."}</p>
+          <p className="text-xs text-zinc-600">{selectedLogoName || "Ningún archivo seleccionado."}</p>
         </form>
 
         {cooperative.logoUrl ? (
@@ -214,7 +214,7 @@ export function ProfileForm({
         </label>
 
         <label className="grid gap-1 text-sm">
-          <span>Descripcion breve</span>
+          <span>Descripción breve</span>
           <RichTextEditor
             defaultHtml={shortDescription.html}
             defaultText={shortDescription.text}
@@ -245,13 +245,13 @@ export function ProfileForm({
             className="rounded-md border border-zinc-300 px-3 py-2"
             defaultValue={cooperative.tags.join(", ")}
             name="tags"
-            placeholder="Ej. cafe, turismo, agroecologia"
+            placeholder="Ej. café, turismo, agroecología"
           />
           <span className="text-xs text-zinc-500">Separa cada palabra clave por coma.</span>
         </label>
 
         <div className="grid gap-1 text-sm">
-          <span>Descripcion enriquecida</span>
+          <span>Descripción enriquecida</span>
           <RichTextEditor defaultHtml={rich.html} defaultText={rich.text} name="descriptionRich" />
         </div>
 

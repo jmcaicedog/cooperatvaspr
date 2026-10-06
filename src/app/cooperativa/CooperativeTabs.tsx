@@ -8,7 +8,7 @@ const tabs = [
   { href: "/cooperativa/servicios", label: "Servicios" },
   { href: "/cooperativa/sucursales", label: "Sucursales" },
   { href: "/cooperativa/contactos", label: "Contactos" },
-  { href: "/cooperativa/galeria", label: "Galeria" },
+  { href: "/cooperativa/galeria", label: "Galería" },
 ];
 
 export function CooperativeTabs() {

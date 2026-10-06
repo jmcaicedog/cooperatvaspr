@@ -52,11 +52,11 @@ export async function createGalleryImageAction(formData: FormData): Promise<void
   }
 
   if (!file) {
-    throw new Error("Selecciona una imagen para la galeria.");
+    throw new Error("Selecciona una imagen para la galería.");
   }
 
   if (!canMutateCooperative(actor, parsed.data.cooperativeId)) {
-    throw new Error("No autorizado para editar la galeria de esta cooperativa.");
+    throw new Error("No autorizado para editar la galería de esta cooperativa.");
   }
 
   const totalImages = await db.galleryImage.count({
@@ -64,7 +64,7 @@ export async function createGalleryImageAction(formData: FormData): Promise<void
   });
 
   if (totalImages >= MAX_GALLERY_IMAGES) {
-    throw new Error("La galeria permite un maximo de 5 imagenes.");
+    throw new Error("La galería permite un máximo de 5 imágenes.");
   }
 
   const maxSortOrder = await db.galleryImage.aggregate({

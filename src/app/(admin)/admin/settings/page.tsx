@@ -19,15 +19,15 @@ function getErrorMessage(code: string | undefined): string | null {
   if (!code) return null;
 
   if (code === "invalid_date") {
-    return "La fecha del contador no es valida.";
+    return "La fecha del contador no es válida.";
   }
 
   if (code === "missing_countdown") {
-    return "Cuando activas Proximamente, debes definir una fecha y hora para el contador.";
+    return "Cuando activas Próximamente, debes definir una fecha y hora para el contador.";
   }
 
   if (code === "message_too_long") {
-    return "El mensaje de Proximamente no puede superar 280 caracteres.";
+    return "El mensaje de Próximamente no puede superar 280 caracteres.";
   }
 
   return "No se pudieron guardar los ajustes.";
@@ -77,11 +77,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
     <section className="space-y-6">
       <header className="rounded-2xl border p-5 sm:p-6" style={{ borderColor: "#d7e4dd", background: "linear-gradient(135deg, #f6fbf8 0%, #eff7f3 100%)" }}>
         <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#5f7d72" }}>
-          Configuracion del portal
+          Configuración del portal
         </p>
         <h2 className="mt-2 text-2xl font-semibold" style={{ color: "#0f2c24" }}>Ajustes de visibilidad</h2>
         <p className="mt-1 text-sm" style={{ color: "#4e6d62" }}>
-          Controla el modo Proximamente y las secciones activas del home.
+          Controla el modo Próximamente y las secciones activas del inicio.
         </p>
       </header>
 
@@ -99,12 +99,12 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
       <form action={updatePlatformSettingsAction} className="space-y-6">
         <div className="space-y-4 rounded-2xl border p-5" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
-          <h3 className="text-lg font-semibold" style={{ color: "#123a2f" }}>Modo Proximamente</h3>
+          <h3 className="text-lg font-semibold" style={{ color: "#123a2f" }}>Modo Próximamente</h3>
 
           <ToggleRow
             name="comingSoonEnabled"
-            label="Activar modo Proximamente"
-            description="Al activarlo, el portal publico mostrara una pagina temporal con contador regresivo."
+            label="Activar modo Próximamente"
+            description="Al activarlo, el portal público mostrará una página temporal con contador regresivo."
             defaultChecked={settings.comingSoonEnabled}
           />
 
@@ -120,10 +120,10 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               defaultValue={settings.comingSoonMessage}
               className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: "#c8dad1" }}
-              placeholder="Proximamente estaremos al aire."
+              placeholder="Próximamente estaremos al aire."
             />
             <p className="text-xs" style={{ color: "#5f7d72" }}>
-              Este texto se mostrara en la pagina de espera.
+              Este texto se mostrará en la página de espera.
             </p>
           </div>
 
@@ -140,32 +140,32 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               style={{ borderColor: "#c8dad1" }}
             />
             <p className="text-xs" style={{ color: "#5f7d72" }}>
-              Si el modo Proximamente esta activo, este valor es obligatorio.
+              Si el modo Próximamente está activo, este valor es obligatorio.
             </p>
           </div>
         </div>
 
         <div className="space-y-4 rounded-2xl border p-5" style={{ borderColor: "#d7e4dd", backgroundColor: "#ffffff" }}>
-          <h3 className="text-lg font-semibold" style={{ color: "#123a2f" }}>Secciones del home</h3>
+          <h3 className="text-lg font-semibold" style={{ color: "#123a2f" }}>Secciones del inicio</h3>
 
           <ToggleRow
             name="homeShowEvents"
-            label="Mostrar Eventos"
-            description="Activa o desactiva la seccion de eventos en el home. Tambien controla el enlace Eventos en el menu."
+            label="Mostrar eventos"
+            description="Activa o desactiva la sección de eventos en el inicio. También controla el enlace de eventos en el menú."
             defaultChecked={settings.homeShowEvents}
           />
 
           <ToggleRow
             name="homeShowTestimonials"
-            label="Mostrar Testimonios"
-            description="Activa o desactiva la seccion de testimonios en el home."
+            label="Mostrar testimonios"
+            description="Activa o desactiva la sección de testimonios en el inicio."
             defaultChecked={settings.homeShowTestimonials}
           />
 
           <ToggleRow
             name="homeShowBlog"
-            label="Mostrar Blog"
-            description="Activa o desactiva la seccion del blog en el home. Tambien controla el enlace Blog en el menu."
+            label="Mostrar blog"
+            description="Activa o desactiva la sección del blog en el inicio. También controla el enlace al blog en el menú."
             defaultChecked={settings.homeShowBlog}
           />
         </div>
@@ -176,7 +176,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             className="inline-flex items-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: "var(--verde-impulso)" }}
           >
-            Guardar configuracion
+            Guardar configuración
           </button>
         </div>
       </form>

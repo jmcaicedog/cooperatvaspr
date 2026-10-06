@@ -49,7 +49,7 @@ export default async function CooperativaSucursalesPage() {
       <div className="space-y-3">
         {branches.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
-            Aun no hay sucursales registradas.
+            Aún no hay sucursales registradas.
           </article>
         ) : (
           branches.map((branch, index) => (
@@ -96,7 +96,7 @@ export default async function CooperativaSucursalesPage() {
                       className="w-fit rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
                       type="submit"
                     >
-                      Guardar edicion
+                      Guardar edición
                     </button>
                   </form>
 

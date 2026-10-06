@@ -43,7 +43,7 @@ export default async function CooperativaServiciosPage() {
       <div className="space-y-3">
         {services.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
-            Aun no hay servicios cargados.
+            Aún no hay servicios cargados.
           </article>
         ) : (
           services.map((service, index) => (
@@ -60,21 +60,21 @@ export default async function CooperativaServiciosPage() {
                       className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
                       defaultValue={service.title}
                       name="title"
-                      placeholder="Titulo del servicio"
+                      placeholder="Título del servicio"
                       required
                     />
                     <textarea
                       className="min-h-20 rounded-md border border-zinc-300 px-3 py-2 text-sm"
                       defaultValue={service.description ?? ""}
                       name="description"
-                      placeholder="Descripcion"
+                      placeholder="Descripción"
                     />
                     <div className="flex flex-wrap items-center gap-2">
                       <button
                         className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
                         type="submit"
                       >
-                        Guardar edicion
+                        Guardar edición
                       </button>
                       <p className="text-xs text-zinc-500">{service.isActive ? "Activo" : "Inactivo"}</p>
                     </div>
@@ -121,13 +121,13 @@ export default async function CooperativaServiciosPage() {
         <input
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
           name="title"
-          placeholder="Titulo del servicio"
+          placeholder="Título del servicio"
           required
         />
         <textarea
           className="min-h-24 rounded-md border border-zinc-300 px-3 py-2 text-sm"
           name="description"
-          placeholder="Descripcion"
+          placeholder="Descripción"
         />
         <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" type="submit">
           Agregar servicio

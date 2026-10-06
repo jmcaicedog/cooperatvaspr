@@ -37,8 +37,8 @@ export const cooperativeCreateSchema = z.object({
     .array(cooperativeTypeEnum)
     .min(1, "Selecciona al menos un tipo de cooperativa"),
   tags: z
-    .array(z.string().trim().min(1).max(40, "Cada palabra clave debe tener maximo 40 caracteres"))
-    .max(20, "Puedes ingresar maximo 20 palabras clave")
+    .array(z.string().trim().min(1).max(40, "Cada palabra clave debe tener máximo 40 caracteres"))
+    .max(20, "Puedes ingresar máximo 20 palabras clave")
     .default([]),
 });
 

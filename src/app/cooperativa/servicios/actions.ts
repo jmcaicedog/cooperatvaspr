@@ -9,13 +9,13 @@ import { db } from "@/lib/db";
 
 const createServiceSchema = z.object({
   cooperativeId: z.string().min(1),
-  title: z.string().trim().min(2, "El titulo es obligatorio."),
+  title: z.string().trim().min(2, "El título es obligatorio."),
   description: z.string().trim().max(1200).optional().or(z.literal("")),
 });
 
 const updateServiceSchema = z.object({
   serviceId: z.string().min(1),
-  title: z.string().trim().min(2, "El titulo es obligatorio."),
+  title: z.string().trim().min(2, "El título es obligatorio."),
   description: z.string().trim().max(1200).optional().or(z.literal("")),
 });
 

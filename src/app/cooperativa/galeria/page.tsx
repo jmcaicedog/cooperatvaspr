@@ -18,7 +18,7 @@ export default async function CooperativaGaleriaPage() {
   if (!cooperative) {
     return (
       <section className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-900">
-        No hay cooperativa asignada para gestionar galeria.
+        No hay cooperativa asignada para gestionar la galería.
       </section>
     );
   }
@@ -37,21 +37,21 @@ export default async function CooperativaGaleriaPage() {
   return (
     <section className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Galeria</h1>
+        <h1 className="text-2xl font-semibold">Galería</h1>
         <p className="text-sm text-zinc-600">Cooperativa: {cooperative.name}</p>
       </header>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {gallery.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
-            Aun no hay imagenes cargadas.
+            Aún no hay imágenes cargadas.
           </article>
         ) : (
           gallery.map((image) => (
             <article className="rounded-lg border border-zinc-200 bg-white p-3" key={image.id}>
               <div className="relative h-44 w-full overflow-hidden rounded-md bg-zinc-100">
                 <Image
-                  alt={image.altText ?? "Imagen de galeria"}
+                  alt={image.altText ?? "Imagen de galería"}
                   className="object-contain"
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"

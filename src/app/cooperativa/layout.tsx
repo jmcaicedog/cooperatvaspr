@@ -51,7 +51,7 @@ export default async function CooperativaLayout({
                   className="mt-1 inline-flex rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
                   href="/auth/logout"
                 >
-                  Cerrar sesion
+                  Cerrar sesión
                 </a>
               </div>
               <div className="lg:hidden">

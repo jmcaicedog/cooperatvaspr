@@ -118,7 +118,7 @@ export default async function CooperativaContactosPage() {
       <div className="space-y-3">
         {contacts.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
-            Aun no hay contactos cargados.
+            Aún no hay contactos cargados.
           </article>
         ) : (
           contacts.map((contact) => (
@@ -138,7 +138,7 @@ export default async function CooperativaContactosPage() {
                       name="type"
                       required
                     >
-                      <option value={ContactType.PHONE}>Telefono</option>
+                      <option value={ContactType.PHONE}>Teléfono</option>
                       <option value={ContactType.EMAIL}>Correo</option>
                       <option value={ContactType.WEBSITE}>Sitio web</option>
                       <option value={ContactType.WHATSAPP}>WhatsApp</option>
@@ -164,7 +164,7 @@ export default async function CooperativaContactosPage() {
                         className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
                         type="submit"
                       >
-                        Guardar edicion
+                        Guardar edición
                       </button>
                     </div>
                   </form>
@@ -192,7 +192,7 @@ export default async function CooperativaContactosPage() {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">Nuevo contacto</h2>
 
         <select className="rounded-md border border-zinc-300 px-3 py-2 text-sm" name="type" required>
-          <option value={ContactType.PHONE}>Telefono</option>
+          <option value={ContactType.PHONE}>Teléfono</option>
           <option value={ContactType.EMAIL}>Correo</option>
           <option value={ContactType.WEBSITE}>Sitio web</option>
           <option value={ContactType.WHATSAPP}>WhatsApp</option>
@@ -219,7 +219,7 @@ export default async function CooperativaContactosPage() {
       <div className="space-y-3">
         {socialLinks.length === 0 ? (
           <article className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
-            Aun no hay redes sociales cargadas.
+            Aún no hay redes sociales cargadas.
           </article>
         ) : (
           socialLinks.map((socialLink) => (
@@ -252,7 +252,7 @@ export default async function CooperativaContactosPage() {
                   className="w-fit rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-100"
                   type="submit"
                 >
-                  Guardar edicion
+                  Guardar edición
                 </button>
               </form>
 

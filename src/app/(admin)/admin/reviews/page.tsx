@@ -167,12 +167,12 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
                     to: payload.foundedYear?.toString() ?? "",
                   },
                   {
-                    label: "Descripcion breve",
+                    label: "Descripción breve",
                     from: toRichTextEditorValue(item.cooperative.descriptionText).text,
                     to: toRichTextEditorValue(payload.descriptionText ?? null).text,
                   },
                   {
-                    label: "Descripcion enriquecida (texto)",
+                    label: "Descripción enriquecida (texto)",
                     from: currentRichText,
                     to: proposedRichText,
                   },

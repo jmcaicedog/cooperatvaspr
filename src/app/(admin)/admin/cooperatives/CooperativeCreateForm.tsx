@@ -92,7 +92,7 @@ export function CooperativeCreateForm({ municipalities }: { municipalities: Muni
         <AdminLabel className="mb-0">Palabras clave (tags)</AdminLabel>
         <AdminInput
           name="tags"
-          placeholder="Ej. cafe, turismo, agroecologia"
+          placeholder="Ej. café, turismo, agroecología"
         />
         <span className="text-xs text-zinc-500">Separa cada palabra clave por coma.</span>
       </div>
