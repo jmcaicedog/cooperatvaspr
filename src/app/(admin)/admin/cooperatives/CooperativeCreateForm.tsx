@@ -12,8 +12,8 @@ import {
   AdminInput,
   AdminLabel,
   AdminSelect,
-  AdminTextarea,
 } from "@/components/admin/ui";
+import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
 
 const initialState: CooperativeActionState = {
   ok: false,
@@ -73,7 +73,7 @@ export function CooperativeCreateForm({ municipalities }: { municipalities: Muni
 
       <div className="grid gap-1 text-sm">
         <AdminLabel className="mb-0">Descripción breve</AdminLabel>
-        <AdminTextarea className="min-h-28" name="descriptionText" />
+        <RichTextEditor defaultHtml="" defaultText="" name="descriptionText" />
       </div>
 
       <fieldset className="grid gap-2 text-sm">

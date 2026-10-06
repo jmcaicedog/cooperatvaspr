@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { reviewChangeRequestAction } from "@/app/cooperativa/perfil/actions";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { toRichTextEditorValue } from "@/lib/rich-text-editor-value";
 
 type ReviewsPageProps = {
   searchParams: Promise<{
@@ -167,8 +168,8 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
                   },
                   {
                     label: "Descripcion breve",
-                    from: item.cooperative.descriptionText ?? "",
-                    to: payload.descriptionText ?? "",
+                    from: toRichTextEditorValue(item.cooperative.descriptionText).text,
+                    to: toRichTextEditorValue(payload.descriptionText ?? null).text,
                   },
                   {
                     label: "Descripcion enriquecida (texto)",

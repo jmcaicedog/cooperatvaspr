@@ -48,6 +48,7 @@ import {
 } from "@/components/admin/ui";
 import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
 import { socialPlatformLabels, socialPlatformOptions } from "@/lib/social-links";
+import { toRichTextEditorValue } from "@/lib/rich-text-editor-value";
 
 type CooperativeEditData = {
   id: string;
@@ -197,13 +198,14 @@ export function EditForm({
   }, [galleryState.ok, logoState.ok, router, state.ok]);
 
   const galleryLimitReached = cooperative.gallery.length >= 5;
+  const shortDescription = toRichTextEditorValue(cooperative.descriptionText);
   const rich =
     cooperative.descriptionRich &&
     typeof cooperative.descriptionRich === "object" &&
     "html" in cooperative.descriptionRich &&
     "text" in cooperative.descriptionRich
       ? (cooperative.descriptionRich as { html: string; text: string })
-      : { html: cooperative.descriptionText ?? "", text: cooperative.descriptionText ?? "" };
+      : { html: "", text: "" };
 
   return (
     <div className="admin-themed space-y-6">
@@ -348,10 +350,10 @@ export function EditForm({
         </div>
 
         <div className="grid gap-1 text-sm">
-          <AdminLabel className="mb-0">Descripcion breve (texto plano)</AdminLabel>
-          <AdminTextarea
-            className="min-h-28"
-            defaultValue={cooperative.descriptionText ?? ""}
+          <AdminLabel className="mb-0">Descripcion breve</AdminLabel>
+          <RichTextEditor
+            defaultHtml={shortDescription.html}
+            defaultText={shortDescription.text}
             name="descriptionText"
           />
         </div>

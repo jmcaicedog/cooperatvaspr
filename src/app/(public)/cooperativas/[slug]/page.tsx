@@ -6,6 +6,8 @@ import { BranchMapPanel } from "@/app/(public)/cooperativas/[slug]/BranchMapPane
 import { isMissingCooperativeBranchStorage } from "@/lib/cooperative-branches";
 import { db } from "@/lib/db";
 import { cooperativeTypeLabels } from "@/lib/cooperative-taxonomy";
+import { normalizeExternalUrl } from "@/lib/external-url";
+import { sanitizeBasicHtml } from "@/lib/validators/rich-text";
 import { socialPlatformLabels } from "@/lib/social-links";
 import type { Metadata } from "next";
 
@@ -111,6 +113,9 @@ export default async function CooperativaDetailPage({ params }: Props) {
       : null;
 
   const plainDescription = coop.descriptionText?.trim() ?? "";
+  const plainDescriptionIsHtml = /<(?:a|blockquote|br|div|h[1-6]|li|ol|p|pre|strong|ul)\b/i.test(
+    plainDescription,
+  );
   const richText = richTextPayload?.trim() ?? "";
 
   const normalizeText = (value: string): string =>
@@ -203,20 +208,30 @@ export default async function CooperativaDetailPage({ params }: Props) {
             <section>
               <SectionHeading>Sobre la cooperativa</SectionHeading>
               {shouldShowPlainDescription ? (
-                <p className="mb-5 text-sm leading-[1.7]" style={{ color: "var(--text-secondary)" }}>
-                  {plainDescription}
-                </p>
+                plainDescriptionIsHtml ? (
+                  <div
+                    className="prose-coop mb-5 break-words text-sm [&_a]:break-all"
+                    dangerouslySetInnerHTML={{ __html: sanitizeBasicHtml(plainDescription) }}
+                  />
+                ) : (
+                  <p
+                    className="mb-5 whitespace-pre-line break-words text-sm leading-[1.7] [overflow-wrap:anywhere]"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {plainDescription}
+                  </p>
+                )
               ) : null}
 
               {hasRichDescription ? (
                 richHtml ? (
                   <div
-                    className="prose-coop text-sm"
+                    className="prose-coop break-words text-sm [&_a]:break-all"
                     dangerouslySetInnerHTML={{ __html: richHtml }}
                   />
                 ) : (
                   <p
-                    className="text-sm leading-relaxed whitespace-pre-line"
+                    className="break-words text-sm leading-relaxed whitespace-pre-line [overflow-wrap:anywhere]"
                     style={{ color: "var(--text-secondary)" }}
                   >
                     {richText}
@@ -237,15 +252,15 @@ export default async function CooperativaDetailPage({ params }: Props) {
                 {coop.services.map((s) => (
                   <li
                     key={s.id}
-                    className="rounded-xl border p-3"
+                    className="min-w-0 rounded-xl border p-3"
                     style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
                   >
-                    <p className="text-sm font-semibold" style={{ color: "var(--verde-impulso)" }}>
+                    <p className="break-words text-sm font-semibold [overflow-wrap:anywhere]" style={{ color: "var(--verde-impulso)" }}>
                       {s.title}
                     </p>
                     {s.description && (
-                      <p className="mt-0.5 text-xs" style={{ color: "var(--text-muted)" }}>
-                        {s.description}
+                      <p className="mt-0.5 break-words text-xs [overflow-wrap:anywhere]" style={{ color: "var(--text-muted)" }}>
+                        <LinkifiedText value={s.description} />
                       </p>
                     )}
                   </li>
@@ -476,14 +491,58 @@ function ContactValue({ type, value }: { type: string; value: string }) {
         </a>
       );
     case "WEBSITE":
+      const websiteUrl = normalizeExternalUrl(value);
+      if (!websiteUrl) {
+        return <span className={baseClass} style={style}>{value}</span>;
+      }
+
       return (
-        <a href={value} target="_blank" rel="noopener noreferrer" className={`${baseClass} hover:underline`} style={{ color: "var(--azul-compromiso)" }}>
-          {value.replace(/^https?:\/\//, "")}
+        <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className={`${baseClass} hover:underline`} style={{ color: "var(--azul-compromiso)" }}>
+          {value.replace(/^https?:\/\//i, "")}
         </a>
       );
     default:
       return <span className={baseClass} style={style}>{value}</span>;
   }
+}
+
+const SERVICE_URL_PATTERN =
+  /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+|(?:[a-z\d](?:[a-z\d-]*[a-z\d])?\.)+[a-z]{2,}(?:[/?#][^\s<>"']*)?)/gi;
+
+function LinkifiedText({ value }: { value: string }) {
+  const parts: React.ReactNode[] = [];
+  let cursor = 0;
+
+  for (const match of value.matchAll(SERVICE_URL_PATTERN)) {
+    const start = match.index ?? 0;
+    const matchedUrl = match[0];
+    const urlText = matchedUrl.replace(/[.,!?;:)\]}]+$/g, "");
+    if (!urlText) {
+      continue;
+    }
+
+    const href = normalizeExternalUrl(urlText);
+    if (!href) {
+      continue;
+    }
+
+    parts.push(value.slice(cursor, start));
+    parts.push(
+      <a
+        className="break-all text-[var(--azul-compromiso)] underline"
+        href={href}
+        key={`${start}-${urlText}`}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        {urlText}
+      </a>,
+    );
+    cursor = start + urlText.length;
+  }
+
+  parts.push(value.slice(cursor));
+  return <>{parts}</>;
 }
 
 function getSocialHoverClass(platform: string): string {

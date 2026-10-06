@@ -107,7 +107,7 @@ export async function updateCooperativeProfileAction(
     municipalityCode: formData.get("municipalityCode"),
     foundedYear: formData.get("foundedYear"),
     slogan: formData.get("slogan"),
-    descriptionText: formData.get("descriptionText"),
+    descriptionText: formData.get("descriptionTextText") ?? formData.get("descriptionText"),
     cooperativeTypes: formData.getAll("cooperativeTypes"),
     tags: parseTagListInput(formData.get("tags")),
   });
@@ -124,6 +124,11 @@ export async function updateCooperativeProfileAction(
     text: formData.get("descriptionRichText") ?? "",
   });
 
+  const parsedShortDescription = richTextPayloadSchema.safeParse({
+    html: formData.get("descriptionTextHtml") ?? "",
+    text: formData.get("descriptionTextText") ?? formData.get("descriptionText") ?? "",
+  });
+
   if (!parsedRich.success) {
     return {
       ok: false,
@@ -131,6 +136,14 @@ export async function updateCooperativeProfileAction(
     };
   }
 
+  if (!parsedShortDescription.success) {
+    return {
+      ok: false,
+      message: parsedShortDescription.error.issues[0]?.message ?? "Descripción breve inválida.",
+    };
+  }
+
+  const normalizedShortDescription = normalizeRichTextValue(parsedShortDescription.data);
   const normalizedRich = normalizeRichTextValue(parsedRich.data);
 
   const newData = {
@@ -138,7 +151,8 @@ export async function updateCooperativeProfileAction(
     municipalityCode: parsedCore.data.municipalityCode,
     foundedYear: parsedCore.data.foundedYear ?? null,
     slogan: parsedCore.data.slogan || null,
-    descriptionText: parsedCore.data.descriptionText || null,
+    descriptionText:
+      normalizedShortDescription.html || parsedCore.data.descriptionText || null,
     cooperativeTypes: parsedCore.data.cooperativeTypes,
     tags: parsedCore.data.tags,
     descriptionRich: normalizedRich,

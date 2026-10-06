@@ -62,18 +62,27 @@ export async function createCooperativeAction(
     municipalityCode: formData.get("municipalityCode"),
     foundedYear: formData.get("foundedYear"),
     slogan: formData.get("slogan"),
-    descriptionText: formData.get("descriptionText"),
+    descriptionText: formData.get("descriptionTextText") ?? formData.get("descriptionText"),
     cooperativeTypes: formData.getAll("cooperativeTypes"),
     tags: parseTagListInput(formData.get("tags")),
   });
 
-  if (!parsed.success) {
+  const parsedShortDescription = richTextPayloadSchema.safeParse({
+    html: formData.get("descriptionTextHtml") ?? "",
+    text: formData.get("descriptionTextText") ?? formData.get("descriptionText") ?? "",
+  });
+
+  if (!parsed.success || !parsedShortDescription.success) {
     return {
       ok: false,
-      message: parsed.error.issues[0]?.message ?? "Datos inválidos",
+      message:
+        parsed.error?.issues[0]?.message ??
+        parsedShortDescription.error?.issues[0]?.message ??
+        "Datos inválidos",
     };
   }
 
+  const shortDescription = normalizeRichTextValue(parsedShortDescription.data);
   const slugBase = toSlug(parsed.data.name);
 
   if (!slugBase) {
@@ -97,7 +106,7 @@ export async function createCooperativeAction(
       municipalityCode: parsed.data.municipalityCode,
       foundedYear: parsed.data.foundedYear ?? null,
       slogan: parsed.data.slogan || null,
-      descriptionText: parsed.data.descriptionText || null,
+      descriptionText: shortDescription.html || parsed.data.descriptionText || null,
       cooperativeTypes: parsed.data.cooperativeTypes,
       tags: parsed.data.tags,
       status: CooperativeStatus.DRAFT,
@@ -130,9 +139,14 @@ export async function updateCooperativeByAdminAction(
     municipalityCode: formData.get("municipalityCode"),
     foundedYear: formData.get("foundedYear"),
     slogan: formData.get("slogan"),
-    descriptionText: formData.get("descriptionText"),
+    descriptionText: formData.get("descriptionTextText") ?? formData.get("descriptionText"),
     cooperativeTypes: formData.getAll("cooperativeTypes"),
     tags: parseTagListInput(formData.get("tags")),
+  });
+
+  const parsedShortDescription = richTextPayloadSchema.safeParse({
+    html: formData.get("descriptionTextHtml") ?? "",
+    text: formData.get("descriptionTextText") ?? formData.get("descriptionText") ?? "",
   });
 
   const parsedRich = richTextPayloadSchema.safeParse({
@@ -151,6 +165,14 @@ export async function updateCooperativeByAdminAction(
     };
   }
 
+  if (!parsedShortDescription.success) {
+    return {
+      ok: false,
+      message: parsedShortDescription.error.issues[0]?.message ?? "Descripción breve inválida.",
+    };
+  }
+
+  const shortDescription = normalizeRichTextValue(parsedShortDescription.data);
   const cooperative = await db.cooperative.findUnique({
     where: { id: cooperativeId },
     select: { id: true, slug: true },
@@ -167,7 +189,7 @@ export async function updateCooperativeByAdminAction(
       municipalityCode: parsed.data.municipalityCode,
       foundedYear: parsed.data.foundedYear ?? null,
       slogan: parsed.data.slogan || null,
-      descriptionText: parsed.data.descriptionText || null,
+      descriptionText: shortDescription.html || parsed.data.descriptionText || null,
       cooperativeTypes: parsed.data.cooperativeTypes,
       tags: parsed.data.tags,
       descriptionRich: normalizeRichTextValue(parsedRich.data),

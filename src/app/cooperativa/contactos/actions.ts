@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { requireCoopAdminOrPlatform } from "@/lib/auth/session";
 import { canMutateCooperative } from "@/lib/cooperative-scope";
 import { db } from "@/lib/db";
+import { normalizeExternalUrl } from "@/lib/external-url";
 
 const contactTypeSchema = z.enum([
   ContactType.PHONE,
@@ -47,6 +48,14 @@ export async function createContactAction(formData: FormData): Promise<void> {
     throw new Error("No autorizado para editar contactos de esta cooperativa.");
   }
 
+  const value =
+    parsed.data.type === ContactType.WEBSITE
+      ? normalizeExternalUrl(parsed.data.value)
+      : parsed.data.value;
+  if (!value) {
+    throw new Error("Ingresa una URL válida que comience con un dominio.");
+  }
+
   const maxSortOrder = await db.contactPoint.aggregate({
     where: { cooperativeId: parsed.data.cooperativeId },
     _max: { sortOrder: true },
@@ -57,7 +66,7 @@ export async function createContactAction(formData: FormData): Promise<void> {
       cooperativeId: parsed.data.cooperativeId,
       type: parsed.data.type,
       label: parsed.data.label || null,
-      value: parsed.data.value,
+      value,
       sortOrder: (maxSortOrder._max.sortOrder ?? -1) + 1,
     },
   });
@@ -116,12 +125,20 @@ export async function updateContactAction(formData: FormData): Promise<void> {
     throw new Error("No autorizado para actualizar este contacto.");
   }
 
+  const value =
+    parsed.data.type === ContactType.WEBSITE
+      ? normalizeExternalUrl(parsed.data.value)
+      : parsed.data.value;
+  if (!value) {
+    throw new Error("Ingresa una URL válida que comience con un dominio.");
+  }
+
   await db.contactPoint.update({
     where: { id: contact.id },
     data: {
       type: parsed.data.type,
       label: parsed.data.label || null,
-      value: parsed.data.value,
+      value,
     },
   });
 

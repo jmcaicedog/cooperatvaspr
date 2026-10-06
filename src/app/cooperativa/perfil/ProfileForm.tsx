@@ -12,6 +12,7 @@ import {
 } from "@/app/cooperativa/perfil/actions";
 import { RichTextEditor } from "@/app/cooperativa/perfil/RichTextEditor";
 import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
+import { toRichTextEditorValue } from "@/lib/rich-text-editor-value";
 
 type CooperativeProfileData = {
   id: string;
@@ -55,13 +56,14 @@ export function ProfileForm({
     }
   }, [logoState.ok, router, state.ok]);
 
+  const shortDescription = toRichTextEditorValue(cooperative.descriptionText);
   const rich =
     cooperative.descriptionRich &&
     typeof cooperative.descriptionRich === "object" &&
     "html" in cooperative.descriptionRich &&
     "text" in cooperative.descriptionRich
       ? (cooperative.descriptionRich as { html: string; text: string })
-      : { html: cooperative.descriptionText ?? "", text: cooperative.descriptionText ?? "" };
+      : { html: "", text: "" };
 
   return (
     <div className="space-y-6">
@@ -212,10 +214,10 @@ export function ProfileForm({
         </label>
 
         <label className="grid gap-1 text-sm">
-          <span>Descripcion breve (texto plano)</span>
-          <textarea
-            className="min-h-28 rounded-md border border-zinc-300 px-3 py-2"
-            defaultValue={cooperative.descriptionText ?? ""}
+          <span>Descripcion breve</span>
+          <RichTextEditor
+            defaultHtml={shortDescription.html}
+            defaultText={shortDescription.text}
             name="descriptionText"
           />
         </label>
