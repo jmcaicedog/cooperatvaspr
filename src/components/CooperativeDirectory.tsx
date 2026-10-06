@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cooperativeTypeLabels, cooperativeTypeValues } from "@/lib/cooperative-taxonomy";
 import { CooperativeCard, type CooperativeListItem } from "./CooperativeCard";
 
@@ -35,6 +35,8 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const resultsStartRef = useRef<HTMLDivElement>(null);
+  const shouldScrollToResultsRef = useRef(false);
   const cooperativeTypeSet = useMemo(() => new Set<string>(cooperativeTypeValues), []);
 
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
@@ -97,8 +99,25 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
 
   const goToPage = (nextPage: number) => {
     const clamped = Math.max(1, Math.min(totalPages, nextPage));
+    if (clamped === currentPageSafe) {
+      return;
+    }
+
+    shouldScrollToResultsRef.current = true;
     setCurrentPage(clamped);
   };
+
+  useEffect(() => {
+    if (!shouldScrollToResultsRef.current) {
+      return;
+    }
+
+    shouldScrollToResultsRef.current = false;
+    resultsStartRef.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start",
+    });
+  }, [currentPageSafe]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -230,7 +249,10 @@ export function CooperativeDirectory({ cooperatives, municipalities }: Props) {
       </div>
 
       {/* Results header */}
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+      <div
+        className="scroll-mt-20 flex items-center justify-between mb-4 gap-3 flex-wrap"
+        ref={resultsStartRef}
+      >
         <div className="flex items-center gap-3">
           <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
             {`${filtered.length} de ${cooperatives.length}`}
