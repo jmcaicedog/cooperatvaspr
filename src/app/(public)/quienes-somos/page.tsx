@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Quiénes somos",
   description:
-    "Conoce la misión y visión del directorio cooperativas.pr — la plataforma de referencia para las cooperativas de Puerto Rico.",
+    "Conoce qué es una cooperativa y qué propone el cooperativismo, además de la misión del directorio cooperativas.pr.",
 };
 
 export default function QuienesSomosPage() {
@@ -39,33 +39,42 @@ export default function QuienesSomosPage() {
           </p>
         </section>
 
-        {/* Values */}
-        <section>
-          <h2 className="text-xl font-bold mb-6" style={{ color: "var(--verde-impulso)" }}>
-            Nuestros valores
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {VALUES.map((v) => (
-              <div
-                key={v.title}
-                className="rounded-2xl border p-5"
-                style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
-              >
-                <div
-                  className="h-10 w-10 rounded-xl flex items-center justify-center mb-3 text-lg"
-                  style={{ backgroundColor: "rgba(0,48,36,0.08)" }}
-                >
-                  {v.icon}
-                </div>
-                <h3 className="font-bold text-sm mb-1" style={{ color: "var(--verde-impulso)" }}>
-                  {v.title}
-                </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                  {v.description}
-                </p>
-              </div>
-            ))}
-          </div>
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <article
+            className="rounded-2xl border p-6"
+            style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
+          >
+            <h2 className="text-xl font-bold mb-4" style={{ color: "var(--verde-impulso)" }}>
+              ¿Qué es una cooperativa?
+            </h2>
+            <blockquote className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Una cooperativa es una asociación autónoma de personas que se unen voluntariamente
+              para hacer frente a sus necesidades y aspiraciones económicas, sociales y culturales
+              comunes mediante una empresa de propiedad conjunta controlada democráticamente.
+            </blockquote>
+            <p className="mt-4 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              (Declaración de Identidad Cooperativa, Alianza Cooperativa Internacional, Manchester,
+              1995)
+            </p>
+          </article>
+
+          <article
+            className="rounded-2xl border p-6"
+            style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}
+          >
+            <h2 className="text-xl font-bold mb-4" style={{ color: "var(--verde-impulso)" }}>
+              ¿Qué es el cooperativismo?
+            </h2>
+            <blockquote className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              El cooperativismo es un sistema socioeconómico que busca la liberación, y facilita
+              el perfeccionamiento integral del ser humano, mediante la justicia económica y la
+              cooperación social. Es una doctrina socioeconómica basada en valores y principios
+              cuyo fin es construir una sociedad más justa, social y económicamente.
+            </blockquote>
+            <p className="mt-4 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              (Ley General de Sociedades Cooperativas. Ley 239, 1 de sept. de 2004).
+            </p>
+          </article>
         </section>
 
         {/* Call to action */}
@@ -89,30 +98,3 @@ export default function QuienesSomosPage() {
     </div>
   );
 }
-
-const VALUES = [
-  {
-    icon: "🌿",
-    title: "Comunidad",
-    description:
-      "Creemos en el poder de la economía solidaria para fortalecer las comunidades de Puerto Rico.",
-  },
-  {
-    icon: "🤝",
-    title: "Transparencia",
-    description:
-      "Información clara, accesible y actualizada sobre cada cooperativa del país.",
-  },
-  {
-    icon: "⚡",
-    title: "Innovación",
-    description:
-      "Tecnología moderna al servicio del movimiento cooperativo boricua.",
-  },
-  {
-    icon: "🌱",
-    title: "Inclusión",
-    description:
-      "Todas las cooperativas, grandes y pequeñas, tienen un espacio en nuestra plataforma.",
-  },
-];
